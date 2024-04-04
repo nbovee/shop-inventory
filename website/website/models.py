@@ -11,12 +11,9 @@ class users(models.Model):
 
 class orders(models.Model):
     id = models.IntegerField(primary_key=True)
-    users = models.CharField(max_length=30)
+    users = models.ForeignKey(users, on_delete=models.CASCADE)
     timestamp = models.DateTimeField()
-    orange = models.IntegerField()
-    apple = models.IntegerField()
-    soup = models.IntegerField()
-    kcup = models.IntegerField()
+    stuff = models.ManyToManyField('inventory')
     feedback = models.TextField()
     notes = models.TextField()
     requests = models.TextField()
