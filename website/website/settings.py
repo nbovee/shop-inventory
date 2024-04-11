@@ -27,7 +27,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', INSECURE_KEY)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = is_true(os.getenv('DJANGO_DEBUG', 'true'))
 
-ALLOWED_HOSTS = split_with_comma(os.getenv('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost'))
+ALLOWED_HOSTS = split_with_comma(os.getenv('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost,0.0.0.0'))
 
 INTERNAL_IPS = ['127.0.0.1']
 
@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'polls.apps.PollsConfig',
 ]
 
 MIDDLEWARE = [
