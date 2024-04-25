@@ -1,8 +1,8 @@
 # Django + Docker = ❤️
 <div>
 
-[![Build](https://github.com/amerkurev/django-docker-template/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/amerkurev/django-docker-template/actions/workflows/ci.yml)
-[![Coverage Status](https://coveralls.io/repos/github/amerkurev/django-docker-template/badge.svg)](https://coveralls.io/github/amerkurev/django-docker-template)
+[![Build](https://github.com/nbovee/shop-prototype/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/nbovee/shop-prototype/actions/workflows/ci.yml)
+[![Coverage Status](https://coveralls.io/repos/github/nbovee/shop-prototype/badge.svg)](https://coveralls.io/github/nbovee/shop-prototype)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 </div>
 
