@@ -1,7 +1,7 @@
 # Django + Docker = ❤️
 <div>
 
-[![Build](https://github.com/nbovee/shop-prototype/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/nbovee/shop-prototype/actions/workflows/ci.yml)
+[![Build](https://github.com/nbovee/shop-prototype/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/nbovee/shop-prototype/actions/workflows/ci.yml)
 [![Coverage Status](https://coveralls.io/repos/github/nbovee/shop-prototype/badge.svg)](https://coveralls.io/github/nbovee/shop-prototype)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 </div>
