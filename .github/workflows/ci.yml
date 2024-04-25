@@ -3,18 +3,17 @@ name: build
 on:
   push:
     branches:
-      - master
+      - main
     tags:
       - '*'
     paths-ignore:
       - '*.md'
-  pull_request_review:
-    types: [submitted]
+  pull_request:
+    branches: [main]
 
 
 jobs:
   build:
-    if: github.event_name == 'push' || github.event.review.state == 'APPROVED'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
