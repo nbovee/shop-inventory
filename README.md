@@ -2,7 +2,7 @@
 <div>
 
 [![Build](https://github.com/nbovee/shop-prototype/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/nbovee/shop-prototype/actions/workflows/ci.yml)
-[![Coverage Status](https://coveralls.io/repos/github/nbovee/shop-prototype/badge.svg)](https://coveralls.io/github/nbovee/shop-prototype)
+[![Coverage Status](https://coveralls.io/repos/github/nbovee/shop-prototype/badge.svg?branch=main)](https://coveralls.io/github/nbovee/shop-prototype?branch=main)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 </div>
 
