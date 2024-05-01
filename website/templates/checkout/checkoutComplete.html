@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Checkout Successful</title>
+
+        <script>
+            function returnToCheckout(){
+                //location.href = "https://engineering.rowan.edu/faculty_staff/listing/robi-polikar.html";
+                //location.href = "http://127.0.0.1:8000/checkout/checkoutComplete/";
+                location.href="{% url 'checkout:index' %}"
+            }
+        </script>
+        
+    </head>
+    <body style="text-align: center;background-color: rgba(113, 217, 243,.6);margin: 10px;border-radius: 8px;">
+        <div>
+            <p style="font-size: 200%;margin: 10px;">
+                Checkout Successful
+            </p>
+            <p style="font-size: 150%;margin: 10px;padding: 0px;">
+                To Start Another Checkout Press The Button Below
+            </p>
+            <button type="button" onclick="returnToCheckout()">
+                New Checkout
+            </button>
+            
+
+        </div>
+    </body>
+
+</html>
+

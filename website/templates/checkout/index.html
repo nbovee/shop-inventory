@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>User Checkout ong</title>
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                height: 100vh;
+                display: flex;
+                flex-direction: column;
+            }
+            .top-half {
+                height: 15vh;
+                background-color: beige;
+            }
+            .bottom-half {
+                display: grid;
+                grid-template-columns: 75fr 25fr;
+                height: 85vh;
+            }
+        </style>
+
+        <script>
+            var testcodes = {"ks81":"Apple","9sj2s":"Kiwi","j51s":"Chips"};
+            // items will hold the text
+            var items = [];
+            // this will hold the barcodes relative to the item. if done correctly
+            // the order shoud probably not matter
+            var itemsbarcode = [];
+
+        function displayItems() {
+            var inputElement = document.getElementById("inputText");
+            items.push(inputElement.value);
+            displayStoredItems();
+            inputElement.value = ""; 
+        }
+        function displayStoredItems() {
+            var displayElement = document.getElementById("displayItems");
+            displayElement.innerHTML = "";
+            items.forEach(function(text) {
+                var p = document.createElement("p");
+                for(let key in testcodes){
+                    if(key == text){
+                        p.innerText = testcodes[key];
+                        displayElement.appendChild(p);
+                    }
+                }
+
+            });
+            
+        }
+        function completeCheckout(){
+            //location.href = "https://engineering.rowan.edu/faculty_staff/listing/robi-polikar.html";
+            //location.href = "http://127.0.0.1:8000/checkout/checkoutComplete/";
+            location.href="{% url 'checkout:checkoutComplete' %}"
+        }
+        </script>
+    </head>
+    <body>
+        <div class="top-half" style="text-align: center;background-color: rgba(113, 217, 243,.6);margin: 10px;border-radius: 8px;">
+            <p style="font-size: 200%;margin: 10px;">
+                Client Checkout
+            </p>
+            <p style="font-size: 150%;margin: 10px;padding: 0px;">
+                Scan items belows
+            </p>
+        </div>
+        <div class="bottom-half" style="text-align: center;">
+            <div style="background-color: rgba(113, 217, 243,.6); margin: 8px;border-radius: 8px;" >
+                <div style ="margin: 20px">
+                    <input type ="text" id="inputText" placeholder = "Tap and Scan Barcode" style="height: 50px;width: 500px;">
+                    <button onclick="displayItems()"  style="height: 50px;width: 50px; margin-left: 10px;">
+                        Enter
+                    </button style="height: 50px;width: 50px;">
+                </div>
+                <div>
+                    <input type ="text"  placeholder = "Enter Manually"style="height: 50px;width: 500px;">
+                    <button style="height: 50px;width: 50px; margin-left: 10px;">
+                        Enter
+                    </button>
+
+                </div>
+                <div style="margin: 10px;">
+                    <button type="button" onclick="completeCheckout()">
+                        Finish Checkout
+                    </button>
+                    
+                </div>
+
+            </div>
+            <div style="background-color: rgba(113, 217, 243,.6); margin: 8px;border-radius: 8px;" >
+                <p>
+                    <span id="displayItems"></span> 
+                </p>
+
+            </div>
+
+        </div>
+    </body>
+
+</html>
+
+<!-- 
+    https://www.youtube.com/watch?v=Xg2JUlI3Ydc
+    https://www.youtube.com/watch?v=tDqTXipQmBU 
+    https://stackoverflow.com/questions/21968922/how-to-add-script-to-a-button-in-html-in-same-file
+
+-->
