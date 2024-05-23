@@ -16,4 +16,3 @@
    - restart your built in terminal, allowing the virtual environment to automatically load
    - run `pip install -r requirements.txt -r requirements-dev.txt` to install project and dev dependencies for your linter
    - run `pre-commit install` to initialize `pre-commit`
-
