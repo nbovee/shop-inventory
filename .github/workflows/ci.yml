@@ -3,23 +3,18 @@ name: build
 on:
   push:
     branches:
-      - master
+      - main
     tags:
       - '*'
     paths-ignore:
       - '*.md'
   pull_request:
-    paths-ignore:
-      - '*.md'
-  pull_request_review:
-    types: [submitted]
-    paths-ignore:
-      - '*.md'
+    branches: [main]
+
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4

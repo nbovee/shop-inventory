@@ -1,12 +1,24 @@
+# Shop Prototype Repository
+
+This repository is the development repository for the Rowan SHOP Offile Inventory System
+To contribute, please read the guidelines here : [Contributing.md](CONTRIBUTING.md)
+
+<hr>
 # Django + Docker = ❤️
 <div markdown="1">
 
+<<<<<<< HEAD
 [![Build](https://github.com/amerkurev/django-docker-template/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/amerkurev/django-docker-template/actions/workflows/ci.yml)
 [![Coverage Status](https://coveralls.io/repos/github/amerkurev/django-docker-template/badge.svg)](https://coveralls.io/github/amerkurev/django-docker-template)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/amerkurev/django-docker-template/blob/master/LICENSE)
+=======
+[![Build](https://github.com/nbovee/shop-prototype/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/nbovee/shop-prototype/actions/workflows/ci.yml)
+[![Coverage Status](https://coveralls.io/repos/github/nbovee/shop-prototype/badge.svg?branch=main)](https://coveralls.io/github/nbovee/shop-prototype?branch=main)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+>>>>>>> origin/main
 </div>
 
-This simple Django project is an excellent template for your future projects. 
+This simple Django project is an excellent template for your future projects.
 It includes everything you need to quickly set up a quality technology stack and start developing your web application's business logic, skipping all the complex deployment issues at an early stage.
 
 ## See in Action
@@ -79,7 +91,7 @@ docker run -it --rm -p 8000:8000 -v sqlite:/sqlite -v $(pwd)/website:/usr/src/we
 Now you can go to [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/) in your browser. Go to the Django admin panel and try updating the server code "on the fly".
 Everything works just like if you were running the Django development server outside the container.
 
-> Note that we mount the directory with your source code inside the container, so you can work with the project in your IDE, and changes will be visible inside the container, and the Django development server will restart itself. 
+> Note that we mount the directory with your source code inside the container, so you can work with the project in your IDE, and changes will be visible inside the container, and the Django development server will restart itself.
 
 <details markdown="1">
 <summary>SQLite Usage Details</summary>
@@ -88,10 +100,17 @@ Everything works just like if you were running the Django development server out
 > In our example, we add a volume named `sqlite`. This data is stored persistently and does not disappear between restarts of the Django development server.
 > However, if you have a second similar project, it would be better to change the volume name from `sqlite` to something else so that the second project uses its own copy of the database. For example:
 >
+<<<<<<< HEAD
 ```console
 docker run -it --rm -p 8000:8000 -v another_sqlite:/sqlite -v $(pwd)/website:/usr/src/website django-docker-template:master python manage.py runserver 0.0.0.0:8000
 ```
 > 
+=======
+> ```console
+> docker run -it --rm -p 8000:8000 -v another_sqlite:/sqlite -v $(pwd)/website:/usr/src/website django-docker-template:master python manage.py runserver 0.0.0.0:8000
+> ```
+>
+>>>>>>> origin/main
 >  To better understand how volumes work in Docker, refer to the official [documentation](https://docs.docker.com/storage/volumes/).
 </details>
 
@@ -146,8 +165,13 @@ docker run -it --rm -v sqlite:/sqlite django-docker-template:master python manag
 docker compose -f docker-compose.debug.yml up
 ```
 
+<<<<<<< HEAD
 Enjoy watching the lines run in the terminal 🖥️   
 And after a few seconds, open your browser at [http://127.0.0.1/admin/](http://127.0.0.1/admin/). The superuser with the login and password `admin/admin` is already created, welcome to the Django admin panel.
+=======
+Enjoy watching the lines run in the terminal 🖥️
+And after a few seconds, open your browser at http://127.0.0.1/admin/. The superuser with the login and password `admin/admin` is already created, welcome to the Django admin panel.
+>>>>>>> origin/main
 
 Django is still in Debug mode! You can work in your IDE, write code, and immediately see changes inside the container. However, you are currently using Traefik and Postgres.
 You can also add Redis or MongoDB, and all of this will work in your development environment. This is very convenient.
@@ -166,9 +190,13 @@ docker compose down --remove-orphans --rmi local -v
 
 #### Django settings
 
+<<<<<<< HEAD
 Some Django settings from the [`settings.py`](https://github.com/amerkurev/django-docker-template/blob/master/website/website/settings.py) file are stored in environment variables.
 You can easily change these settings in the [`.env`](https://github.com/amerkurev/django-docker-template/blob/master/.env) file.
 This file does not contain all the necessary settings, but many of them. Add additional settings to environment variables if needed.
+=======
+Some Django settings from the [`settings.py`](website/website/settings.py) file are stored in environment variables. You can easily change these settings in the [`.env`](.env) file. This file does not contain all the necessary settings, but many of them. Add additional settings to environment variables if needed.
+>>>>>>> origin/main
 
 > It is important to note the following: **never store sensitive settings such as DJANGO_SECRET_KEY or DJANGO_EMAIL_HOST_PASSWORD in your repository!**
 > Docker allows you to override environment variable values from additional files, the command line, or the current session. Store passwords and other sensitive information separately from the code and only connect this information at system startup.
@@ -197,7 +225,7 @@ cd django-docker-template
 MY_DOMAIN=your.domain.com docker compose -f docker-compose.yml -f docker-compose.tls.yml up -d
 ```
 
-It will take a few seconds to start the database, migrate, collect static files, and obtain a Let's Encrypt certificate. So wait a little and open https://your.domain.com in your browser. Your server is ready to work 🏆 
+It will take a few seconds to start the database, migrate, collect static files, and obtain a Let's Encrypt certificate. So wait a little and open https://your.domain.com in your browser. Your server is ready to work 🏆
 
 > Don't worry about renewing the Let's Encrypt certificate, it will happen automatically.
 
@@ -235,6 +263,8 @@ Enjoy the ease of deployment with Caddy!
 Now that you have a working project, you can extend it as you like, adding [dashboards for monitoring service health](https://doc.traefik.io/traefik/operations/dashboard/), [centralized log collection](https://www.fluentd.org), [secret storage](https://www.vaultproject.io), and of course, your own Django applications.
 All of this is beyond the scope of the current description, as the idea of this project is minimalism and providing only the essentials. Good luck!
 
+## Template Source
+Developed from the excellent template repo by @amerkurev found here: https://github.com/amerkurev/django-docker-template
 ## License
 
 [MIT](https://github.com/amerkurev/django-docker-template/blob/master/LICENSE)
