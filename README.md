@@ -7,8 +7,8 @@ To contribute, please read the guidelines here : [Contributing.md](CONTRIBUTING.
 # Django + Docker = ❤️
 <div>
 
-[![Build](https://github.com/amerkurev/django-docker-template/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/amerkurev/django-docker-template/actions/workflows/ci.yml)
-[![Coverage Status](https://coveralls.io/repos/github/amerkurev/django-docker-template/badge.svg)](https://coveralls.io/github/amerkurev/django-docker-template)
+[![Build](https://github.com/nbovee/shop-prototype/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/nbovee/shop-prototype/actions/workflows/ci.yml)
+[![Coverage Status](https://coveralls.io/repos/github/nbovee/shop-prototype/badge.svg?branch=main)](https://coveralls.io/github/nbovee/shop-prototype?branch=main)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 </div>
 
@@ -231,6 +231,8 @@ Enjoy the ease of deployment with Caddy!
 
 Now that you have a working project, you can extend it as you like, adding [dashboards for monitoring service health](https://doc.traefik.io/traefik/operations/dashboard/), [centralized log collection](https://www.fluentd.org), [secret storage](https://www.vaultproject.io), and of course, your own Django applications. All of this is beyond the scope of the current description, as the idea of this project is minimalism and providing only the essentials. Good luck!
 
+## Template Source
+Developed from the excellent template repo by @amerkurev found here: https://github.com/amerkurev/django-docker-template
 ## License
 
 [MIT](LICENSE)
