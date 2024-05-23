@@ -104,7 +104,7 @@ Everything works just like if you were running the Django development server out
 ```console
 docker run -it --rm -p 8000:8000 -v another_sqlite:/sqlite -v $(pwd)/website:/usr/src/website django-docker-template:master python manage.py runserver 0.0.0.0:8000
 ```
-> 
+>
 =======
 > ```console
 > docker run -it --rm -p 8000:8000 -v another_sqlite:/sqlite -v $(pwd)/website:/usr/src/website django-docker-template:master python manage.py runserver 0.0.0.0:8000
@@ -166,7 +166,7 @@ docker compose -f docker-compose.debug.yml up
 ```
 
 <<<<<<< HEAD
-Enjoy watching the lines run in the terminal 🖥️   
+Enjoy watching the lines run in the terminal 🖥️
 And after a few seconds, open your browser at [http://127.0.0.1/admin/](http://127.0.0.1/admin/). The superuser with the login and password `admin/admin` is already created, welcome to the Django admin panel.
 =======
 Enjoy watching the lines run in the terminal 🖥️
