@@ -1,3 +1,9 @@
+# Shop Prototype Repository
+
+This repository is the development repository for the Rowan SHOP Offile Inventory System
+To contribute, please read the guidelines here : [Contributing.md](CONTRIBUTING.md)
+
+<hr>
 # Django + Docker = ❤️
 <div>
 
