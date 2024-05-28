@@ -80,7 +80,7 @@
 
         </style>
 
-        <script>
+        <script>            
 
             var testcodes = {"ks81":"Apple","9sj2s":"Kiwi","j51s":"Chips"};
             // items will hold the text
@@ -90,20 +90,22 @@
             var itemsbarcode = [];
             var quantity = {};
 
+            // Function to ask if they want finish checking out or not
             function checkIfFinishCheckout(){
-                var modal_check_container = document.getElementById('modal_check_container');
+                var modal_check_container = document.getElementById("modal_check_container");
                 modal_check_container.classList.toggle("show");
             }
-
+            //Finish the Checkout Process and head over to the check out complete page
             function finishCheckout(){
+                sessionStorage.setItem("items",JSON.stringify(quantity));
                 location.href="{% url 'checkout:checkoutComplete' %}"
             }
-
+            //
             function notFinishCheckout(){
 
-                var modal_check_container = document.getElementById('modal_check_container');
-                var close = document.getElementById('close');
-                var show = document.getElementById('show');
+                var modal_check_container = document.getElementById("modal_check_container");
+                var close = document.getElementById("close");
+                var show = document.getElementById("show");
 
                 modal_check_container.classList.toggle("show");
 
@@ -138,10 +140,10 @@
             }
 
             function editItem(displayElement,p,item){
-                var modal_container = document.getElementById('modal_container');
-                var EditSpecificItem = document.getElementById('EditSpecificItem');
-                var amountText = document.getElementById('amountText');
-                var inputAmount = document.getElementById('inputAmount');
+                var modal_container = document.getElementById("modal_container");
+                var EditSpecificItem = document.getElementById("EditSpecificItem");
+                var amountText = document.getElementById("amountText");
+                var inputAmount = document.getElementById("inputAmount");
                 
                 modal_container.classList.toggle("show");
                 itemToEdit = item;
@@ -151,9 +153,9 @@
             }
 
             function closeEdit(){
-                var modal_container = document.getElementById('modal_container');
-                var close = document.getElementById('close');
-                var show = document.getElementById('show');
+                var modal_container = document.getElementById("modal_container");
+                var close = document.getElementById("close");
+                var show = document.getElementById("show");
 
                 modal_container.classList.toggle("show");
             }
@@ -171,7 +173,7 @@
 
                 currentItem.innerText = itemToEdit + " " + "[" + quantity[itemToEdit] + "x]"
                 inputAmount.value = "";
-                amountText.innerText =  "Amount : " + quantity[itemToEdit];
+                amountText.innerText =  "Amount: " + quantity[itemToEdit];
             }
 
             function removeAmount(){
@@ -190,7 +192,7 @@
                     currentItem.innerText = itemToEdit + " " + "[" + quantity[itemToEdit] + "x]"
                 }
                 inputAmount.value = "";
-                amountText.innerText =  "Amount : " + quantity[itemToEdit];
+                amountText.innerText =  "Amount: " + quantity[itemToEdit];
 
             }
 
