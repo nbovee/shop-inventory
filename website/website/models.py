@@ -9,19 +9,22 @@ class users(models.Model):
     shop_eligibility = models.BooleanField()
     notes = models.TextField()
 
+
 class orders(models.Model):
     id = models.IntegerField(primary_key=True)
     users = models.ForeignKey(users, on_delete=models.CASCADE)
     timestamp = models.DateTimeField()
-    stuff = models.ManyToManyField('inventory')
+    stuff = models.ManyToManyField("inventory")
     feedback = models.TextField()
     notes = models.TextField()
     requests = models.TextField()
+
 
 class locations(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=30)
     active = models.BooleanField()
+
 
 class inventory(models.Model):
     id = models.IntegerField(primary_key=True)
