@@ -33,13 +33,13 @@ The technology stack used includes:
 
 Nothing extra, only the essentials! You can easily add everything else yourself by expanding the existing configuration files:
 
-- [requirements.txt](/requirements.txt)
-- [docker-compose.yml](/docker-compose.yml)
+- [requirements.txt](requirements.txt)
+- [docker-compose.yml](docker-compose.yml)
 - [pytest.ini](/website/pytest.ini)
 - and others...
 
-> This project includes a simple Django application from the official Django tutorial - ["a basic poll application"](https://docs.djangoproject.com/en/4.2/intro/tutorial01/).
-> You can safely delete this application at any time. This application is present in the project as an example, used for testing and debugging.
+> This project originally included a simple Django application from the official Django tutorial - ["a basic poll application"](https://docs.djangoproject.com/en/4.2/intro/tutorial01/).
+> It may still be used to demonstrate functionality in this readme.
 
 So, what do you get by using this project as a template for your project? Let's take a look.
 
@@ -103,7 +103,7 @@ docker run -it --rm -p 8000:8000 -v another_sqlite:/sqlite -v $(pwd)/website:/us
 ```console
 docker run --rm django-docker-template:master ./pytest.sh
 ```
-The [pytest.sh](/blob/master/website/pytest.sh) script runs tests using pytest and coverage. As a result, you will see an output like this in the terminal:
+The [pytest.sh](/website/pytest.sh) script runs tests using pytest and coverage. As a result, you will see an output like this in the terminal:
 ```console
 ================== test session starts =====================================
 platform linux -- Python 3.11.7, pytest-7.4.4, pluggy-1.3.0
@@ -212,16 +212,16 @@ docker compose exec django python manage.py shell
 
 ### Using Caddy Server Instead of Traefik
 
-Traefik is a great edge router, but it doesn't serve static files, which is why we pair it with [Nginx](/docker-compose.yml#L26) in our setup.
+Traefik is a great edge router, but it doesn't serve static files, which is why we pair it with [Nginx](docker-compose.yml#L26) in our setup.
 If you prefer a single tool that can handle everything, you might want to try [Caddy](https://caddyserver.com).
 
 Caddy can automatically handle the creation and renewal of Let's Encrypt certificates and also serve static files, which allows you to use just one server instead of two.
 
 Here's how to set up Caddy with your project:
 
-1. Ensure you have a [`Caddyfile`](/Caddyfile) in your project directory. This file will tell Caddy how to deliver static and media files and how to forward other requests to your Django app.
+1. Ensure you have a [`Caddyfile`](Caddyfile) in your project directory. This file will tell Caddy how to deliver static and media files and how to forward other requests to your Django app.
 
-2. Swap out the `docker-compose.yml` and `docker-compose.tls.yml` with a single [`docker-compose.caddy.yml`](/docker-compose.caddy.yml). This file is designed to set up Caddy with Django and Postgres, and it doesn't include Nginx, which makes the file shorter and easier to understand.
+2. Swap out the `docker-compose.yml` and `docker-compose.tls.yml` with a single [`docker-compose.caddy.yml`](docker-compose.caddy.yml). This file is designed to set up Caddy with Django and Postgres, and it doesn't include Nginx, which makes the file shorter and easier to understand.
 
 3. To get your Django project up with Caddy, run the following command, making sure to replace `your.domain.com` with your actual domain:
 
@@ -241,4 +241,4 @@ All of this is beyond the scope of the current description, as the idea of this 
 Developed from the excellent template repo by @amerkurev found here: https://github.com/amerkurev/django-docker-template
 ## License
 
-[MIT](/LICENSE)
+[MIT](LICENSE)
