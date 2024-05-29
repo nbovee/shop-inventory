@@ -52,7 +52,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "website.apps.WebsiteConfig",
-    "website.apps.CheckoutConfig"
+    "website.apps.CheckoutConfig",
 ]
 
 MIDDLEWARE = [
