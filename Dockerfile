@@ -63,3 +63,10 @@ ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["/docker-cmd.sh"]
 
 EXPOSE $GUNICORN_PORT
+
+RUN python manage.py makemigrations && \
+	python manage.py migrate && \
+	python manage.py loaddata website/fixtures/users.json && \
+	python manage.py loaddata website/fixtures/orders.json && \
+	python manage.py loaddata website/fixtures/locations.json && \
+	python manage.py loaddata website/fixtures/inventory.json
