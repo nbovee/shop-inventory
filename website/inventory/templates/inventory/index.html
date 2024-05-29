@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory System</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-4">Inventory System</h1>
+        {% if messages %}
+            <div class="alert alert-info mt-2">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <a href="{% url 'add_item' %}" class="btn btn-primary mt-4">Add Item</a>
+        <a href="{% url 'remove_item' %}" class="btn btn-danger mt-4">Remove Item</a>
+        <h2 class="mt-4">Current Inventory</h2>
+        <ul class="list-group mt-4">
+            {% for item in items %}
+                <li class="list-group-item">{{ item.name }}: {{ item.quantity }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
+
