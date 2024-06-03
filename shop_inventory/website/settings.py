@@ -67,7 +67,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "website.urls"
-
+AUTHENTICATION_BACKENDS = (("django.contrib.auth.backends.ModelBackend"),)
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -96,7 +96,7 @@ DATABASES = {
     }
 }
 
-if "POSTGRES_DB" in os.environ:
+if bool(os.getenv("POSTGRES_DB")):
     DATABASES["default"] = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": os.environ["POSTGRES_DB"],
@@ -126,6 +126,9 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
+
+if DEBUG:
+    AUTH_PASSWORD_VALIDATORS = []
 
 
 # Internationalization

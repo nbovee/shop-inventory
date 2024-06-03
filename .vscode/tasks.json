@@ -24,6 +24,13 @@
       "problemMatcher": []
     },
     {
+      "type": "shell",
+      "label": "shell: makemigrations",
+      "dependsOn": ["docker-build"],
+      "command": "docker run --rm -v {$pwd}/shop_inventory:usr/src/shop_inventory django-docker-template:master python manage.py makemigrations",
+      "problemMatcher": []
+    },
+    {
       // shell is used here as vscode keeps docker-run tasks running for debugpy. This would then be reserving the default container name, blocking future tasks.
       "type": "shell",
       "label": "shell: ensure superuser",
