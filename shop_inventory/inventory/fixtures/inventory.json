@@ -1,6 +1,6 @@
-[
-  {
-    "model": "website.inventory",
+
+{
+    "model": "inventory.inventory",
     "fields": {
       "id": 1,
       "item_name": "apple",
@@ -10,7 +10,7 @@
     }
   },
   {
-    "model": "website.inventory",
+    "model": "inventory.inventory",
     "fields": {
       "id": 2,
       "item_name": "orange",
@@ -20,7 +20,7 @@
     }
   },
   {
-    "model": "website.inventory",
+    "model": "inventory.inventory",
     "fields": {
       "id": 3,
       "item_name": "soup",
@@ -30,7 +30,7 @@
     }
   },
   {
-    "model": "website.inventory",
+    "model": "inventory.inventory",
     "fields": {
       "id": 4,
       "item_name": "kcup",
@@ -40,7 +40,7 @@
     }
   },
   {
-    "model": "website.inventory",
+    "model": "inventory.inventory",
     "fields": {
       "id": 5,
       "item_name": "pasta",
@@ -50,7 +50,7 @@
     }
   },
   {
-    "model": "website.inventory",
+    "model": "inventory.inventory",
     "fields": {
       "id": 6,
       "item_name": "sauce",
@@ -60,7 +60,7 @@
     }
   },
   {
-    "model": "website.inventory",
+    "model": "inventory.inventory",
     "fields": {
       "id": 7,
       "item_name": "orange juice",
@@ -70,7 +70,7 @@
     }
   },
   {
-    "model": "website.inventory",
+    "model": "inventory.inventory",
     "fields": {
       "id": 8,
       "item_name": "apple juice",
@@ -80,7 +80,7 @@
     }
   },
   {
-    "model": "website.inventory",
+    "model": "inventory.inventory",
     "fields": {
       "id": 9,
       "item_name": "grape juice",
@@ -90,7 +90,7 @@
     }
   },
   {
-    "model": "website.inventory",
+    "model": "inventory.inventory",
     "fields": {
       "id": 10,
       "item_name": "cranberry juice",

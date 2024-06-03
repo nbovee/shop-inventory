@@ -1,0 +1,29 @@
+[
+  {
+    "model": "inventory.base_item",
+    "fields": {
+      "id": 1,
+      "item_name": "apple",
+      "barcode_number": "8242194892418",
+      "active": true
+    }
+  },
+  {
+    "model": "inventory.base_item",
+    "fields": {
+      "id": 2,
+      "item_name": "orange",
+      "barcode_number": "1578156593879",
+      "active": true
+    }
+  },
+  {
+    "model": "inventory.base_item",
+    "fields": {
+      "id": 3,
+      "item_name": "pizza",
+      "barcode_number": "7840801609759",
+      "active": false
+    }
+  }
+]
