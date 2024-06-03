@@ -8,8 +8,8 @@
       "python": {
         "pathMappings": [
           {
-            "localRoot": "${workspaceFolder}/website/",
-            "remoteRoot": "/usr/src/website/"
+            "localRoot": "${workspaceFolder}/shop_inventory/",
+            "remoteRoot": "/usr/src/shop_inventory/"
           }
         ],
         "projectType": "django"

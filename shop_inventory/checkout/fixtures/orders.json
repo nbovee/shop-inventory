@@ -1,6 +1,6 @@
 [
   {
-    "model": "website.orders",
+    "model": "checkout.orders",
     "fields": {
       "id": 1,
       "users": "whelle11",
@@ -15,7 +15,7 @@
     }
   },
   {
-    "model": "website.orders",
+    "model": "checkout.orders",
     "fields": {
       "id": 2,
       "users": "villian33",
@@ -30,7 +30,7 @@
     }
   },
   {
-    "model": "website.orders",
+    "model": "checkout.orders",
     "fields": {
       "id": 3,
       "users": "harris93",
@@ -45,7 +45,7 @@
     }
   },
   {
-    "model": "website.orders",
+    "model": "checkout.orders",
     "fields": {
       "id": 4,
       "users": "mercur29",
@@ -60,7 +60,7 @@
     }
   },
   {
-    "model": "website.orders",
+    "model": "checkout.orders",
     "fields": {
       "id": 5,
       "users": "gilber34",
@@ -75,7 +75,7 @@
     }
   },
   {
-    "model": "website.orders",
+    "model": "checkout.orders",
     "fields": {
       "id": 6,
       "users": "flacco15",
@@ -90,7 +90,7 @@
     }
   },
   {
-    "model": "website.orders",
+    "model": "checkout.orders",
     "fields": {
       "id": 7,
       "users": "brickq43",
@@ -105,7 +105,7 @@
     }
   },
   {
-    "model": "website.orders",
+    "model": "checkout.orders",
     "fields": {
       "id": 8,
       "users": "fitzge51",
@@ -120,7 +120,7 @@
     }
   },
   {
-    "model": "website.orders",
+    "model": "checkout.orders",
     "fields": {
       "id": 9,
       "users": "gilber34",
@@ -135,7 +135,7 @@
     }
   },
   {
-    "model": "website.orders",
+    "model": "checkout.orders",
     "fields": {
       "id": 10,
       "users": "wheele11",

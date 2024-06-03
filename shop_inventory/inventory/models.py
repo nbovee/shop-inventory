@@ -3,21 +3,22 @@ from django.db import models
 # Create your models here.
 
 
-class base_item(models.Model):
-    id = models.IntegerField(primary_key=True)
+class BaseItem(models.Model):
     name = models.CharField(max_length=30)
     barcode_number = models.TextField()
     active = models.BooleanField(default=True)
 
 
-class location(models.Model):
-    id = models.IntegerField(primary_key=True)
+class Location(models.Model):
     name = models.CharField(max_length=30)
+    barcode_number = models.TextField()
     active = models.BooleanField(default=True)
 
 
-class inventory(models.Model):
-    id = models.IntegerField(primary_key=True)
-    item_type = models.ForeignKey(base_item, on_delete=models.CASCADE)
+class Inventory(models.Model):
+    base_item = models.ForeignKey(BaseItem, on_delete=models.CASCADE)
+    location = models.ForeignKey(Location, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
-    location = models.ManyToManyField(location, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ("base_item", "location")

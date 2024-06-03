@@ -96,7 +96,7 @@ Everything works just like if you were running the Django development server out
 ```console
 docker run -it --rm -p 8000:8000 -v another_sqlite:/sqlite -v $(pwd)/website:/usr/src/website django-docker-template:master python manage.py runserver 0.0.0.0:8000
 ```
-> 
+>
 >  To better understand how volumes work in Docker, refer to the official [documentation](https://docs.docker.com/storage/volumes/).
 </details>
 

@@ -1,102 +1,38 @@
-
-{
+[
+  {
     "model": "inventory.inventory",
     "fields": {
       "id": 1,
-      "item_name": "apple",
+      "item_type": "apple",
       "quantity": 24,
-      "barcode_number": "8242194892418",
-      "notes": "apple note"
+      "location": "Shop Front"
     }
   },
   {
     "model": "inventory.inventory",
     "fields": {
       "id": 2,
-      "item_name": "orange",
-      "quantity": 27,
-      "barcode_number": "1578156593879",
-      "notes": "orange note"
+      "item_type": "apple",
+      "quantity": 12,
+      "location": "Shop Back"
     }
   },
   {
     "model": "inventory.inventory",
     "fields": {
       "id": 3,
-      "item_name": "soup",
-      "quantity": 52,
-      "barcode_number": "7840801609759",
-      "notes": "soup note"
+      "item_type": "banana",
+      "quantity": 4,
+      "location": "Shop Front"
     }
   },
   {
     "model": "inventory.inventory",
     "fields": {
       "id": 4,
-      "item_name": "kcup",
-      "quantity": 110,
-      "barcode_number": "3513933287112",
-      "notes": "kcup note"
-    }
-  },
-  {
-    "model": "inventory.inventory",
-    "fields": {
-      "id": 5,
-      "item_name": "pasta",
-      "quantity": 19,
-      "barcode_number": "5871484185836",
-      "notes": "pasta note"
-    }
-  },
-  {
-    "model": "inventory.inventory",
-    "fields": {
-      "id": 6,
-      "item_name": "sauce",
+      "item_type": "banana",
       "quantity": 8,
-      "barcode_number": "9894719659342",
-      "notes": "sauce note"
-    }
-  },
-  {
-    "model": "inventory.inventory",
-    "fields": {
-      "id": 7,
-      "item_name": "orange juice",
-      "quantity": 10,
-      "barcode_number": "2320947112207",
-      "notes": "orange juice note"
-    }
-  },
-  {
-    "model": "inventory.inventory",
-    "fields": {
-      "id": 8,
-      "item_name": "apple juice",
-      "quantity": 11,
-      "barcode_number": "1868483396947",
-      "notes": "apple juice note"
-    }
-  },
-  {
-    "model": "inventory.inventory",
-    "fields": {
-      "id": 9,
-      "item_name": "grape juice",
-      "quantity": 4,
-      "barcode_number": "7751591795334",
-      "notes": "grape juice note"
-    }
-  },
-  {
-    "model": "inventory.inventory",
-    "fields": {
-      "id": 10,
-      "item_name": "cranberry juice",
-      "quantity": 9,
-      "barcode_number": "6604876475937",
-      "notes": "cranberry juice note"
+      "location": "Shop Old"
     }
   }
 ]
