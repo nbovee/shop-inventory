@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    // "github.vscode-pull-request-github",
+    "ms-python.vscode-pylance",
+    // "ms-python.pylint",
+    "ms-python.python",
+    "ms-python.black-formatter",
+    "charliermarsh.ruff",
+    "ms-azuretools.vscode-docker",
+    "esbenp.prettier-vscode"
+  ]
+}

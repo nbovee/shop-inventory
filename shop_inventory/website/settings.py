@@ -51,7 +51,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "website.apps.WebsiteConfig",
+    "users.apps.UsersConfig",
+    "inventory.apps.InventoryConfig",
     "checkout.apps.CheckoutConfig",
 ]
 

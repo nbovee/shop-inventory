@@ -26,7 +26,7 @@ The technology stack used includes:
 - [`Python`](https://www.python.org) ver. 3.11
 - [`Django`](https://www.djangoproject.com) ver. 4.2
 - [`PostgreSQL`](https://www.postgresql.org) ver. 15
-- [`Gunicorn`](https://gunicorn.org) ver. 21.2
+- [`Gunicorn`](https://gunicorn.org) ver. 22.0
 - [`Traefik`](https://traefik.io/traefik/) ver. 2.9
 - [`Caddy`](https://caddyserver.com) ver. 2.7 *(instead of Traefik if you wish)*
 - [`Docker`](https://docs.docker.com/get-docker/) and [`Docker Compose`](https://docs.docker.com/compose/)
@@ -79,6 +79,7 @@ docker run -it --rm -v sqlite:/sqlite django-docker-template:master python manag
 ```console
 docker run -it --rm -p 8000:8000 -v sqlite:/sqlite -v $(pwd)/website:/usr/src/website django-docker-template:master python manage.py runserver 0.0.0.0:8000
 ```
+If using VSCode, you may launch the debugpy tool into your development server by running "Simple Debug" from the Run and Debug tab of the IDE.
 
 Now you can go to [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/) in your browser. Go to the Django admin panel and try updating the server code "on the fly".
 Everything works just like if you were running the Django development server outside the container.
@@ -95,7 +96,7 @@ Everything works just like if you were running the Django development server out
 ```console
 docker run -it --rm -p 8000:8000 -v another_sqlite:/sqlite -v $(pwd)/website:/usr/src/website django-docker-template:master python manage.py runserver 0.0.0.0:8000
 ```
->
+> 
 >  To better understand how volumes work in Docker, refer to the official [documentation](https://docs.docker.com/storage/volumes/).
 </details>
 
@@ -219,9 +220,9 @@ Caddy can automatically handle the creation and renewal of Let's Encrypt certifi
 
 Here's how to set up Caddy with your project:
 
-1. Ensure you have a [`Caddyfile`](Caddyfile) in your project directory. This file will tell Caddy how to deliver static and media files and how to forward other requests to your Django app.
+1. Ensure you have a [`Caddyfile`](https://github.com/amerkurev/django-docker-template/blob/master/Caddyfile) in your project directory. This file will tell Caddy how to deliver static and media files and how to forward other requests to your Django app.
 
-2. Swap out the `docker-compose.yml` and `docker-compose.tls.yml` with a single [`docker-compose.caddy.yml`](docker-compose.caddy.yml). This file is designed to set up Caddy with Django and Postgres, and it doesn't include Nginx, which makes the file shorter and easier to understand.
+2. Swap out the `docker-compose.yml` and `docker-compose.tls.yml` with a single [`docker-compose.caddy.yml`](https://github.com/amerkurev/django-docker-template/blob/master/docker-compose.caddy.yml). This file is designed to set up Caddy with Django and Postgres, and it doesn't include Nginx, which makes the file shorter and easier to understand.
 
 3. To get your Django project up with Caddy, run the following command, making sure to replace `your.domain.com` with your actual domain:
 
@@ -241,4 +242,4 @@ All of this is beyond the scope of the current description, as the idea of this 
 Developed from the excellent template repo by @amerkurev found here: https://github.com/amerkurev/django-docker-template
 ## License
 
-[MIT](LICENSE)
+[MIT](https://github.com/amerkurev/django-docker-template/blob/master/LICENSE)
