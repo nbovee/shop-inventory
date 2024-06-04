@@ -1,38 +1,27 @@
 [
   {
     "model": "inventory.inventory",
-    "fields": {
-      "id": 1,
-      "item_type": "apple",
-      "quantity": 24,
-      "location": "Shop Front"
-    }
+    "pk": 1,
+    "fields": { "base_item": 1, "location": 1, "quantity": 10 }
   },
   {
     "model": "inventory.inventory",
-    "fields": {
-      "id": 2,
-      "item_type": "apple",
-      "quantity": 12,
-      "location": "Shop Back"
-    }
+    "pk": 2,
+    "fields": { "base_item": 2, "location": 1, "quantity": 2 }
   },
   {
     "model": "inventory.inventory",
-    "fields": {
-      "id": 3,
-      "item_type": "banana",
-      "quantity": 4,
-      "location": "Shop Front"
-    }
+    "pk": 3,
+    "fields": { "base_item": 2, "location": 2, "quantity": 1 }
   },
   {
     "model": "inventory.inventory",
-    "fields": {
-      "id": 4,
-      "item_type": "banana",
-      "quantity": 8,
-      "location": "Shop Old"
-    }
+    "pk": 4,
+    "fields": { "base_item": 2, "location": 3, "quantity": 0 }
+  },
+  {
+    "model": "inventory.inventory",
+    "pk": 5,
+    "fields": { "base_item": 3, "location": 3, "quantity": 3 }
   }
 ]

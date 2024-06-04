@@ -4,8 +4,11 @@ from django.contrib.auth.admin import UserAdmin
 from .models import User
 
 
+@admin.register(User)
 class CustomAdmin(UserAdmin):
     pass
+
+
 #     # Add custom fields here
 #     list_display = ("email", "is_staff")
 #     fieldsets = (
@@ -13,5 +16,3 @@ class CustomAdmin(UserAdmin):
 #         ("Personal info", {"fields": ("first_name", "last_name")}),
 #         ("Permissions", {"fields": ("is_staff", "is_active")}),
 #     )
-
-admin.site.register(User, CustomAdmin)

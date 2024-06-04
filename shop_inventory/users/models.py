@@ -11,7 +11,8 @@ class User(AbstractUser):
     # first_name = models.CharField(_("first name"), max_length=30)
     # last_name = models.CharField(_("last name"), max_length=150)
     email = models.EmailField(_("Rowan email address"))
-    # banner_id = models.PositiveIntegerField()
+    banner = models.PositiveIntegerField(null=True, default=None)
+    magstripe = models.CharField(max_length=20)
 
     def __str__(self):
         return "{} ({})".format(self.username, self.id)

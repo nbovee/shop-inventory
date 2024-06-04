@@ -53,7 +53,7 @@
           "POSTGRES_DB": ""
         },
         // "volume" option uses type=bind, can not work as expected https://code.visualstudio.com/docs/containers/reference#_volumes-object-properties
-        // "volumes": [{ "localPath": "sqlite", "containerPath": "/sqlite" }],
+        "volumes": [{ "localPath": "${workspaceFolder}/shop_inventory", "containerPath": "/usr/src/shop_inventory" }],
         // instead we will use the below for a volume mount
         "customOptions": "-v sqlite:/sqlite",
         "ports": [
