@@ -1,0 +1,19 @@
+{
+  "configurations": [
+    {
+      "name": "Simple Debug",
+      "type": "docker",
+      "request": "launch",
+      "preLaunchTask": "docker-run: debug",
+      "python": {
+        "pathMappings": [
+          {
+            "localRoot": "${workspaceFolder}/shop_inventory",
+            "remoteRoot": "/usr/src/shop_inventory"
+          }
+        ],
+        "projectType": "django"
+      }
+    }
+  ]
+}
