@@ -1,0 +1,27 @@
+[
+  {
+    "model": "inventory.inventory",
+    "pk": 1,
+    "fields": { "base_item": 1, "location": 1, "quantity": 10 }
+  },
+  {
+    "model": "inventory.inventory",
+    "pk": 2,
+    "fields": { "base_item": 2, "location": 1, "quantity": 2 }
+  },
+  {
+    "model": "inventory.inventory",
+    "pk": 3,
+    "fields": { "base_item": 2, "location": 2, "quantity": 1 }
+  },
+  {
+    "model": "inventory.inventory",
+    "pk": 4,
+    "fields": { "base_item": 2, "location": 3, "quantity": 0 }
+  },
+  {
+    "model": "inventory.inventory",
+    "pk": 5,
+    "fields": { "base_item": 3, "location": 3, "quantity": 3 }
+  }
+]
