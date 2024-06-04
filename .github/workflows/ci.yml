@@ -28,6 +28,6 @@ jobs:
           docker build -t shop-inventory:master .
           docker run --rm -v $(pwd)/shop_inventory/:/usr/src/shop_inventory shop-inventory:master ./pytest.sh
           pip install coveralls
-          cd website && coveralls --service=github
+          cd shop_inventory && coveralls --service=github
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
