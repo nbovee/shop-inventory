@@ -25,8 +25,8 @@ jobs:
 
       - name: Test and submit coverage report
         run: |
-          docker build -t django-docker-template:master .
-          docker run --rm -v $(pwd)/website/:/usr/src/website django-docker-template:master ./pytest.sh
+          docker build -t shop-inventory:master .
+          docker run --rm -v $(pwd)/shop_inventory/:/usr/src/shop_inventory shop-inventory:master ./pytest.sh
           pip install coveralls
           cd website && coveralls --service=github
         env:
