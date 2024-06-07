@@ -1,0 +1,14 @@
+{% extends 'inventory/base.html' %}
+
+{% block content %}
+    <div>
+        <div class="row">
+            <div class="col-sm-11 col-md-4 mx-auto mt-5">
+                <h1 class="fw-light">Welcome to the SHOP Inventory Management System!</h1>
+                <div>
+                    <a href="{% url 'inventory:InventoryList' %}" class="btn btn-primary">View Inventory</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

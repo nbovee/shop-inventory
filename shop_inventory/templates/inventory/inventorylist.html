@@ -1,0 +1,61 @@
+{% extends 'inventory/base.html' %}
+
+{% block content %}
+    
+        <div class="row">
+            
+            <div class="col-md-10 col-12 mx-auto mt-5">
+                 <h1> INVENTORY</h1>
+                
+                <div class="d-flex justify-content-end">         
+                    <a href="{% url 'inventory:AddInventory' %}" class="btn btn-primary">+ Add Items</a>   
+                </div>
+
+                <table class="table table-hover table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Item Name</th>
+                            <th scope="col">Quantity</th>
+                            <th scope="col">Location</th>
+                            <th scope="col">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% if items|length == 0 %}
+                        <tr>
+                                <th scope="row">-</th>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                        </tr>
+                    {% else %}
+                        {% for item in items %}
+                        <tr>
+                            <th scope="row">{{ item.base_item.name }}</th>
+                            <td scope="row">{{ item.quantity }}</td>
+                            <td scope="row">{{ item.location.name }}</td>
+                            <td scope="row">{{ item.notes }}</td>
+                            <td>
+                                <a href="{% url 'inventory:EditInventory' item.id %}" class="btn btn-outline-secondary">Edit</a>
+                            </td>
+                            <td>
+                                <a href="{% url 'inventory:DeleteInventory' item.id %}"class="btn btn-danger">Delete</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% endif %}
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+  
+
+        <!-- <div class="col-sm-11 col-md-4 mx-auto mt-5">
+            <div class="alert alert-success text-center" role="alert">
+                 You need to <a href="#" style="color: #008000;">log in</a> to view this content.
+            </div>
+        </div>
+
+     -->
+    {% endblock content %}

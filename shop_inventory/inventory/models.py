@@ -13,12 +13,14 @@ class Location(models.Model):
     name = models.CharField(max_length=30)
     barcode_number = models.TextField()
     active = models.BooleanField(default=True)
+    
 
 
 class Inventory(models.Model):
     base_item = models.ForeignKey(BaseItem, on_delete=models.CASCADE)
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
+    notes = models.TextField(blank=True, null=True)
 
     class Meta:
         unique_together = ("base_item", "location")
