@@ -1,0 +1,26 @@
+{% extends 'inventory/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <a href="{% url 'inventory:InventoryList' %}" class="btn btn-outline-primary my-3 mx-4">Go Back</a>
+
+    <div class="row">
+        <div class="col-11 col-md-4 mx-auto mt-5 ">
+            <h1>Update Inventory Item</h1>
+            <form method="POST">
+                {% csrf_token %}
+                <fieldset>
+                    {{ base_item_form|crispy }}
+                </fieldset>
+
+                <fieldset>
+                    {{ inventory_form|crispy }}
+                </fieldset>
+
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock content %}

@@ -25,6 +25,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("homepage.urls")),
     path("checkout/", include("checkout.urls")),
+     path("inventory/", include("inventory.urls")),
 ]
 
 # Serve media files from MEDIA_ROOT. It will only work when DEBUG=True is set.
