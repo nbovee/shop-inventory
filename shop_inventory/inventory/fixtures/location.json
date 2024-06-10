@@ -1,0 +1,29 @@
+[
+  {
+    "model": "inventory.location",
+    "pk": 1,
+    "fields": {
+      "name": "Shop Front",
+      "barcode_number": "123210454",
+      "active": true
+    }
+  },
+  {
+    "model": "inventory.location",
+    "pk": 2,
+    "fields": {
+      "name": "Shop Back",
+      "barcode_number": "34235sa235",
+      "active": true
+    }
+  },
+  {
+    "model": "inventory.location",
+    "pk": 3,
+    "fields": {
+      "name": "Shop Old",
+      "barcode_number": "1242352ss5566",
+      "active": false
+    }
+  }
+]

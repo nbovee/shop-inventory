@@ -5,17 +5,20 @@
         
         <title>User Checkout test</title>
         {% load static %}
-        <link rel="stylesheet" type="text/css" href="{% static 'checkoutstyle.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static '/checkout/checkoutstyle.css' %}">
 
         <script>
 
             var testcodes = {"ks81":"Apple","9sj2s":"Kiwi","j51s":"Chips"};
+            var base_item_data = JSON.parse('{{base_item_data|escapejs}}');
             // items will hold the text
             var items = [];
             // this will hold the barcodes relative to the item. if done correctly
             // the order shoud probably not matter
             var itemsbarcode = [];
             var quantity = {};
+
+            var itemToEdit = ""
 
             // Function to ask if they want finish checking out or not
             function checkIfFinishCheckout(){
@@ -73,6 +76,7 @@
                 var inputAmount = document.getElementById("inputAmount");
 
                 modal_container.classList.toggle("show");
+                //console.log(item);
                 itemToEdit = item;
                 EditSpecificItem.innerText = "Edit Item " + itemToEdit;
                 amountText.innerText = "Amount: " + quantity[itemToEdit];
@@ -130,21 +134,25 @@
                 //ks81
 
                 items.forEach(function(text) {
-
+                    console.log(text)
                     var p = document.createElement("p");
 
-                    for(let key in testcodes){
-                      if(key == text){;
-                            if(inputElement.value == key){
+                    for(let key in base_item_data){
+                        //console.log(base_item_data[key]["fields"]["barcode_number"])
+                      if((base_item_data[key]["fields"]["barcode_number"]).toString() == text){
+                        console.log("true")
+                            if(inputElement.value == (base_item_data[key]["fields"]["barcode_number"]).toString()){
 
-                                if(document.getElementById(testcodes[key])){
-                                    incrementItem(document.getElementById(testcodes[key]),testcodes[key]);
+                                if(document.getElementById(base_item_data[key]["fields"]["name"])){
+                                    incrementItem(document.getElementById(base_item_data[key]["fields"]["name"]),base_item_data[key]["fields"]["name"]);
+                                    console.log("Check1")
                                 }else{
-                                    quantity[testcodes[key]] = 1;
-                                    p.innerText = testcodes[key];
-                                    p.id = testcodes[key]
-                                    p.innerText = testcodes[key];
-                                    p.onclick = function(){editItem(displayElement,p,testcodes[key])};
+                                    console.log("Check2");
+                                    quantity[base_item_data[key]["fields"]["name"]] = 1;
+                                    p.innerText = base_item_data[key]["fields"]["name"];
+                                    p.id = base_item_data[key]["fields"]["name"]
+                                    p.innerText = base_item_data[key]["fields"]["name"];
+                                    p.onclick = function(){editItem(displayElement,p,base_item_data[key]["fields"]["name"])};
                                     displayElement.appendChild(p);
                                 }
                             }
@@ -167,7 +175,7 @@
     <body>
         <div class="top-half" style="text-align: center;background-color: rgba(113, 217, 243,.6);margin: 10px;border-radius: 8px;">
             <p style="font-size: 200%;margin: 10px;">
-                Client Checkout hype4
+                Client Checkout hype6
             </p>
             <p style="font-size: 150%;margin: 10px;padding: 0px;">
                 Scan items belows
@@ -237,7 +245,7 @@
                 <h1>
                     Finished Checking Out?
                 </h1>
-                <p id = "finishCheckout" style="background-color: rgb(45, 202, 97); text-align: center;width: 300px; margin: auto; margin-top: 10px; margin-bottom: 10px;font-size: x-large;border-radius: 5px;"onclick = "finishCheckout()">
+                <p class = "finishCheckout" id = "finishCheckout" style="background-color: rgb(45, 202, 97); text-align: center;width: 300px; margin: auto; margin-top: 10px; margin-bottom: 10px;font-size: x-large;border-radius: 5px;"onclick = "finishCheckout()">
                     Finish Checkout
 
                 </p>
@@ -250,6 +258,51 @@
 
     </body>
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+
+    <script type ="text/javascript">
+        console.log("test")
+
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        $(".finishCheckout").click(function(){
+            console.log("Rest")
+            var test_barcode_number;
+            test_barcode_number = $(this).attr("")
+            $.ajax({
+                    url: 'removeFromInventory/',
+                    type:"PUT",
+                    dataType:"json",
+                    data : JSON.stringify({items: quantity}),
+                    headers: {
+                    "X-Requested-With": "XMLHttpRequest",
+                    "X-CSRFToken": getCookie('csrftoken'),  
+                    },
+                    success: (data) =>{
+                        console.log(data);
+                    },
+                    error: (error) =>{
+                        console.log(error)
+                    }
+                    
+                })
+        })
+    </script>
+    </html>
 </html>
 
 <!--

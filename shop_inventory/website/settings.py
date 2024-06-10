@@ -51,7 +51,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "website.apps.WebsiteConfig",
+    "users.apps.UsersConfig",
+    "inventory.apps.InventoryConfig",
     "checkout.apps.CheckoutConfig",
 ]
 
@@ -66,7 +67,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "website.urls"
-
+AUTHENTICATION_BACKENDS = (("django.contrib.auth.backends.ModelBackend"),)
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -95,7 +96,7 @@ DATABASES = {
     }
 }
 
-if "POSTGRES_DB" in os.environ:
+if bool(os.getenv("POSTGRES_DB")):
     DATABASES["default"] = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": os.environ["POSTGRES_DB"],
@@ -105,6 +106,8 @@ if "POSTGRES_DB" in os.environ:
         "PORT": os.environ["POSTGRES_PORT"],
     }
 
+# Custom User Model
+AUTH_USER_MODEL = "users.User"
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -123,6 +126,9 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
+
+if DEBUG:
+    AUTH_PASSWORD_VALIDATORS = []
 
 
 # Internationalization
