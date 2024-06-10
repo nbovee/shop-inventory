@@ -16,14 +16,27 @@
                 {% endfor %}
             </div>
         {% endif %}
-        <a href="{% url 'add_item' %}" class="btn btn-primary mt-4">Add Item</a>
-        <a href="{% url 'remove_item' %}" class="btn btn-danger mt-4">Remove Item</a>
+        <a href="{% url 'add_inventory' %}" class="btn btn-primary mt-4">Add Inventory</a>
+        <a href="{% url 'remove_inventory' %}" class="btn btn-danger mt-4">Remove Inventory</a>
         <h2 class="mt-4">Current Inventory</h2>
-        <ul class="list-group mt-4">
-            {% for item in items %}
-                <li class="list-group-item">{{ item.name }}: {{ item.quantity }}</li>
-            {% endfor %}
-        </ul>
+        <table class="table mt-4">
+            <thead>
+                <tr>
+                    <th scope="col">Item Name</th>
+                    <th scope="col">Location</th>
+                    <th scope="col">Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in inventory_items %}
+                    <tr>
+                        <td>{{ item.base_item.name }}</td>
+                        <td>{{ item.location.name }}</td>
+                        <td>{{ item.quantity }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </body>
 </html>
