@@ -11,8 +11,17 @@ def index(request):
 def add_item(request):
     if request.method == 'POST':
         form = AddItemForm(request.POST)
-        if form.is_valid():
-            form.save()
+        amount = request.POST.get('amount')
+        barcode = request.POST.get('barcode')
+
+        if form.is_valid() and amount.isdigit():
+            amount = int(amount)
+            item, created = Item.objects.get_or_create(
+                name=form.cleaned_data['name'],
+                defaults={'quantity': 0, 'barcode': barcode}
+            )
+            item.quantity += amount
+            item.save()
             messages.success(request, 'Item added successfully.')
             return redirect('index')
     else:
@@ -29,10 +38,7 @@ def remove_item(request):
                 item = Item.objects.get(name=name)
                 if item.quantity >= quantity:
                     item.quantity -= quantity
-                    if item.quantity == 0:
-                        item.delete()
-                    else:
-                        item.save()
+                    item.save()
                     messages.success(request, 'Item removed successfully.')
                 else:
                     messages.error(request, 'Not enough quantity to remove.')
@@ -42,4 +48,3 @@ def remove_item(request):
     else:
         form = RemoveItemForm()
     return render(request, 'inventory/remove_item.html', {'form': form})
-

@@ -10,4 +10,3 @@ class AddItemForm(forms.ModelForm):
 class RemoveItemForm(forms.Form):
     name = forms.CharField(max_length=200)
     quantity = forms.IntegerField(min_value=1)
-

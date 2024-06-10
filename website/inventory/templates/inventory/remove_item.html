@@ -12,10 +12,13 @@
         <form method="POST" class="mt-4">
             {% csrf_token %}
             {{ form.as_p }}
+            <div class="form-group">
+                <label for="quantity">Quantity to Remove</label>
+                <input type="number" class="form-control" id="quantity" name="quantity" required>
+            </div>
             <button type="submit" class="btn btn-danger">Remove Item</button>
         </form>
         <a href="{% url 'index' %}" class="btn btn-secondary mt-4">Back to Inventory</a>
     </div>
 </body>
 </html>
-
