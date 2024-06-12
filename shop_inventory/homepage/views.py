@@ -9,7 +9,7 @@ def index(request):
 
 
 def index(request):
-    return render(request, "homepage.html")
+    return render(request, "homepage/index.html")
 
 
 def test(request):

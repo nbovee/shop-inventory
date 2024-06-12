@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "users.apps.UsersConfig",
     "inventory.apps.InventoryConfig",
     "checkout.apps.CheckoutConfig",
+    "homepage.apps.HomepageConfig",
 ]
 
 MIDDLEWARE = [
