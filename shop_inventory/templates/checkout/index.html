@@ -25,10 +25,12 @@
                 modal_check_container.classList.toggle("show");
             }
             //Finish the Checkout Process and head over to the check out complete page
+            /*
             function finishCheckout(){
                 sessionStorage.setItem("items",JSON.stringify(quantity));
                 location.href="{% url 'checkout:checkoutComplete' %}"
             }
+            */
             //
             function notFinishCheckout(){
 
@@ -126,7 +128,7 @@
 
             }
 
-            function addItemToBackend(){
+            function finishCheckout(){
                 sessionStorage.setItem("items",JSON.stringify(quantity));
                 var quantityinput = document.getElementById("quantityinput");
                
@@ -262,7 +264,7 @@
                     {{form}}
                     <input type ="hidden" id = "quantityinput" name ="quantity_JSON">
                     
-                        <p class = "finishCheckout" id = "finishCheckout" style="background-color: rgb(45, 202, 97); text-align: center;width: 300px; margin: auto; margin-top: 10px; margin-bottom: 10px;font-size: x-large;border-radius: 5px;"onclick = "addItemToBackend()">
+                        <p class = "finishCheckout" id = "finishCheckout" style="background-color: rgb(45, 202, 97); text-align: center;width: 300px; margin: auto; margin-top: 10px; margin-bottom: 10px;font-size: x-large;border-radius: 5px;"onclick = "finishCheckout()">
                             Finish Checkout
         
                         </p>
