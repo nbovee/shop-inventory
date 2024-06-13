@@ -6,15 +6,10 @@ from inventory.models import Location
 from django.shortcuts import render
 from django.core import serializers
 import json
-
-# inventory.objects.create(item_name=1,quantity=2,barcode_number=39392,location=1,notes="menqie")
+from .forms import checkoutForm
 
 # Create your views here.
 def index(request):
-    #template = loader.get_template("checkout/index.html")
-    #jsonfile = serializers.serialize("json",inventory.objects.all())
-    #return HttpResponse(template.render())
-   # return render(request,"checkout/index.html",{'data':jsonfile})
     inventory_data = Inventory.objects.all()
     base_item_data = BaseItem.objects.all()
     location_data = Location.objects.all()
@@ -22,14 +17,39 @@ def index(request):
     base_item_data_json = serializers.serialize('json',base_item_data)
     location_data_json = serializers.serialize('json',location_data)
 
-    content = {
-       'inventory_data': inventory_data_json,
-       'base_item_data': base_item_data_json,
-       'location_data': location_data_json
-   }
-    return render(request,"checkout/index.html",{"inventory_data":inventory_data_json,"base_item_data":base_item_data_json,"location_data":location_data_json})
-  #  items = inventory.objects.all()
-   # return render(request, 'checkout/index.html',{'items':items})
+    if request.method == "POST" :
+        print(request)
+        form = checkoutForm(request.POST)
+        print("check")
+        print(request.POST)
+        print(form.errors)
+        quantity_data =json.loads(request.POST['quantity_JSON'])
+        if form.is_valid():
+
+            for key in quantity_data:
+                for inventory_item in inventory_data:
+                    if (inventory_item.base_item.name == key):
+                        if(inventory_item.location.name == "Shop Front"):
+                            print("Removed")
+                            inventory_item.quantity = inventory_item.quantity - int(quantity_data[key])
+
+                            if(inventory_item.quantity < 0):
+                                inventory_item.quantity = 0
+
+                            inventory_item.save()
+
+            template = loader.get_template("checkout/checkoutComplete.html")
+
+            return HttpResponse(template.render())
+        else:
+
+            return render(request,"checkout/index.html",{"inventory_data":inventory_data_json,"base_item_data":base_item_data_json,"location_data":location_data_json,'form':form})
+    else:
+
+        form = checkoutForm()
+        #return render(request,"checkout/index.html",context)
+        return render(request,"checkout/index.html",{"inventory_data":inventory_data_json,"base_item_data":base_item_data_json,"location_data":location_data_json,'form':form})
+
 
 
 def checkoutComplete(request):
@@ -37,10 +57,11 @@ def checkoutComplete(request):
 
     return HttpResponse(template.render())
 
+def checkoutComplete2(request):
+    return()
 
 def removeFromInventory(request):
 
-    #is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
     inventory_data = Inventory.objects.all()
     base_item_data = BaseItem.objects.all()
     location_data = Location.objects.all()
@@ -64,8 +85,6 @@ def removeFromInventory(request):
                         items[item]  = inventory_item.quantity 
                     
                     inventory_item.save()
-
-                #current_Item = base_item.objects.get(name=item)
             
             items[item] = str(items[item])
             print(items[item])
@@ -74,3 +93,4 @@ def removeFromInventory(request):
         return(JsonResponse({'itemzs': items}))
     else:
         return(HttpResponse("Request Method is not a PUT"))
+
