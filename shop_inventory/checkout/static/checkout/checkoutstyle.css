@@ -6,13 +6,12 @@ body {
     flex-direction: column;
 }
 .top-half {
-    height: 15vh;
-    background-color: rgb(182, 82, 185);
+    height: 20vh;
 }
 .bottom-half {
     display: grid;
-    grid-template-columns: 75fr 25fr;
-    height: 85vh;
+    grid-template-columns: 60fr 40fr;
+    height: 80vh;
 }
 .modal-container{
     display: flex;

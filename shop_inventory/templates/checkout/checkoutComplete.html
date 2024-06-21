@@ -3,7 +3,7 @@
     <head>
         <title>Checkout Successful</title>
         {% load static %}
-        <link rel="stylesheet" type="text/css" href="{% static '/checkout/ccCompletestyle.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static '/checkout/bootstrap.css' %}">
         <script>
             function returnToCheckout(){
 
@@ -16,26 +16,33 @@
 
     </head>
     <body class ="body">
-        <div class = "top-half">
-            <p style="font-size: 200%;margin: 10px;">
-                Checkout Successful
-            </p>
-            <p style="font-size: 150%;">
+        <nav class="navbar navbar-expand-lg bg-primary">
+            <div class="container-fluid">
+                <h1 >
+                    Checkout Complete!
+                </h1>
+            </div>
+          </nav>
+        <div>
+            <h1 style = "text-align: center;margin-top: 10px;">
+                Your Checkout Was Successful!
+            </h1>
+            <p style="font-size: 150%;text-align: center;">
                 To Start Another Checkout Press The Button Below
             </p>
-            <button type="button" onclick="returnToCheckout()" style ="margin-bottom: 10px;">
-                New Checkout
-            </button>
+            <div style="display: flex;justify-content: center;align-items: center;">
+                <button type="button" onclick="returnToCheckout()" class = "btn btn-primary">
+                    New Checkout
+                </button>
+            </div>
+
         </div>
-
-
-
-        <div class = "bottom-half">
+        <div>
             <div class="checkoutList-Background">
-                <p style="font-size: 150%;margin: 10px;padding: 0px;font-weight: 900;">
+                <p style="font-size: 150%;margin: 10px;padding: 0px;font-weight: 900;text-align: center;">
                     The Completed Checkout List!
                 </p>
-                <p id = "itemListCheckout">
+                <p id = "itemListCheckout" style = "align-items: center;">
                 </p>
             </div>
         </div>
@@ -58,11 +65,13 @@
                 var p = document.createElement("p")
                 p.innerText = key + " [" + quantity[key] + "x]";
                 p.id = key;
+                p.style.textAlign = "center"
                 itemListCheckout.appendChild(p);
             }
 
         }else{
             itemListCheckout.innerText = "List is Empty!"
+            itemListCheckout.style.textAlign = "center"
         }
 
     </script>

@@ -6,6 +6,7 @@
         <title>User Checkout test</title>
         {% load static %}
         <link rel="stylesheet" type="text/css" href="{% static '/checkout/checkoutstyle.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static '/checkout/bootstrap.css' %}">
         <script src="{%static '/javascript/jquery-3.7.1.min.js'  %}"></script>
         <script>
 
@@ -185,43 +186,50 @@
         </script>
 
     </head>
-    <body>
-        <div class="top-half" style="text-align: center;background-color: rgba(113, 217, 243,.6);margin: 10px;border-radius: 8px;">
-            <p style="font-size: 200%;margin: 10px;">
-                Client Checkout
-            </p>
-            <p style="font-size: 150%;margin: 10px;padding: 0px;">
-                Scan items belows
-            </p>
+    <body class = "body">
+        <nav class="navbar navbar-expand-lg bg-primary">
+            <div class="container-fluid">
+                <h1 >
+                    SHOP Checkout
+                </h1>
+            </div>
+          </nav>
+        <div class="top-half" style="display: flex;justify-content: center;align-items: center;">
+            <div class="card border-primary mb-3" style = "width: 99.5%;height: 96%;margin-top: 16px;">
+                <div class="card-header">Shop Checkout</div>
+                <div class="card-body">
+                  <h4 class="card-title" style="text-align: center;">Instructions</h4>
+                  <p class="card-text"> First locate the barcode of the desired item. 
+                    Then scan the barcode with the barcode scanner. 
+                    Then the item should appear on the right side of the screen.
+                    If you want to edit the amount of the items you then click on the item on the screen to edit the amount.
+                </p>
+                </div>
+            </div>
         </div>
-        <div class="bottom-half" style="text-align: center;">
-            <div style="background-color: rgba(113, 217, 243,.6); margin: 8px;border-radius: 8px;" >
-                <div style ="margin: 20px">
-                    <input type ="text" id="inputText" placeholder = "Tap and Scan Barcode" style="height: 50px;width: 500px;">
-                    <button onclick="displayItems()"  style="height: 50px;width: 50px; margin-left: 10px;">
-                        Enter
-                    </button style="height: 50px;width: 50px;">
-                </div>
-                <div>
-                    <input type ="text"  placeholder = "Enter Manually"style="height: 50px;width: 500px;">
-                    <button style="height: 50px;width: 50px; margin-left: 10px;">
-                        Enter
-                    </button>
 
-                </div>
-                <div style="margin: 10px;">
-                    <button type="button" onclick="checkIfFinishCheckout()">
+        <div class="bottom-half" style="text-align: center;">
+            <div class="card border-primary mb-3" style = "width: 99.5%;height: 96%;margin-top: 16px;">
+                <div class="card-header">Barcode Scanner</div>
+                <div class="card-body">
+                    <div style ="margin: 20px">
+                        <input type ="text" id="inputText" placeholder = "Tap and Scan Barcode" style="height: 50px;width: 200px;text-align: center;">
+                        <button type = "button" class = "btn btn-primary" onclick="displayItems()"  style="height: 50px;width: 75px; margin-left: 10px;font-size: 100%;">
+                            Enter
+                        </button style="height: 50px;width: 50px;">
+                    </div>
+                    <button type = "button" class = "btn btn-primary" onclick="checkIfFinishCheckout()">
                         Finish Checkout
                     </button>
-
                 </div>
-
             </div>
-            <div style="background-color: rgba(113, 217, 243,.6); margin: 8px;border-radius: 8px;" >
-                <p>
-                    <span id="displayItems"></span>
-                </p>
-
+            <div class="card border-primary mb-3" style = "width: 99.5%;height: 96%;margin-top: 16px;">
+                <div class="card-header">Items</div>
+                <div class="card-body">
+                    <p>
+                        <span id="displayItems"></span>
+                    </p>
+                </div>
             </div>
 
         </div>
@@ -283,6 +291,7 @@
 
 
     <script type ="text/javascript">
+        /*
         console.log("test")
 
         function getCookie(name) {
@@ -323,6 +332,7 @@
                     
                 })
         })
+                */
     </script>
     </html>
 </html>
