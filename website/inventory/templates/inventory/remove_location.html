@@ -1,13 +1,13 @@
 {% extends 'inventory/base.html' %}
 
-{% block title %}Add Inventory{% endblock %}
+{% block title %}Remove Location{% endblock %}
 
 {% block content %}
-    <h1 class="mt-4">Add Inventory</h1>
+    <h1 class="mt-4">Remove Location</h1>
     <form method="POST" class="mt-4">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Add Item</button>
+        <button type="submit" class="btn btn-danger">Remove Location</button>
     </form>
     <a href="{% url 'index' %}" class="btn btn-secondary mt-4">Back to Inventory</a>
 {% endblock %}
