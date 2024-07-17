@@ -8,11 +8,13 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = []
+    dependencies = [
+        ("inventory", "0001_initial"),
+    ]
 
     operations = [
         migrations.CreateModel(
-            name="BaseItem",
+            name="Cart",
             fields=[
                 (
                     "id",
@@ -23,13 +25,10 @@ class Migration(migrations.Migration):
                         verbose_name="ID",
                     ),
                 ),
-                ("name", models.CharField(max_length=30)),
-                ("barcode_number", models.TextField()),
-                ("active", models.BooleanField(default=True)),
             ],
         ),
         migrations.CreateModel(
-            name="Location",
+            name="CartItem",
             fields=[
                 (
                     "id",
@@ -40,13 +39,27 @@ class Migration(migrations.Migration):
                         verbose_name="ID",
                     ),
                 ),
-                ("name", models.CharField(max_length=30)),
-                ("barcode_number", models.TextField()),
-                ("active", models.BooleanField(default=True)),
+                ("quantity", models.PositiveIntegerField(default=1)),
             ],
         ),
         migrations.CreateModel(
-            name="Inventory",
+            name="Order",
+            fields=[
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("timestamp", models.DateTimeField(auto_now_add=True)),
+                ("completed", models.BooleanField(default=False)),
+            ],
+        ),
+        migrations.CreateModel(
+            name="OrderItem",
             fields=[
                 (
                     "id",
@@ -59,22 +72,25 @@ class Migration(migrations.Migration):
                 ),
                 ("quantity", models.PositiveIntegerField()),
                 (
-                    "base_item",
+                    "order",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        to="inventory.baseitem",
+                        on_delete=django.db.models.deletion.CASCADE, to="checkout.order"
                     ),
                 ),
                 (
-                    "location",
+                    "product",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="inventory.location",
+                        to="inventory.inventory",
                     ),
                 ),
             ],
-            options={
-                "unique_together": {("base_item", "location")},
-            },
+        ),
+        migrations.AddField(
+            model_name="order",
+            name="items",
+            field=models.ManyToManyField(
+                through="checkout.OrderItem", to="inventory.inventory"
+            ),
         ),
     ]
