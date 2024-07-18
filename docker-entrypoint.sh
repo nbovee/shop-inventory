@@ -9,6 +9,6 @@ else
   wait-for-it -s "$POSTGRES_HOST:$POSTGRES_PORT" -t 60
 fi
 # You can comment out this line if you want to migrate manually
-su-exec "$USER" python manage.py migrate --noinput
+# su-exec "$USER" python manage.py migrate --noinput
 
 exec "$@"

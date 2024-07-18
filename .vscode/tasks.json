@@ -41,7 +41,7 @@
     {
       "type": "docker-run",
       "label": "docker-run: debug",
-      "dependsOn": ["shell: ensure superuser"],
+      "dependsOn": ["docker-build"],
       "dockerRun": {
         "image": "django-docker-template:master",
         "remove": true,

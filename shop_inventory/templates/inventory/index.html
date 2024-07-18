@@ -13,9 +13,9 @@
     {% endif %}
     <a href="{% url 'add_inventory' %}" class="btn btn-primary mt-4">Add Inventory</a>
     
-    {% if perms.inventory.manage_base_items %}
+    <!-- {% if perms.inventory.manage_base_items %} -->
     <a href="{% url 'manage_base_items_locations' %}" class="btn btn-secondary mt-4">Base Items/Locations</a>
-    {% endif %}
+    <!-- {% endif %} -->
 
     <form method="GET" action="{% url 'index' %}" class="mt-4">
         <div class="input-group">

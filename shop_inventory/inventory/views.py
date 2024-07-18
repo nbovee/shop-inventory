@@ -6,7 +6,7 @@ from django.db.models import Q
 from .models import BaseItem, Location, Inventory
 from .forms import BaseItemForm, LocationForm, InventoryForm, RemoveInventoryForm, EditInventoryForm
 
-@login_required
+# @login_required
 def index(request):
     search_query = request.GET.get('search', '')
     if search_query:
@@ -18,7 +18,7 @@ def index(request):
         inventory_items = Inventory.objects.all()
     return render(request, 'inventory/index.html', {'inventory_items': inventory_items})
 
-@login_required
+# @login_required
 def add_inventory(request):
     if request.method == 'POST':
         form = InventoryForm(request.POST)

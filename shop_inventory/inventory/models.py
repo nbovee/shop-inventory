@@ -5,7 +5,7 @@ from django.db import models
 
 class BaseItem(models.Model):
     name = models.CharField(max_length=30)
-    barcode_number = models.TextField()
+    barcode_number = models.TextField(blank=True, default='')
     active = models.BooleanField(default=True)
 
 
