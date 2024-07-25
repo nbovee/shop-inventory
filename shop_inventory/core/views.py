@@ -9,8 +9,4 @@ def index(request):
 
 
 def index(request):
-    return render(request, "homepage.html")
-
-
-def test(request):
-    return HttpResponseRedirect(reverse("polls:results", args=()))
+    return render(request, "core/homepage.html")

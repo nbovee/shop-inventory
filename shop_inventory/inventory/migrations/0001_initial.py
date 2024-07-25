@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
             name='Inventory',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('uuid', models.UUIDField(default=uuid.uuid4, unique=True)),
+                ('barcode', models.UUIDField(default=uuid.uuid4, unique=True)),
                 ('quantity', models.PositiveIntegerField()),
                 ('base_item', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='inventory.baseitem')),
                 ('location', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='inventory.location')),

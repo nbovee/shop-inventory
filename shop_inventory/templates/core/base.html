@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Inventory System{% endblock %}</title>
+    <title>Rowan SHOP</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="{% url 'index' %}">Inventory System</a>
+        <a class="navbar-brand" href="{% url 'index' %}">{% block title %}Inventory System{% endblock %}</a>
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav ml-auto">
                 {% if user.is_authenticated %}

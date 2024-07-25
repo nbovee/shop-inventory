@@ -5,7 +5,7 @@ from .models import BaseItem, Location, Inventory
 class BaseItemForm(forms.ModelForm):
     class Meta:
         model = BaseItem
-        fields = ["name", "barcode_number"]
+        fields = ["name", "variant"]
 
 
 class LocationForm(forms.ModelForm):

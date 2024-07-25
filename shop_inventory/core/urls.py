@@ -19,12 +19,13 @@ from django.urls import include, path
 from django.conf.urls.static import static
 from django.conf import settings
 
+from . import views
+
 
 urlpatterns = [
-    # path("admin/", admin.site.urls),
-    path("", include("homepage.urls")),
+    path("", views.index, name="index"),
     path("inventory/", include("inventory.urls")),
-    path("checkout/", include("checkout.urls")),
+    # path("checkout/", include("checkout.urls")),
 ]
 
 # Serve media files from MEDIA_ROOT. It will only work when DEBUG=True is set.
