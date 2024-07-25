@@ -16,7 +16,8 @@ from pathlib import Path
 from _core import is_true, split_with_comma
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+CORE_APP = Path(__file__).resolve().parent
+BASE_DIR = CORE_APP.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -43,7 +44,6 @@ if DEBUG:
 
 
 # Application definition
-COREAPP = "_core"
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -51,7 +51,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    f"{COREAPP}.apps.CoreConfig",
+    f"{CORE_APP.name}.apps.CoreConfig",
     "inventory.apps.InventoryConfig",
     # "checkout.apps.CheckoutConfig",
 ]
@@ -66,13 +66,13 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = f"{COREAPP}.urls"
+ROOT_URLCONF = f"{CORE_APP.name}.urls"
 AUTHENTICATION_BACKENDS = (("django.contrib.auth.backends.ModelBackend"),)
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [BASE_DIR / "_templates"],
-        "APP_DIRS": True,
+        "APP_DIRS": False,
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
@@ -84,7 +84,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = f"{COREAPP}.wsgi.application"
+WSGI_APPLICATION = f"{CORE_APP.name}.wsgi.application"
 
 
 # Database
@@ -107,7 +107,7 @@ if bool(os.getenv("POSTGRES_DB")):
     }
 
 # Custom User Model
-AUTH_USER_MODEL = f"{COREAPP}.User"
+AUTH_USER_MODEL = f"{CORE_APP.name}.User"
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
