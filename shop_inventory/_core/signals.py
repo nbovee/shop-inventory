@@ -1,10 +1,8 @@
 # Define Required Permissions and Groups for the App to run after migration
 from django.db.models.signals import post_migrate
 from django.dispatch import receiver
-from django.contrib.auth.models import Group, Permission
-from django.contrib.contenttypes.models import ContentType
-from .models import Inventory, BaseItem, Location
-from django.contrib.auth.models import User
+from django.contrib.auth.models import Group
+from django.contrib.auth import get_user_model
 
 
 # Create Shop Employee Group
@@ -12,57 +10,19 @@ from django.contrib.auth.models import User
 def create_shop_employee_group(sender, **kwargs):
     if sender.label == "_core":
         # Create the group
-        group, created = Group.objects.get_or_create(name="Shop Employee")
-
-        # Define the model and related models for which you want to assign permissions
-        models = [Inventory]  # Add other related models as needed
-
-        for model in models:
-            content_type = ContentType.objects.get_for_model(model)
-
-            # Assign create and edit permissions to the group for the model
-            permission_create = Permission.objects.get(
-                content_type=content_type, codename=f"add_{model._meta.model_name}"
-            )
-            permission_create = Permission.objects.get(
-                content_type=content_type, codename=f"change_{model._meta.model_name}"
-            )
-            group.permissions.add(permission_create)
-
-        # Save the group
-        group.save()
-
-
-# Create Shop Manager Group
-@receiver(post_migrate)
-def create_shop_manager_group(sender, **kwargs):
-    if sender.label == "_core":
-        # Create the group
-        group, created = Group.objects.get_or_create(name="Shop Manager")
-
-        # Define the model and related models for which you want to assign permissions
-        models = [Inventory, BaseItem, Location]  # Add other related models as needed
-
-        for model in models:
-            content_type = ContentType.objects.get_for_model(model)
-
-            # Assign create and edit permissions to the group for the model
-            permission_create = Permission.objects.get(
-                content_type=content_type, codename=f"add_{model._meta.model_name}"
-            )
-            permission_create = Permission.objects.get(
-                content_type=content_type, codename=f"change_{model._meta.model_name}"
-            )
-            group.permissions.add(permission_create)
-
-        group.save()
+        for group_name in ["Shop Manager", "Shop Employee"]:
+            group, created = Group.objects.get_or_create(name=group_name)
+            if created:
+                print(f'Group "{group.name}" created.')
+            else:
+                print(f'Group "{group.name}" already exists.')
 
 
 # Create Default Users
 @receiver(post_migrate)
 def create_default_users(sender, **kwargs):
     if sender.label == "_core":
-
+        User = get_user_model()
         # Define the default user data
         users = [
             {"username": "manager", "password": "manager", "group": "Shop Manager"},
@@ -81,13 +41,9 @@ def create_default_users(sender, **kwargs):
 
             # Create the user
             user = User.objects.create_user(username=username, password=password)
-
-            # Add the user to the specified group
             try:
                 group = Group.objects.get(name=group_name)
                 user.groups.add(group)
-                print(f'User "{username}" added to group "{group_name}".')
+                print(f'User "{user.username}" added to group "{group.name}".')
             except Group.DoesNotExist:
                 print(f'Group "{group_name}" does not exist.')
-
-        print("Default users created.")
