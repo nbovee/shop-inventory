@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 # Create Shop Employee Group
 @receiver(post_migrate)
 def create_shop_employee_group(sender, **kwargs):
-    if sender.label == "users":
+    if sender.label == "core":
         # Create the group
         group, created = Group.objects.get_or_create(name="Shop Employee")
 
@@ -36,7 +36,7 @@ def create_shop_employee_group(sender, **kwargs):
 # Create Shop Manager Group
 @receiver(post_migrate)
 def create_shop_manager_group(sender, **kwargs):
-    if sender.label == "users":
+    if sender.label == "core":
         # Create the group
         group, created = Group.objects.get_or_create(name="Shop Manager")
 
@@ -61,7 +61,7 @@ def create_shop_manager_group(sender, **kwargs):
 # Create Default Users
 @receiver(post_migrate)
 def create_default_users(sender, **kwargs):
-    if sender.label == "users":
+    if sender.label == "core":
 
         # Define the default user data
         users = [
