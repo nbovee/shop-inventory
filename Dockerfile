@@ -22,9 +22,6 @@ ARG DJANGO_STATIC_ROOT=/var/www/static
 ARG DJANGO_MEDIA_ROOT=/var/www/media
 ARG DJANGO_SQLITE_DIR=/sqlite
 # The superuser with the data below will be created only if there are no users in the database!
-ARG DJANGO_SUPERUSER_USERNAME=admin
-ARG DJANGO_SUPERUSER_PASSWORD=admin
-ARG DJANGO_SUPERUSER_EMAIL=admin@example.com
 ARG DJANGO_DEV_SERVER_PORT=8000
 
 

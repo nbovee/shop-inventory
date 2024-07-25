@@ -6,6 +6,7 @@ from django.contrib.contenttypes.models import ContentType
 from .models import Inventory, BaseItem, Location
 from django.contrib.auth.models import User
 
+
 # Create Shop Employee Group
 @receiver(post_migrate)
 def create_shop_employee_group(sender, **kwargs):
@@ -21,15 +22,16 @@ def create_shop_employee_group(sender, **kwargs):
 
             # Assign create and edit permissions to the group for the model
             permission_create = Permission.objects.get(
-                content_type=content_type, codename=f"add_{model._meta.model_name}" 
+                content_type=content_type, codename=f"add_{model._meta.model_name}"
             )
             permission_create = Permission.objects.get(
-                content_type=content_type, codename=f"change_{model._meta.model_name}" 
+                content_type=content_type, codename=f"change_{model._meta.model_name}"
             )
             group.permissions.add(permission_create)
 
         # Save the group
         group.save()
+
 
 # Create Shop Manager Group
 @receiver(post_migrate)
@@ -46,14 +48,15 @@ def create_shop_manager_group(sender, **kwargs):
 
             # Assign create and edit permissions to the group for the model
             permission_create = Permission.objects.get(
-                content_type=content_type, codename=f"add_{model._meta.model_name}" 
+                content_type=content_type, codename=f"add_{model._meta.model_name}"
             )
             permission_create = Permission.objects.get(
-                content_type=content_type, codename=f"change_{model._meta.model_name}" 
+                content_type=content_type, codename=f"change_{model._meta.model_name}"
             )
             group.permissions.add(permission_create)
 
         group.save()
+
 
 # Create Default Users
 @receiver(post_migrate)
@@ -88,6 +91,3 @@ def create_default_users(sender, **kwargs):
                 print(f'Group "{group_name}" does not exist.')
 
         print("Default users created.")
-
-
-
