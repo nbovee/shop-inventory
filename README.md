@@ -35,7 +35,7 @@ Nothing extra, only the essentials! You can easily add everything else yourself 
 
 - [requirements.txt](requirements.txt)
 - [docker-compose.yml](docker-compose.yml)
-- [pytest.ini](/website/pytest.ini)
+- [pytest.ini](/core/pytest.ini)
 - and others...
 
 > This project originally included a simple Django application from the official Django tutorial - ["a basic poll application"](https://docs.djangoproject.com/en/4.2/intro/tutorial01/).
@@ -77,7 +77,7 @@ docker run -it --rm -v sqlite:/sqlite django-docker-template:master python manag
 
 4. Run the Django development server inside the Django container:
 ```console
-docker run -it --rm -p 8000:8000 -v sqlite:/sqlite -v $(pwd)/website:/usr/src/website django-docker-template:master python manage.py runserver 0.0.0.0:8000
+docker run -it --rm -p 8000:8000 -v sqlite:/sqlite -v $(pwd)/core:/usr/src/core django-docker-template:master python manage.py runserver 0.0.0.0:8000
 ```
 If using VSCode, you may launch the debugpy tool into your development server by running "Simple Debug" from the Run and Debug tab of the IDE.
 
@@ -94,7 +94,7 @@ Everything works just like if you were running the Django development server out
 > However, if you have a second similar project, it would be better to change the volume name from `sqlite` to something else so that the second project uses its own copy of the database. For example:
 >
 ```console
-docker run -it --rm -p 8000:8000 -v another_sqlite:/sqlite -v $(pwd)/website:/usr/src/website django-docker-template:master python manage.py runserver 0.0.0.0:8000
+docker run -it --rm -p 8000:8000 -v another_sqlite:/sqlite -v $(pwd)/core:/usr/src/core django-docker-template:master python manage.py runserver 0.0.0.0:8000
 ```
 >
 >  To better understand how volumes work in Docker, refer to the official [documentation](https://docs.docker.com/storage/volumes/).
@@ -104,12 +104,12 @@ docker run -it --rm -p 8000:8000 -v another_sqlite:/sqlite -v $(pwd)/website:/us
 ```console
 docker run --rm django-docker-template:master ./pytest.sh
 ```
-The [pytest.sh](/website/pytest.sh) script runs tests using pytest and coverage. As a result, you will see an output like this in the terminal:
+The [pytest.sh](/core/pytest.sh) script runs tests using pytest and coverage. As a result, you will see an output like this in the terminal:
 ```console
 ================== test session starts =====================================
 platform linux -- Python 3.11.7, pytest-7.4.4, pluggy-1.3.0
-django: version: 4.2.9, settings: website.settings (from ini)
-rootdir: /usr/src/website
+django: version: 4.2.9, settings: core.settings (from ini)
+rootdir: /usr/src/core
 configfile: pytest.ini
 plugins: django-4.7.0
 collected 10 items
@@ -129,9 +129,9 @@ polls/models.py                               20      2    90%   15, 33
 polls/tests.py                                57      0   100%
 polls/urls.py                                  4      0   100%
 polls/views.py                                28      8    71%   39-58
-website/__init__.py                            6      0   100%
-website/settings.py                           52      2    96%   94, 197
-website/urls.py                                6      0   100%
+core/__init__.py                            6      0   100%
+core/settings.py                           52      2    96%   94, 197
+core/urls.py                                6      0   100%
 ------------------------------------------------------------------------
 TOTAL                                        199     12    94%
 ```
@@ -171,7 +171,7 @@ docker compose down --remove-orphans --rmi local -v
 
 #### Django settings
 
-Some Django settings from the [`settings.py`](website/website/settings.py) file are stored in environment variables. You can easily change these settings in the [`.env`](.env) file. This file does not contain all the necessary settings, but many of them. Add additional settings to environment variables if needed.
+Some Django settings from the [`settings.py`](core/core/settings.py) file are stored in environment variables. You can easily change these settings in the [`.env`](.env) file. This file does not contain all the necessary settings, but many of them. Add additional settings to environment variables if needed.
 
 > It is important to note the following: **never store sensitive settings such as DJANGO_SECRET_KEY or DJANGO_EMAIL_HOST_PASSWORD in your repository!**
 > Docker allows you to override environment variable values from additional files, the command line, or the current session. Store passwords and other sensitive information separately from the code and only connect this information at system startup.

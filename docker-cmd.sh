@@ -13,10 +13,10 @@ if [ "$1" = "--debug" ]; then
   # these should run somewhere around here instead of from dockerfile
   # python manage.py makemigrations && \
 	# python manage.py migrate && \
-	# python manage.py loaddata website/fixtures/users.json && \
-	# python manage.py loaddata website/fixtures/orders.json && \
-	# python manage.py loaddata website/fixtures/locations.json && \
-	# python manage.py loaddata website/fixtures/inventory.json
+	# python manage.py loaddata core/fixtures/users.json && \
+	# python manage.py loaddata core/fixtures/orders.json && \
+	# python manage.py loaddata core/fixtures/locations.json && \
+	# python manage.py loaddata core/fixtures/inventory.json
 else
   # Gunicorn
   exec su-exec "$USER" gunicorn "$PROJECT_NAME.wsgi:application" \

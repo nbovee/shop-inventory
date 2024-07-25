@@ -66,7 +66,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "website.urls"
+ROOT_URLCONF = "core.urls"
 AUTHENTICATION_BACKENDS = (("django.contrib.auth.backends.ModelBackend"),)
 TEMPLATES = [
     {
@@ -84,7 +84,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "website.wsgi.application"
+WSGI_APPLICATION = "core.wsgi.application"
 
 
 # Database
