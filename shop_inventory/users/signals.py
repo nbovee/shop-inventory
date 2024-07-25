@@ -4,6 +4,7 @@ from django.dispatch import receiver
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from .models import Inventory, BaseItem, Location
+from django.contrib.auth.models import User
 
 # Create Shop Employee Group
 @receiver(post_migrate)
@@ -54,31 +55,39 @@ def create_shop_manager_group(sender, **kwargs):
 
         group.save()
 
-
-# Default Locations
+# Create Default Users
 @receiver(post_migrate)
-def create_default_building(sender, **kwargs):
+def create_default_users(sender, **kwargs):
     if sender.label == "users":
-        apps = kwargs.get("apps")
-        try:
-            BuildingModel = apps.get_model("equipment", "Building")
-        except Exception as e:
-            print(f"Error retrieving Building model: {str(e)}")
-            return
 
-        # List of buildings to create
-        buildings = [
-            {"name": "Rowan Hall"},
-            {"name": "Engineering Hall"},
+        # Define the default user data
+        users = [
+            {"username": "employee", "password": "employee", "group": "Shop Employee"},
+            {"username": "manager", "password": "manager", "group": "Shop Manager"},
         ]
 
-        for building_data in buildings:
-            name = building_data["name"]
-            building, created = BuildingModel.objects.get_or_create(name=name)
+        for user_data in users:
+            username = user_data["username"]
+            password = user_data["password"]
+            group_name = user_data["group"]
 
-            if created:
-                # Building was newly created
-                print(f'Building "{name}" created.')
-            else:
-                # Building already exists
-                print(f'Building "{name}" already exists.')
+            # Check if the user already exists
+            if User.objects.filter(username=username).exists():
+                print(f'User "{username}" already exists.')
+                continue
+
+            # Create the user
+            user = User.objects.create_user(username=username, password=password)
+
+            # Add the user to the specified group
+            try:
+                group = Group.objects.get(name=group_name)
+                user.groups.add(group)
+                print(f'User "{username}" added to group "{group_name}".')
+            except Group.DoesNotExist:
+                print(f'Group "{group_name}" does not exist.')
+
+        print("Default users created.")
+
+
+
