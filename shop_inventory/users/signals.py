@@ -65,8 +65,9 @@ def create_default_users(sender, **kwargs):
 
         # Define the default user data
         users = [
-            {"username": "employee", "password": "employee", "group": "Shop Employee"},
             {"username": "manager", "password": "manager", "group": "Shop Manager"},
+            {"username": "employee", "password": "employee", "group": "Shop Employee"},
+
         ]
 
         for user_data in users:

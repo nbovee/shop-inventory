@@ -9,6 +9,7 @@ if [ "$1" = "--debug" ]; then
 
 else
   # Gunicorn
+  exec su-exc "$USER" python manage.py migrate --noinput
   exec su-exec "$USER" gunicorn "$PROJECT_NAME.wsgi:application" \
     --bind "0.0.0.0:$GUNICORN_PORT" \
     --workers "$GUNICORN_WORKERS" \

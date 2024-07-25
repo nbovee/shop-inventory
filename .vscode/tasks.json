@@ -27,7 +27,7 @@
       "type": "shell",
       "label": "shell: makemigrations",
       "dependsOn": ["docker-build"],
-      "command": "docker run --rm -v {$pwd}/shop_inventory:usr/src/shop_inventory shop-prototype:master python manage.py makemigrations",
+      "command": "docker run --rm -v ${pwd}/shop_inventory:/usr/src/shop_inventory shop-prototype:master python manage.py makemigrations",
       "problemMatcher": []
     },
     {
