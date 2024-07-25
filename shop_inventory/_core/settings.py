@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 
 from pathlib import Path
-from core import is_true, split_with_comma
+from _core import is_true, split_with_comma
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -43,7 +43,7 @@ if DEBUG:
 
 
 # Application definition
-
+COREAPP = "_core"
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -51,7 +51,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "core.apps.CoreConfig",
+    f"{COREAPP}.apps.CoreConfig",
     "inventory.apps.InventoryConfig",
     # "checkout.apps.CheckoutConfig",
 ]
@@ -66,12 +66,12 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "core.urls"
+ROOT_URLCONF = f"{COREAPP}.urls"
 AUTHENTICATION_BACKENDS = (("django.contrib.auth.backends.ModelBackend"),)
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],
+        "DIRS": [BASE_DIR / "_templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -84,7 +84,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "core.wsgi.application"
+WSGI_APPLICATION = f"{COREAPP}.wsgi.application"
 
 
 # Database
@@ -107,7 +107,7 @@ if bool(os.getenv("POSTGRES_DB")):
     }
 
 # Custom User Model
-AUTH_USER_MODEL = "core.User"
+AUTH_USER_MODEL = f"{COREAPP}.User"
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -159,11 +159,11 @@ MEDIA_URL = os.getenv("DJANGO_MEDIA_URL", "media/")
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = "_static/"
 
 STATIC_ROOT = os.getenv("DJANGO_STATIC_ROOT")
 
-STATICFILES_DIRS = [BASE_DIR / "static"]
+STATICFILES_DIRS = [BASE_DIR / STATIC_URL]
 
 
 # Default primary key field type
