@@ -28,6 +28,8 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", INSECURE_KEY)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = is_true(os.getenv("DJANGO_DEBUG", "true"))
+# Time in seconds for a user's session to expire, so employee accounts are not left logged in.
+SESSION_COOKIE_AGE = 600
 
 ALLOWED_HOSTS = split_with_comma(
     os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost")
