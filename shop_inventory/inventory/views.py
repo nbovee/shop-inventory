@@ -4,6 +4,15 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from .models import BaseItem, Location, Inventory
+from io import BytesIO
+from django.http import HttpResponse
+
+
+import uuid
+
+from treepoem import generate_barcode
+from PIL import Image
+
 from .forms import (
     BaseItemForm,
     LocationForm,
@@ -15,7 +24,7 @@ from .forms import (
 
 # @login_required
 def index(request):
-    search_query = request.GET.get("search", "")
+    search_query = request.GET.get("search", None)
     if search_query:
         inventory_items = Inventory.objects.filter(
             Q(base_item__name__icontains=search_query)
@@ -92,7 +101,7 @@ def add_base_item(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Base item added successfully.")
-            return redirect("manage_base_items_locations")
+            return redirect("manage_inventory")
     else:
         form = BaseItemForm()
     return render(request, "inventory/add_base_item.html", {"form": form})
@@ -106,11 +115,12 @@ def remove_base_item(request):
             base_item_name = form.cleaned_data["name"]
             try:
                 base_item = BaseItem.objects.get(name=base_item_name)
-                base_item.delete()
+                base_item.active = False
+                base_item.save()
                 messages.success(request, "Base item removed successfully.")
             except BaseItem.DoesNotExist:
                 messages.error(request, "Base item not found.")
-            return redirect("manage_base_items_locations")
+            return redirect("manage_inventory")
     else:
         form = BaseItemForm()
     return render(request, "inventory/remove_base_item.html", {"form": form})
@@ -123,7 +133,7 @@ def add_location(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Location added successfully.")
-            return redirect("manage_base_items_locations")
+            return redirect("manage_inventory")
     else:
         form = LocationForm()
     return render(request, "inventory/add_location.html", {"form": form})
@@ -137,11 +147,12 @@ def remove_location(request):
             location_name = form.cleaned_data["name"]
             try:
                 location = Location.objects.get(name=location_name)
-                location.delete()
+                location.active = False
+                location.save()
                 messages.success(request, "Location removed successfully.")
             except Location.DoesNotExist:
                 messages.error(request, "Location not found.")
-            return redirect("manage_base_items_locations")
+            return redirect("manage_inventory")
     else:
         form = LocationForm()
     return render(request, "inventory/remove_location.html", {"form": form})
@@ -149,7 +160,7 @@ def remove_location(request):
 
 @login_required
 def manage_base_items_locations(request):
-    return render(request, "inventory/manage_base_items_locations.html")
+    return render(request, "inventory/manage_inventory.html")
 
 
 @login_required
@@ -158,9 +169,9 @@ def edit_inventory(request, pk):
     if request.method == "POST":
         form = EditInventoryForm(request.POST, instance=inventory_item)
         if form.is_valid():
-            form.save()
+            form.save(commit=True)
             messages.success(request, "Inventory item updated successfully.")
-            return redirect("index")
+            return redirect("inventory")
     else:
         form = EditInventoryForm(instance=inventory_item)
     return render(
@@ -186,3 +197,49 @@ def user_login(request):
 def user_logout(request):
     logout(request)
     return redirect("login")
+
+
+@login_required
+# @permission_required("add_baseitem", raise_exception=True)
+def qrcode_sheet(request):
+    dpi = 600
+
+    page_width = int(8.5 * dpi)
+    page_height = int(11.0 * dpi)
+    # designed for Avery Presta 94503
+    barcode_size = int(0.3 * dpi)
+    barcode_spacing_x = int(0.72 * dpi)
+    barcode_spacing_y = int(0.69 * dpi)
+
+    barcode_rows = int(14)
+    barcode_cols = int(11)
+
+    barcode_offset_x = int(0.53 * dpi)
+    barcode_offset_y = int(0.91 * dpi)
+
+    sheet_img = Image.new("1", (page_width, page_height), 1)
+
+    for row in range(0, barcode_rows):
+        for col in range(0, barcode_cols):
+            id = uuid.uuid4()
+            # 22px sie is 1px target border, 20x20 data
+            encoded = generate_barcode(
+                barcode_type="qrcode",
+                data=f"{id.hex}",
+                options={"version": "3"},
+                scale=1,
+            )
+            # scale 7.5 could be correct for this dpi but it takes int
+            barcode_img = encoded.convert("1").resize((barcode_size, barcode_size))
+            sheet_img.paste(
+                barcode_img.copy(),
+                (
+                    barcode_offset_x + col * barcode_spacing_x,
+                    barcode_offset_y + row * barcode_spacing_y,
+                ),
+            )
+
+    bytes = BytesIO()
+    sheet_img.save(bytes, "PDF", resolution=dpi)
+    response = HttpResponse(bytes.getvalue(), content_type="application/pdf")
+    return response

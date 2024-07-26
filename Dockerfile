@@ -2,12 +2,14 @@ FROM python:3.11-alpine as base
 
 FROM base as builder
 
-RUN apk update && apk --no-cache add python3-dev libpq-dev && mkdir /install
+RUN mkdir /install
 WORKDIR /install
 COPY requirements.txt ./
 RUN pip install --no-cache-dir --prefix=/install -r ./requirements.txt
 
 FROM base
+# installing in builder stage is not working
+RUN apk --update add libpq ghostscript
 
 ARG USER=user
 ARG USER_UID=1001

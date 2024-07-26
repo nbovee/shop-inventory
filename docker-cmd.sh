@@ -2,6 +2,7 @@
 # vim:sw=4:ts=4:et
 
 su-exec "$USER" python manage.py collectstatic --noinput
+su-exec "$USER" python manage.py migrate --noinput
 
 if [ "$1" = "--debug" ]; then
   # Django development server

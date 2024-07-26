@@ -27,8 +27,9 @@ class RemoveInventoryForm(forms.Form):
 
 
 class EditInventoryForm(forms.ModelForm):
+    barcode = forms.UUIDField()
     quantity = forms.IntegerField(min_value=0)
 
     class Meta:
         model = Inventory
-        fields = ["base_item", "location", "quantity"]
+        fields = ["base_item", "location", "barcode", "quantity"]
