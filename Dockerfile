@@ -24,6 +24,11 @@ ARG DJANGO_SQLITE_DIR=/sqlite
 # The superuser with the data below will be created only if there are no users in the database!
 ARG DJANGO_DEV_SERVER_PORT=8000
 
+# Keeps Python from generating .pyc files in the container
+ENV PYTHONDONTWRITEBYTECODE=1
+
+# Turns off buffering for easier container logging
+ENV PYTHONUNBUFFERED=1
 
 ENV \
 	USER=$USER \
