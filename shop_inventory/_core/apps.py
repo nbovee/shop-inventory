@@ -1,9 +1,9 @@
 from django.apps import AppConfig
 
 
-class InventoryConfig(AppConfig):
+class CoreConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "inventory"
+    name = "_core"
 
     def ready(self):
         # Implicitly connect signal handlers decorated with @receiver.

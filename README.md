@@ -1,6 +1,19 @@
 # Shop Prototype Repository
 
-This repository is the development repository for the Rowan SHOP Offile Inventory System
+
+## TODO
+Move barcodes to items instead of itemlocations.
+barcode should allow uuid or 6-12 digit string for upc-a/upc-e
+add volunteer and admin users
+Checkout only occurs against shop floor location
+Stock Check pulls both locaitons and allows qty changes
+- how does qty mismatch need to work?
+- allow to go negative
+acknowledgesments page for sponsor and students
+add email field to checkout transaction
+shop logo?
+
+This repository is the development repository for the Rowan Shop Offile Inventory System
 To contribute, please read the guidelines here : [Contributing.md](CONTRIBUTING.md)
 
 <hr>
@@ -18,7 +31,7 @@ It includes everything you need to quickly set up a quality technology stack and
 ## See in Action
 Deploying a Django Project in Production with Automatic Let's Encrypt HTTPS in Just 55 Seconds... 🏎️💨 ...🏁
 
-<a href="https://asciinema.org/a/632218" ><img width="939" alt="image" src="https://github.com/amerkurev/django-docker-template/assets/28217522/6409c517-e868-4baf-8be6-18bb0d59e5f7"></a>
+<a href="https://asciinema.org/a/632218" ><img width="939" alt="image" src="https://github.com/nbovee/shop-prototype/assets/28217522/6409c517-e868-4baf-8be6-18bb0d59e5f7"></a>
 
 ## Technology stack
 The technology stack used includes:
@@ -35,7 +48,7 @@ Nothing extra, only the essentials! You can easily add everything else yourself 
 
 - [requirements.txt](requirements.txt)
 - [docker-compose.yml](docker-compose.yml)
-- [pytest.ini](/website/pytest.ini)
+- [pytest.ini](/shop_inventory/pytest.ini)
 - and others...
 
 > This project originally included a simple Django application from the official Django tutorial - ["a basic poll application"](https://docs.djangoproject.com/en/4.2/intro/tutorial01/).
@@ -59,25 +72,25 @@ So, what do you get by using this project as a template for your project? Let's 
 
 ### For development on your computer
 
-1. Clone the repository to your computer and go to the `django-docker-template` directory:
+1. Clone the repository to your computer and go to the `shop-prototype` directory:
 ```console
 git clone https://github.com/nbovee/shop-prototype.git
-cd django-docker-template
+cd shop-prototype
 ```
 
 2. Build the Docker container image with Django:
 ```console
-docker build -t django-docker-template:master .
+docker build -t shop-prototype:master .
 ```
 
 3. Create the first superuser:
 ```console
-docker run -it --rm -v sqlite:/sqlite django-docker-template:master python manage.py createsuperuser
+docker run -it --rm -v sqlite:/sqlite shop-prototype:master python manage.py createsuperuser
 ```
 
 4. Run the Django development server inside the Django container:
 ```console
-docker run -it --rm -p 8000:8000 -v sqlite:/sqlite -v $(pwd)/website:/usr/src/website django-docker-template:master python manage.py runserver 0.0.0.0:8000
+docker run -it --rm -p 8000:8000 -v sqlite:/sqlite -v $(pwd)/shop_inventory:/usr/src/shop_inventory shop-prototype:master python manage.py runserver 0.0.0.0:8000
 ```
 If using VSCode, you may launch the debugpy tool into your development server by running "Simple Debug" from the Run and Debug tab of the IDE.
 
@@ -94,7 +107,7 @@ Everything works just like if you were running the Django development server out
 > However, if you have a second similar project, it would be better to change the volume name from `sqlite` to something else so that the second project uses its own copy of the database. For example:
 >
 ```console
-docker run -it --rm -p 8000:8000 -v another_sqlite:/sqlite -v $(pwd)/website:/usr/src/website django-docker-template:master python manage.py runserver 0.0.0.0:8000
+docker run -it --rm -p 8000:8000 -v another_sqlite:/sqlite -v $(pwd)/shop_inventory:/usr/src/shop_inventory shop-prototype:master python manage.py runserver 0.0.0.0:8000
 ```
 >
 >  To better understand how volumes work in Docker, refer to the official [documentation](https://docs.docker.com/storage/volumes/).
@@ -102,14 +115,14 @@ docker run -it --rm -p 8000:8000 -v another_sqlite:/sqlite -v $(pwd)/website:/us
 
 5. Run tests with pytest and coverage ✅:
 ```console
-docker run --rm django-docker-template:master ./pytest.sh
+docker run --rm shop-prototype:master ./pytest.sh
 ```
-The [pytest.sh](/website/pytest.sh) script runs tests using pytest and coverage. As a result, you will see an output like this in the terminal:
+The [pytest.sh](/shop_inventory/pytest.sh) script runs tests using pytest and coverage. As a result, you will see an output like this in the terminal:
 ```console
 ================== test session starts =====================================
 platform linux -- Python 3.11.7, pytest-7.4.4, pluggy-1.3.0
-django: version: 4.2.9, settings: website.settings (from ini)
-rootdir: /usr/src/website
+django: version: 4.2.9, settings: core.settings (from ini)
+rootdir: /usr/src/core
 configfile: pytest.ini
 plugins: django-4.7.0
 collected 10 items
@@ -129,21 +142,21 @@ polls/models.py                               20      2    90%   15, 33
 polls/tests.py                                57      0   100%
 polls/urls.py                                  4      0   100%
 polls/views.py                                28      8    71%   39-58
-website/__init__.py                            6      0   100%
-website/settings.py                           52      2    96%   94, 197
-website/urls.py                                6      0   100%
+core/__init__.py                            6      0   100%
+core/settings.py                           52      2    96%   94, 197
+core/urls.py                                6      0   100%
 ------------------------------------------------------------------------
 TOTAL                                        199     12    94%
 ```
 
 > If you don't want to use pytest (for some reason), you can run the tests without pytest using the command below:
 ```console
-docker run --rm django-docker-template:master python manage.py test
+docker run --rm shop-prototype:master python manage.py test
 ```
 
 6. Interactive shell with the Django project environment:
 ```console
-docker run -it --rm -v sqlite:/sqlite django-docker-template:master python manage.py shell
+docker run -it --rm -v sqlite:/sqlite shop-prototype:master python manage.py shell
 ```
 
 7. Start all services locally (Postgres, Gunicorn, Traefik) using docker-compose:
@@ -171,7 +184,7 @@ docker compose down --remove-orphans --rmi local -v
 
 #### Django settings
 
-Some Django settings from the [`settings.py`](website/website/settings.py) file are stored in environment variables. You can easily change these settings in the [`.env`](.env) file. This file does not contain all the necessary settings, but many of them. Add additional settings to environment variables if needed.
+Some Django settings from the [`settings.py`](shop_inventory/_core/settings.py) file are stored in environment variables. You can easily change these settings in the [`.env`](.env) file. This file does not contain all the necessary settings, but many of them. Add additional settings to environment variables if needed.
 
 > It is important to note the following: **never store sensitive settings such as DJANGO_SECRET_KEY or DJANGO_EMAIL_HOST_PASSWORD in your repository!**
 > Docker allows you to override environment variable values from additional files, the command line, or the current session. Store passwords and other sensitive information separately from the code and only connect this information at system startup.
@@ -187,10 +200,10 @@ For the Let's Encrypt HTTP challenge you will need:
 
 #### Steps on a server
 
-1. Clone the repository on your host and go to the `django-docker-template` directory:
+1. Clone the repository on your host and go to the `shop-prototype` directory:
 ```console
 git clone https://github.com/nbovee/shop-prototype.git
-cd django-docker-template
+cd shop-prototype
 ```
 
 2. Configure as described in the [Django settings](#django-settings) section or leave everything as is.
@@ -220,9 +233,9 @@ Caddy can automatically handle the creation and renewal of Let's Encrypt certifi
 
 Here's how to set up Caddy with your project:
 
-1. Ensure you have a [`Caddyfile`](https://github.com/amerkurev/django-docker-template/blob/master/Caddyfile) in your project directory. This file will tell Caddy how to deliver static and media files and how to forward other requests to your Django app.
+1. Ensure you have a [`Caddyfile`](https://github.com/nbovee/shop-prototype/blob/master/Caddyfile) in your project directory. This file will tell Caddy how to deliver static and media files and how to forward other requests to your Django app.
 
-2. Swap out the `docker-compose.yml` and `docker-compose.tls.yml` with a single [`docker-compose.caddy.yml`](https://github.com/amerkurev/django-docker-template/blob/master/docker-compose.caddy.yml). This file is designed to set up Caddy with Django and Postgres, and it doesn't include Nginx, which makes the file shorter and easier to understand.
+2. Swap out the `docker-compose.yml` and `docker-compose.tls.yml` with a single [`docker-compose.caddy.yml`](https://github.com/nbovee/shop-prototype/blob/master/docker-compose.caddy.yml). This file is designed to set up Caddy with Django and Postgres, and it doesn't include Nginx, which makes the file shorter and easier to understand.
 
 3. To get your Django project up with Caddy, run the following command, making sure to replace `your.domain.com` with your actual domain:
 
@@ -239,7 +252,7 @@ Now that you have a working project, you can extend it as you like, adding [dash
 All of this is beyond the scope of the current description, as the idea of this project is minimalism and providing only the essentials. Good luck!
 
 ## Template Source
-Developed from the excellent template repo by @amerkurev found here: https://github.com/amerkurev/django-docker-template
+Developed from the excellent template repo by @amerkurev found here: https://github.com/nbovee/shop-prototype
 ## License
 
-[MIT](https://github.com/amerkurev/django-docker-template/blob/master/LICENSE)
+[MIT](https://github.com/nbovee/shop-prototype/blob/master/LICENSE)

@@ -4,7 +4,6 @@
     "pk": 1,
     "fields": {
       "name": "apple",
-      "barcode_number": "8242194892418",
       "active": true
     }
   },
@@ -13,7 +12,6 @@
     "pk": 2,
     "fields": {
       "name": "orange",
-      "barcode_number": "1578156593879",
       "active": true
     }
   },
@@ -22,8 +20,7 @@
     "pk": 3,
     "fields": {
       "name": "pizza",
-      "barcode_number": "7840801609759",
-      "active": true
+      "active": false
     }
   }
 ]

@@ -1,0 +1,15 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Rowan Shop & Pantry Homepage{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-row flex-wrap justify-content-center">
+{% include 'core/card.html' with title="Start Checkout" description="Begin shopping" url='index' %}
+</div>
+{% if user.is_authenticated %}
+<div class="d-flex flex-row flex-wrap justify-content-center">
+{% include 'core/card.html' with title="Manage Inventory" description="Add/remove items" url='inventory' %}
+{% include 'core/card.html' with title="Print New Barcodes" description="print fresh sheet of barcodes" url='barcodes' %}
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,8 @@
+<form method="POST" action="{% url 'stock_update' %}">
+    {% csrf_token %}
+    <input type="hidden" name="item_id" value="{{ item.id }}">
+    <input type="hidden" name="delta_qty" value="{{ num }}">
+    <button type="submit" class="btn btn-primary m-1">
+        {% if num < 0 %}{{num}}{% else %} +{{num}}{% endif%}
+    </button>
+</form>
