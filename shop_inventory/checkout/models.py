@@ -21,6 +21,7 @@ class OrderItem(models.Model):
 class Cart(models.Model):
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 
+    # TODO form validator that checks an email is added?
     @transaction.atomic
     def process_order(self):
         order = Order.objects.create(user=self.user)
