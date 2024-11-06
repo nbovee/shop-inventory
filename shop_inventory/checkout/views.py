@@ -7,9 +7,3 @@ def index(request):
     template = loader.get_template("checkout/index.html")
 
     return HttpResponse(template.render())
-
-
-def checkoutComplete(request):
-    template = loader.get_template("checkout/checkoutComplete.html")
-
-    return HttpResponse(template.render())
