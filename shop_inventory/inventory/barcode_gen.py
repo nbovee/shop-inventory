@@ -5,6 +5,7 @@ from io import BytesIO
 
 
 def barcode_page_generation():
+    # TODO improve efficiency, perhaps SVG methods could help?
     dpi = 600
     page_width = int(8.5 * dpi)
     page_height = int(11.0 * dpi)
