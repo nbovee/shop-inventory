@@ -1,0 +1,7 @@
+<div class="btn-group btn-group-toggle" data-toggle="buttons">
+    {% include "inventory/stock_button.html" with item=item num=-10%}
+    {% include "inventory/stock_button.html" with item=item num=-1%}
+    {% include "inventory/stock_button.html" with item=item num=1%}
+    {% include "inventory/stock_button.html"  with item=item num=10%}
+</div>
+QTY
