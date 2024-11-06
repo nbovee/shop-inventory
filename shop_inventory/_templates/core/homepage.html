@@ -8,8 +8,7 @@
 </div>
 {% if user.is_authenticated %}
 <div class="d-flex flex-row flex-wrap justify-content-center">
-{% include 'core/card.html' with title="Inventory Systems" description="Adjust quantities of inventory items" url='inventory' %}
-{% include 'core/card.html' with title="Manage Inventory" description="Add/remove items" url='manage_inventory' %}
+{% include 'core/card.html' with title="Manage Inventory" description="Add/remove items" url='inventory' %}
 {% include 'core/card.html' with title="Print New Barcodes" description="print fresh sheet of barcodes" url='barcodes' %}
 </div>
 {% endif %}

@@ -17,7 +17,7 @@ class LocationForm(forms.ModelForm):
 class InventoryForm(forms.ModelForm):
     class Meta:
         model = Inventory
-        fields = ["base_item", "location", "quantity"]
+        fields = ["base_item", "location", "quantity", "barcode"]
 
 
 class RemoveInventoryForm(forms.Form):
@@ -33,3 +33,8 @@ class EditInventoryForm(forms.ModelForm):
     class Meta:
         model = Inventory
         fields = ["base_item", "location", "barcode", "quantity"]
+
+
+class StockUpdateForm(forms.Form):
+    item_id = forms.IntegerField()
+    delta_qty = forms.IntegerField()

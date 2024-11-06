@@ -1,6 +1,19 @@
 # Shop Prototype Repository
 
-This repository is the development repository for the Rowan SHOP Offile Inventory System
+
+## TODO
+Move barcodes to items instead of itemlocations.
+barcode should allow uuid or 6-12 digit string for upc-a/upc-e
+add volunteer and admin users
+Checkout only occurs against shop floor location
+Stock Check pulls both locaitons and allows qty changes
+- how does qty mismatch need to work?
+- allow to go negative
+acknowledgesments page for sponsor and students
+add email field to checkout transaction
+shop logo?
+
+This repository is the development repository for the Rowan Shop Offile Inventory System
 To contribute, please read the guidelines here : [Contributing.md](CONTRIBUTING.md)
 
 <hr>

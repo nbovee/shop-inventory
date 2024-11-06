@@ -1,13 +1,20 @@
-{% extends 'core/base.html' %}
-
-{% block title %}Add Inventory{% endblock %}
-
+{% extends 'core/base.html' %} {% block title %}Add Inventory{% endblock title %}
 {% block content %}
-    <h1 class="mt-4">Add Inventory</h1>
-    <form method="POST" class="mt-4">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Add Item</button>
-    </form>
-    <a href="{% url 'index' %}" class="btn btn-secondary mt-4">Back to Inventory</a>
-{% endblock %}
+
+<h1 class="mt-4">Add Inventory</h1>
+<form method="POST" class="mt-4">
+  {% csrf_token %} {{ form.as_p }}
+  <button type="submit" class="btn btn-primary">Add Item</button>
+</form>
+
+<a href="{% url 'inventory' %}" class="btn btn-secondary mt-4"
+  >Back to Inventory</a>
+
+<script>
+  const barcodeBox = document.getElementById("id_barcode");
+
+  barcodeBox.addEventListener("click", function () {
+    this.select();
+  });
+</script>
+{% endblock content %}

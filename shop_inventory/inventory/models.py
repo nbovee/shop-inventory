@@ -28,7 +28,7 @@ class Inventory(models.Model):
     quantity = models.PositiveIntegerField()
 
     def __str__(self):
-        return "{}({}) @ {}".format(self.base_item, self.variant, self.location)
+        return "{} @ {}".format(self.base_item, self.location)
 
     class Meta:
         unique_together = ("base_item", "location")

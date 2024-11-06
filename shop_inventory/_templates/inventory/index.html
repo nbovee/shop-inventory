@@ -3,7 +3,6 @@
 {% block title %}Inventory System{% endblock %}
 
 {% block content %}
-    <h1 class="mt-4">Inventory System</h1>
     {% if messages %}
         <div class="alert alert-info mt-2">
             {% for message in messages %}
@@ -11,11 +10,14 @@
             {% endfor %}
         </div>
     {% endif %}
-    <a href="{% url 'add_inventory' %}" class="btn btn-primary mt-4">Add Inventory</a>
+    <a href="{% url 'add_inventory' %}" class="btn btn-primary mt-4">Add to Inventory</a>
 
     {% if perms.inventory.add_baseitem %}
-    <a href="{% url 'manage_inventory' %}" class="btn btn-secondary mt-4">Base Items/Locations</a>
+    <a href="{% url 'manage_inventory' %}" class="btn btn-secondary mt-4">Add Base Items/Locations</a>
     {% endif %}
+
+    <a href="{% url 'stock_check' %}" class="btn btn-secondary mt-4">Stock Check</a>
+
 
     <form method="GET" action="{% url 'index' %}" class="mt-4">
         <div class="input-group">

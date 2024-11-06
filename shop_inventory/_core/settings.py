@@ -97,16 +97,16 @@ DATABASES = {
         "NAME": Path(os.getenv("DJANGO_SQLITE_DIR", ".")) / "db.sqlite3",
     }
 }
-
-if bool(os.getenv("POSTGRES_DB")):
-    DATABASES["default"] = {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ["POSTGRES_DB"],
-        "USER": os.environ["POSTGRES_USER"],
-        "PASSWORD": os.environ["POSTGRES_PASSWORD"],
-        "HOST": os.environ["POSTGRES_HOST"],
-        "PORT": os.environ["POSTGRES_PORT"],
-    }
+# Not configured for Postegres
+# if bool(os.getenv("POSTGRES_DB")):
+#     DATABASES["default"] = {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "NAME": os.environ["POSTGRES_DB"],
+#         "USER": os.environ["POSTGRES_USER"],
+#         "PASSWORD": os.environ["POSTGRES_PASSWORD"],
+#         "HOST": os.environ["POSTGRES_HOST"],
+#         "PORT": os.environ["POSTGRES_PORT"],
+#     }
 
 # Custom User Model
 AUTH_USER_MODEL = f"{CORE_APP.name}.User"

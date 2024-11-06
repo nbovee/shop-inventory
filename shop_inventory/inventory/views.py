@@ -19,10 +19,11 @@ from .forms import (
     InventoryForm,
     RemoveInventoryForm,
     EditInventoryForm,
+    StockUpdateForm,
 )
 
 
-# @login_required
+@login_required
 def index(request):
     search_query = request.GET.get("search", None)
     if search_query:
@@ -35,31 +36,56 @@ def index(request):
     return render(request, "inventory/index.html", {"inventory_items": inventory_items})
 
 
-# @login_required
+@login_required
+def stock_check(request):
+    locations = Location.objects.all()
+    items_in_location = {}
+    for location in locations:
+        items_in_location[location] = Inventory.objects.filter(location=location)
+    return render(
+        request, "inventory/stock_check.html", {"items_in_location": items_in_location}
+    )
+
+
+@login_required
+def stock_update(request, item=None, delta_qty=None):
+    if request.method == "POST":
+        form = StockUpdateForm(request.POST)
+        if form.is_valid():
+            item = Inventory.objects.get(id=form.cleaned_data["item_id"])
+            try:
+                item.quantity += form.cleaned_data["delta_qty"]
+                item.save()
+                messages.success(request, "{} Updated.".format(item))
+            except Exception:
+                messages.failure(request, "{} could not be Updated.".format(item))
+    return redirect("stock_check")
+
+
+@login_required
 def add_inventory(request):
     if request.method == "POST":
         form = InventoryForm(request.POST)
-        if form.is_valid():
-            base_item = form.cleaned_data["base_item"]
-            location = form.cleaned_data["location"]
-            quantity = form.cleaned_data["quantity"]
-
-            try:
-                inventory_item = Inventory.objects.get(
-                    base_item=base_item, location=location
-                )
-                inventory_item.quantity += quantity
-                inventory_item.save()
-                messages.success(
-                    request, "Inventory item quantity updated successfully."
-                )
-            except Inventory.DoesNotExist:
+        base_item = form.data["base_item"]
+        location = form.data["location"]
+        quantity = int(form.data["quantity"])
+        try:
+            inventory_item = Inventory.objects.get(
+                base_item=base_item, location=location
+            )
+            inventory_item.quantity += quantity
+            inventory_item.save()
+            messages.success(request, "Inventory item quantity updated successfully.")
+        except Inventory.DoesNotExist:
+            if form.is_valid():
                 Inventory.objects.create(
                     base_item=base_item, location=location, quantity=quantity
                 )
                 messages.success(request, "Inventory item added successfully.")
+            else:
+                messages.failure(request, "Inventory item could not be add/updated.")
 
-            return redirect("index")
+        return redirect("inventory")
     else:
         form = InventoryForm()
     return render(request, "inventory/add_item.html", {"form": form})
@@ -160,7 +186,7 @@ def remove_location(request):
 
 @login_required
 def manage_base_items_locations(request):
-    return render(request, "inventory/manage_inventory.html")
+    return render(request, "inventory/manage_base_items_locations.html")
 
 
 @login_required
