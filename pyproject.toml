@@ -1,0 +1,25 @@
+[project]
+name = "shop-inventory"
+version = "0.1.0"
+description = "Local-only inventory management for the Rowan Pantry"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "django<5",
+    "pillow>=11.0.0",
+    "treepoem>=3.25.0",
+    "wait-for-it>=2.3.0",
+]
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.0.1",
+]
+prod = [
+    "gunicorn>=23.0.0",
+]
+test = [
+    "pytest-django==4.7.0",
+    "pytest==7.4.4",
+    "coverage==7.4.0",
+]
