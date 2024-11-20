@@ -5,7 +5,8 @@ from io import BytesIO
 
 
 def barcode_page_generation():
-    # TODO improve efficiency, perhaps SVG methods could help? Measure speeds to confirm.
+    # TODO improve efficiency, perhaps parallelism or SVG methods could help?
+    # or we generate at small size and scale up with nearest neighbor?
     dpi = 600
     page_width = int(8.5 * dpi)
     page_height = int(11.0 * dpi)
