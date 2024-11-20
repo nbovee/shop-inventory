@@ -25,7 +25,9 @@ from . import views
 urlpatterns = [
     path("", views.index, name="index"),
     path("inventory/", include("inventory.urls")),
-    # path("checkout/", include("checkout.urls")),
+    path("checkout/", include("checkout.urls")),
+    path("login/", views.user_login, name="login"),
+    path("logout/", views.user_logout, name="logout"),
 ]
 
 # Serve media files from MEDIA_ROOT. It will only work when DEBUG=True is set.

@@ -11,8 +11,6 @@ urlpatterns = [
     path("remove_location/", views.remove_location, name="remove_location"),
     path("manage/", views.manage_base_items_locations, name="manage_inventory"),
     path("barcodes", views.qrcode_sheet, name="barcodes"),
-    path("login/", views.user_login, name="login"),
-    path("logout/", views.user_logout, name="logout"),
     path("stockcheck/", views.stock_check, name="stock_check"),
     path("stock_update", views.stock_update, name="stock_update"),
 ]

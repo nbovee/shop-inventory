@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from .models import BaseItem, Location, Inventory
@@ -16,7 +15,7 @@ from .forms import (
     StockUpdateForm,
 )
 
-from barcode_gen import barcode_page_generation
+from .barcode_gen import barcode_page_generation
 
 
 @login_required
@@ -201,24 +200,6 @@ def edit_inventory(request, pk):
         "inventory/edit_item.html",
         {"form": form, "inventory_item": inventory_item},
     )
-
-
-def user_login(request):
-    if request.method == "POST":
-        username = request.POST.get("username")
-        password = request.POST.get("password")
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect("index")
-        else:
-            messages.error(request, "Invalid username or password")
-    return render(request, "inventory/login.html")
-
-
-def user_logout(request):
-    logout(request)
-    return redirect("login")
 
 
 @login_required
