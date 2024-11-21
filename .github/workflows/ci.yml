@@ -26,8 +26,8 @@ jobs:
       - name: Test and submit coverage report
         run: |
           docker build -t shop-inventory:master .
-          docker run --rm -v $(pwd)/shop_inventory/:/usr/src/shop_inventory shop-inventory:master ./pytest.sh
+          docker run --rm -v $(pwd)/shop-inventory/:/usr/src/shop-inventory shop-inventory:master ./pytest.sh
           pip install coveralls
-          cd shop_inventory && coveralls --service=github
+          cd shop-inventory && coveralls --service=github
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
