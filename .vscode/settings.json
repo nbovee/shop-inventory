@@ -5,4 +5,6 @@ priority over everything but the '-e' flag. Typically the .env file is very low 
 More information can be found here:
 https://docs.docker.com/compose/environment-variables/envvars-precedence/
 */
-{ "python.envFile": "" }
+{
+    "python.envFile": "",
+}
