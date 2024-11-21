@@ -1,0 +1,50 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Your Cart{% endblock %}
+
+{% block content %}
+<h1>Your Cart</h1>
+
+{% if not cart.implicit_id %}
+<form method="POST">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label for="implicit_id" class="form-label">Rowan ID or Email</label>
+        <input type="text" class="form-control" id="implicit_id" name="implicit_id"
+               placeholder="Enter your Rowan email or scan your RowanCard" required>
+        <button type="submit" name="enter_implicit_id" class="btn btn-primary mt-2">Save ID</button>
+    </div>
+</form>
+{% endif %}
+
+<form method="POST">
+    {% csrf_token %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item, form in cart_items %}
+            <tr>
+                <td>{{ item.product.base_item.name }}</td>
+                <td>{{ form.quantity }}</td>
+                <td>
+                    <button type="submit" name="update_item" class="btn btn-primary">Update</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</form>
+
+{% if cart.implicit_id %}
+<form method="POST">
+    {% csrf_token %}
+    <button type="submit" name="process_cart" class="btn btn-success">Checkout</button>
+</form>
+{% endif %}
+{% endblock %}
