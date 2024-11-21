@@ -13,7 +13,7 @@ RUN apk --update add libpq ghostscript
 
 ARG USER=user
 ARG USER_UID=1001
-ARG PROJECT_NAME=shop_inventory
+ARG PROJECT_NAME=shop-inventory
 ARG GUNICORN_PORT=8000
 ARG GUNICORN_WORKERS=2
 # the value is in seconds

@@ -7,4 +7,5 @@ https://docs.docker.com/compose/environment-variables/envvars-precedence/
 */
 {
     "python.envFile": "",
+    "djlint.showInstallError": false,
 }
