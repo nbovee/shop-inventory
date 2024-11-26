@@ -53,7 +53,7 @@ def stock_update(request, item=None, delta_qty=None):
                 item.save()
                 messages.success(request, "{} Updated.".format(item))
             except Exception:
-                messages.failure(request, "{} could not be Updated.".format(item))
+                messages.error(request, "{} could not be Updated.".format(item))
     return redirect("stock_check")
 
 
@@ -61,26 +61,19 @@ def stock_update(request, item=None, delta_qty=None):
 def add_inventory(request):
     if request.method == "POST":
         form = InventoryForm(request.POST)
-        base_item = form.data["base_item"]
-        location = form.data["location"]
-        quantity = int(form.data["quantity"])
-        try:
-            inventory_item = Inventory.objects.get(
-                base_item=base_item, location=location
-            )
-            inventory_item.quantity += quantity
+        # is_valid() will be false if the item already exists
+        cleaned_data = form.clean()
+        inventory_item, created = Inventory.objects.get_or_create(
+            base_item=cleaned_data["base_item"],
+            location=cleaned_data["location"],
+        )
+        if created:
+            messages.success(request, "Inventory item added successfully.")
+        else:
+            inventory_item.quantity = cleaned_data["quantity"]
             inventory_item.save()
-            messages.success(request, "Inventory item quantity updated successfully.")
-        except Inventory.DoesNotExist:
-            if form.is_valid():
-                Inventory.objects.create(
-                    base_item=base_item, location=location, quantity=quantity
-                )
-                messages.success(request, "Inventory item added successfully.")
-            else:
-                messages.failure(request, "Inventory item could not be add/updated.")
-
-        return redirect("inventory")
+            messages.success(request, "Inventory item updated successfully.")
+        return redirect("add_inventory")
     else:
         form = InventoryForm()
     return render(request, "inventory/add_item.html", {"form": form})
