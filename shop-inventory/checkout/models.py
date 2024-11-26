@@ -22,18 +22,6 @@ class Order(models.Model):
         max_length=255, validators=[email_validator, numeric_validator]
     )
 
-
-class OrderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    product = models.ForeignKey("inventory.Inventory", on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1)
-
-
-class Cart(models.Model):
-    items = models.ManyToManyField("inventory.Inventory", through="CartItem")
-    session_key = models.CharField(max_length=40, null=True, blank=True)
-    implicit_id = models.CharField(max_length=255, blank=True)
-
     @transaction.atomic
     def process_order(self):
         order = Order.objects.create(user=self.user)
@@ -47,7 +35,7 @@ class Cart(models.Model):
         order.completed = True
 
 
-class CartItem(models.Model):
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
-    product = models.ForeignKey("inventory.inventory", on_delete=models.CASCADE)
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    product = models.ForeignKey("inventory.Inventory", on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
