@@ -5,8 +5,12 @@ import uuid
 
 
 class BaseItem(models.Model):
-    name = models.CharField(max_length=30, unique=True)
+    name = models.CharField(max_length=30)
     variant = models.CharField(max_length=30)
+
+    class Meta:
+        unique_together = ("name", "variant")
+
     active = models.BooleanField(default=True)
 
     def __str__(self):

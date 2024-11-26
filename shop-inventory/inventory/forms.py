@@ -19,6 +19,22 @@ class InventoryForm(forms.ModelForm):
         model = Inventory
         fields = ["base_item", "location", "quantity", "barcode"]
 
+    def clean(self):
+        cleaned_data = super().clean()
+        base_item = cleaned_data.get("base_item")
+        location = cleaned_data.get("location")
+        quantity = cleaned_data.get("quantity")
+
+        if base_item and location:
+            try:
+                existing_item = Inventory.objects.get(
+                    base_item=base_item, location=location
+                )
+                cleaned_data["quantity"] = existing_item.quantity + quantity
+            except Inventory.DoesNotExist:
+                pass
+        return cleaned_data
+
 
 class RemoveInventoryForm(forms.Form):
     base_item = forms.ModelChoiceField(queryset=BaseItem.objects.all())
