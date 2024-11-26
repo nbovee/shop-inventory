@@ -26,15 +26,13 @@
     {
       "type": "shell",
       "label": "shell: makemigrations",
-      "dependsOn": ["docker-build"],
-      "command": "docker run --rm -v ${pwd}/shop-inventory:/usr/src/shop-inventory shop-inventory:master python manage.py makemigrations",
+      "command": "docker exec -it shopinventory-dev python manage.py makemigrations",
       "problemMatcher": []
     },
     {
       "type": "shell",
       "label": "shell: migrate",
-      "dependsOn": ["docker-build"],
-      "command": "docker run --rm -v ${pwd}/shop-inventory:/usr/src/shop-inventory shop-inventory:master python manage.py migrate",
+      "command": "docker exec -it shopinventory-dev python manage.py migrate",
       "problemMatcher": []
     },
     {
