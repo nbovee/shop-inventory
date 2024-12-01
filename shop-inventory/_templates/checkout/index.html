@@ -1,4 +1,5 @@
 {% extends 'core/base.html' %}
+{% load checkout_filters %}
 
 {% block title %}Checkout Cart{% endblock %}
 
@@ -11,14 +12,101 @@
         </div>
     {% endif %}
 
-    <form method="GET" action="{% url 'index' %}" class="mt-4">
-        <div class="input-group">
-            <input type="text" name="search" class="form-control" placeholder="Search for an item" value="{{ request.GET.search }}">
-            <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="submit">Search</button>
+    <div class="d-flex flex-column flex-lg-row gap-3">
+        <!-- Cart Section -->
+        <div class="flex-shrink-0 mr-2" style="width: 300px;">
+            <div class="card sticky-top" style="top: 1rem;">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Shopping Cart</h5>
+                </div>
+                <div class="card-body">
+                    {% with cart=request.session.cart %}
+                        {% if cart %}
+                            <ul class="list-unstyled">
+                            {% for product_id, quantity in cart.items %}
+                                {% with item=inventory_items|filter_by_id:product_id %}
+                                    <li class="mb-2">
+                                        <div class="d-flex justify-content-between align-items-right">
+                                            <span>{{ item.base_item.name }}</span>
+                                            <span> ({{item.base_item.variant}})</span>
+                                            <span class="badge badge-primary">x{{ quantity }}</span>
+                                        </div>
+                                    </li>
+                                {% endwith %}
+                            {% endfor %}
+                            </ul>
+                            <hr>
+                            <form method="POST" action="{% url 'process_order' %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success w-100">Process Order</button>
+                            </form>
+                        {% else %}
+                            <p class="text-muted mb-0">Your cart is empty</p>
+                        {% endif %}
+                    {% endwith %}
+                </div>
             </div>
         </div>
-    </form>
 
-    {% include 'checkout/cart.html' %}
+        <!-- Main Content -->
+        <div class="flex-grow-1">
+            <form method="POST" action="{% url 'checkout' %}" class="mb-1">
+                {% csrf_token %}
+                <div class="input-group">
+                    <input type="text" name="barcode" class="form-control" placeholder="Scan barcode" autofocus>
+                    <input type="hidden" name="quantity" value="1">
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-primary">Add Item</button>
+                    </div>
+                </div>
+            </form>
+
+            <form method="GET" action="{% url 'checkout' %}" class="mb-4">
+                <div class="input-group">
+                    <input type="text" name="filter" class="form-control" placeholder="enter item name or variant" value="{{ request.GET.filter }}">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="submit">Filter</button>
+                    </div>
+                </div>
+            </form>
+            <div class="table-responsive card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Inventory Items</h5>
+                </div>
+                <table class="table table-striped table-hover table-bordered rounded">
+                    <thead class="thead">
+                        <tr>
+                            <th>Item Name</th>
+                            <th>Variant</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in inventory_items %}
+                        <tr>
+                            <td>{{ item.base_item.name }}</td>
+                            <td>{{ item.base_item.variant }}</td>
+                            <td>${{ item.price }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>
+                                <form method="POST" action="{% url 'checkout' %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="product_id" value="{{ item.id }}">
+                                    <input type="hidden" name="quantity" value="1">
+                                    <button type="submit" class="btn btn-sm btn-primary">Add to Cart</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">No items found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 {% endblock %}
