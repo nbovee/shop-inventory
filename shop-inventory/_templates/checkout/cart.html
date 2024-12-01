@@ -1,34 +1,39 @@
-
-
-{% block title %}Your Cart{% endblock %}
-
-{% block content %}
-
-
-<form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Add to Cart</button>
-</form>
-
-{% if cart %}
-<table class="table">
-    <thead>
-        <tr>
-            <th>Product ID</th>
-            <th>Quantity</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for product_id, quantity in cart.items %}
-        <tr>
-            <td>{{ product_id }}</td>
-            <td>{{ quantity }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-{% else %}
-<p>Your cart is empty.</p>
-{% endif %}
-{% endblock %}
+{% load checkout_filters %}
+        <div class="flex-shrink-0 mr-2" style="width: 300px;">
+            <div class="card sticky-top" style="top: 1rem;">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Shopping Cart</h5>
+                </div>
+                <div class="card-body">
+                    {% with cart=request.session.cart %}
+                        {% if cart %}
+                            <ul class="list-unstyled">
+                            {% for product_id, quantity in cart.items %}
+                                {% with item=inventory_items|filter_by_id:product_id %}
+                                    <li class="mb-2">
+                                        <div class="d-flex justify-content-between align-items-right">
+                                            <span>{{ item.base_item.name }}</span>
+                                            <span> ({{item.base_item.variant}})</span>
+                                            <span class="badge badge-primary">x{{ quantity }}</span>
+                                        </div>
+                                    </li>
+                                {% endwith %}
+                            {% endfor %}
+                            </ul>
+                            <hr>
+                            <form method="POST" action="{% url 'process_order' %}" class="mb-3">
+                                {% csrf_token %}
+                                <div class="form-group mb-3">
+                                    <label for="implicit_id">Student ID:</label>
+                                    <input type="text" name="implicit_id" id="implicit_id" class="form-control" placeholder="Student ID" required>
+                                    <small class="form-text text-muted">Please enter email, or tap then swipe RowanCard</small>
+                                </div>
+                                <button type="submit" class="btn btn-success w-100">Process Order</button>
+                            </form>
+                        {% else %}
+                            <p class="text-muted mb-0">Your cart is empty.</p>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+        </div>
