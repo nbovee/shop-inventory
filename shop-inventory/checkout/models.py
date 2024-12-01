@@ -1,8 +1,6 @@
-from django.db import models, transaction
-from django.contrib.auth import get_user_model
+from django.db import models
 from django.core.validators import EmailValidator, RegexValidator
-
-# Create your models here.
+from django.utils import timezone
 
 
 class Order(models.Model):
@@ -14,28 +12,22 @@ class Order(models.Model):
         r"^\d{12}$",
         message="Must be exactly 12 numeric characters",
     )
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-    timestamp = models.DateTimeField(auto_now_add=True)
-    items = models.ManyToManyField("inventory.Inventory", through="OrderItem")
-    completed = models.BooleanField(default=False)
+
+    order_number = models.CharField(max_length=8, unique=True)
     implicit_id = models.CharField(
         max_length=255, validators=[email_validator, numeric_validator]
     )
+    date = models.DateTimeField(default=timezone.now)
+    completed = models.BooleanField(default=False)
 
-    @transaction.atomic
-    def process_order(self):
-        order = Order.objects.create(user=self.user)
-        for item in self.items.all():
-            OrderItem.objects.create(
-                order=order, product=item.product, quantity=item.quantity
-            )
-            item.product.quantity -= item.quantity
-            item.product.save()
-        self.items.all().delete()
-        order.completed = True
+    def __str__(self):
+        return f"Order #{self.order_number} ({self.implicit_id})"
 
 
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    product = models.ForeignKey("inventory.Inventory", on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
+    inventory_item = models.ForeignKey("inventory.Inventory", on_delete=models.PROTECT)
+    quantity = models.PositiveIntegerField()
+
+    def __str__(self):
+        return f"{self.inventory_item.base_item.name} x{self.quantity} in Order #{self.order.order_number}"
