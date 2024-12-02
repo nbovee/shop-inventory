@@ -251,8 +251,6 @@ Enjoy the ease of deployment with Caddy!
 Now that you have a working project, you can extend it as you like, adding [dashboards for monitoring service health](https://doc.traefik.io/traefik/operations/dashboard/), [centralized log collection](https://www.fluentd.org), [secret storage](https://www.vaultproject.io), and of course, your own Django applications.
 All of this is beyond the scope of the current description, as the idea of this project is minimalism and providing only the essentials. Good luck!
 
-## Template Source
-Developed from the excellent template repo by @amerkurev found here: https://github.com/nbovee/shop-inventory
 ## License
 
 [MIT](https://github.com/nbovee/shop-inventory/blob/master/LICENSE)
