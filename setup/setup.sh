@@ -33,6 +33,20 @@ if [ -f "$SCRIPT_DIR/requirements.txt" ]; then
     pip install -r "$SCRIPT_DIR/requirements.txt"
 fi
 
+echo "Setting up backup cron job..."
+# Create cron job for hourly backups using Django management command
+PYTHON_PATH="/opt/shop-inventory/venv/bin/python"
+MANAGE_PY="/opt/shop-inventory/manage.py"
+CRON_LINE="0 * * * * cd /opt/shop-inventory && $PYTHON_PATH $MANAGE_PY backup_db"
+
+# Add cron job while preserving existing ones
+if ! (crontab -l 2>/dev/null | grep -Fq "backup_db"); then
+    (crontab -l 2>/dev/null; echo "$CRON_LINE") | crontab -
+    echo "Added backup cron job successfully"
+else
+    echo "Backup cron job already exists"
+fi
+
 echo "Setting correct permissions..."
 chown -R www-data:www-data /opt/shop-inventory
 chown -R www-data:www-data /var/lib/shop-inventory
@@ -70,7 +84,8 @@ echo
 echo "Next steps:"
 echo "1. Copy /opt/shop-inventory/.env.template to /opt/shop-inventory/.env"
 echo "2. Edit /opt/shop-inventory/.env with your settings"
-echo "3. Restart the service: systemctl restart shop-inventory"
+echo "3. Update BACKUP_PASSWORD in .env for secure database backups"
+echo "4. Restart the service: systemctl restart shop-inventory"
 echo
 echo "To check status:"
 echo "  systemctl status shop-inventory"
