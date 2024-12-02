@@ -1,20 +1,10 @@
 # Shop Prototype Repository
 
-
-## TODO
-barcode should allow uuid or 6-12 digit string for upc-a/upc-e
-add volunteer and admin users
-Stock Check pulls both locaitons and allows qty changes
-- how does qty mismatch need to work?
-- allow to go negative
-acknowledgesments page for sponsor and students
-shop logo/favicon?
-
 This repository is the development repository for the Rowan Shop & Pantry Inventory System
 To contribute, please read the guidelines here : [Contributing.md](CONTRIBUTING.md)
 
 <hr>
-# Django + Docker = ❤️
+# Django + uv + VSCode + Docker = ❤️
 <div markdown="1">
 
 [![Build](https://github.com/nbovee/shop-inventory/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/nbovee/shop-inventory/actions/workflows/ci.yml)
@@ -37,64 +27,60 @@ cd shop-inventory
 ```
 Using VSCode, you may launch the debugpy tool into your development server by running "Simple Debug" from the Run and Debug tab of the IDE.
 
-Now you can go to [http://127.0.0.1:8000](http://127.0.0.1:8000) in your browser. Go to the Django admin panel and try updating the server code "on the fly".
-Everything works just like if you were running the Django development server outside the container.
+Now you can go to [http://127.0.0.1:8000](http://127.0.0.1:8000) in your browser.
 
 > Note that we mount the directory with your source code inside the container, so you can work with the project in your IDE, and changes will be visible inside the container, and the Django development server will restart itself.
 
-<details markdown="1">
-<summary>SQLite Usage Details</summary>
-
-> Another important point is the use of SQLite3 instead of Postgres, because Postgres is not deployed until Django is run within a Docker Compose environment.
-> In our example, we add a volume named `sqlite`. This data is stored persistently and does not disappear between restarts of the Django development server.
-> However, if you have a second similar project, it would be better to change the volume name from `sqlite` to something else so that the second project uses its own copy of the database. For example:
->
+2. Run tests with pytest and coverage ✅:
 ```console
-docker run -it --rm -p 8000:8000 -v another_sqlite:/sqlite -v $(pwd)/shop-inventory:/usr/src/shop-inventory shop-inventory:master python manage.py runserver 0.0.0.0:8000
+uv run pytest
 ```
->
->  To better understand how volumes work in Docker, refer to the official [documentation](https://docs.docker.com/storage/volumes/).
-</details>
-
-1. Run tests with pytest and coverage ✅:
+The pytest tool runs tests using pytest-django and pytest-cov (wrapping coverage). As a result, you will see an output like this in the terminal:
 ```console
-docker run --rm shop-inventory:master ./pytest.sh
-```
-The [pytest.sh](/shop-inventory/pytest.sh) script runs tests using pytest and coverage. As a result, you will see an output like this in the terminal:
-```console
-================== test session starts =====================================
-platform linux -- Python 3.11.7, pytest-7.4.4, pluggy-1.3.0
-django: version: 4.2.9, settings: core.settings (from ini)
-rootdir: /usr/src/core
-configfile: pytest.ini
-plugins: django-4.7.0
-collected 10 items
+uv run pytest
+================================= test session starts ==================================
+platform win32 -- Python 3.12.5, pytest-8.3.4, pluggy-1.5.0
+django: version: 4.2.16, settings: _core.settings (from ini)
+rootdir: C:\CODE\shop-inventory
+configfile: pyproject.toml
+plugins: cov-6.0.0, django-4.9.0
+collected 3 items
 
-polls/tests.py .......... [100%]
+shop-inventory\_core\tests.py .                                                   [ 33%]
+shop-inventory\inventory\tests.py .                                               [ 66%]
+shop-inventory\tests\test_exists.py .                                             [100%]
 
-================== 10 passed in 0.19s ======================================
-Name                                       Stmts   Miss  Cover   Missing
-------------------------------------------------------------------------
-polls/__init__.py                              0      0   100%
-polls/admin.py                                12      0   100%
-polls/apps.py                                  4      0   100%
-polls/migrations/0001_initial.py               6      0   100%
-polls/migrations/0002_question_upload.py       4      0   100%
-polls/migrations/__init__.py                   0      0   100%
-polls/models.py                               20      2    90%   15, 33
-polls/tests.py                                57      0   100%
-polls/urls.py                                  4      0   100%
-polls/views.py                                28      8    71%   39-58
-core/__init__.py                            6      0   100%
-core/settings.py                           52      2    96%   94, 197
-core/urls.py                                6      0   100%
-------------------------------------------------------------------------
-TOTAL                                        199     12    94%
-```
+---------- coverage: platform win32, python 3.12.5-final-0 -----------
+Name                                                              Stmts   Miss  Cover   Missing
+-----------------------------------------------------------------------------------------------
+shop-inventory\_core\asgi.py                                          4      4     0%   10-16
+shop-inventory\_core\management\commands\backup_db.py                41     41     0%   1-78
+shop-inventory\_core\management\commands\loadtestdata.py             13     13     0%   1-19
+shop-inventory\_core\management\commands\safecreatesuperuser.py      23     23     0%   6-58
+shop-inventory\_core\models.py                                        7      1    86%   13
+shop-inventory\_core\settings.py                                     56      1    98%   200
+shop-inventory\_core\signals.py                                      28     20    29%   11-18, 24-49
+shop-inventory\_core\urls.py                                          6      6     0%   18-34
+shop-inventory\_core\views.py                                        17     17     0%   1-31
+shop-inventory\_core\wsgi.py                                          4      4     0%   10-16
+shop-inventory\checkout\forms.py                                     79     79     0%   1-141
+shop-inventory\checkout\models.py                                    32     17    47%   9-35, 50, 59
+shop-inventory\checkout\templatetags\checkout_filters.py              9      9     0%   1-13
+shop-inventory\checkout\urls.py                                       3      3     0%   1-5
+shop-inventory\checkout\views.py                                     42     42     0%   1-71
+shop-inventory\inventory\barcode_gen.py                              25     25     0%   1-47
+shop-inventory\inventory\forms.py                                    92     92     0%   1-171
+shop-inventory\inventory\models.py                                   37     11    70%   16, 19-20, 23-24, 32, 43, 49-50, 53-54
+shop-inventory\inventory\signals.py                                  35     23    34%   11-21, 25-44, 51-54, 59-62
+shop-inventory\inventory\urls.py                                      3      3     0%   1-4
+shop-inventory\inventory\views.py                                   176    176     0%   1-304
+-----------------------------------------------------------------------------------------------
+TOTAL                                                               748    610    18%
 
-> If you don't want to use pytest (for some reason), you can run the tests without pytest using the command below:
-```console
-docker run --rm shop-inventory:master python manage.py test
+6 files skipped due to complete coverage.
+
+
+================================== 3 passed in 0.74s ===================================
 ```
 
 #### Django settings
@@ -115,3 +101,12 @@ We would like to extend our sincere gratitude to:
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+
+## TODO
+barcode should allow uuid or 6-12 digit string for upc-a/upc-e
+add volunteer and admin users
+- how does qty mismatch need to work?
+- allow to go negative
+acknowledgesments page for sponsor and students
+shop logo/favicon?

@@ -13,12 +13,38 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "coverage>=7.4.0",
     "pre-commit>=4.0.1",
-    "pytest>=8.3.3",
+    "pytest-cov>=6.0.0",
     "pytest-django>=4.9.0",
     "ruff>=0.7.4",
 ]
 prod = [
     "gunicorn>=23.0.0",
+]
+
+[tool.pytest.ini_options]
+pythonpath = "shop-inventory"
+DJANGO_SETTINGS_MODULE = "_core.settings"
+python_files = ["test.py", "tests.py", "test_*.py", "*_tests.py",]
+addopts = ["--cov=shop-inventory", "--cov-config=pyproject.toml",]
+
+[tool.coverage.run]
+omit = [
+    "*/migrations/*",
+    "*/tests/*",
+    "manage.py",
+    "*/__init__.py",
+    "*/apps.py",
+]
+[tool.coverage.report]
+skip_covered = true
+show_missing = true
+exclude_also = [
+    "pragma: no cover",
+    "def __repr__",
+    "if settings.DEBUG",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "pass",
+    "raise ImportError",
 ]
