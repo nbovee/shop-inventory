@@ -3,11 +3,40 @@
 {% block title %}Remove Base Item{% endblock %}
 
 {% block content %}
-    <h1 class="mt-4">Remove Base Item</h1>
-    <form method="POST" class="mt-4">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-danger">Remove Base Item</button>
-    </form>
-    <a href="{% url 'inventory' %}" class="btn btn-secondary mt-4">Back to Inventory</a>
+<div class="container">
+    <div class="card">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0">Remove Base Item</h5>
+        </div>
+        <div class="card-body">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+                {% if form.errors %}
+                    <div class="alert alert-danger">
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                                <p class="mb-0">{{ error }}</p>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <div class="form-group">
+                    {{ form.base_item.label_tag }}
+                    {{ form.base_item }}
+                    <small class="form-text text-muted">Select the item you want to remove</small>
+                </div>
+                <button type="submit" class="btn btn-danger">Remove Item</button>
+                <a href="{% url 'manage_inventory' %}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}

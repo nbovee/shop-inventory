@@ -3,13 +3,17 @@
 {% block title %}Rowan Shop & Pantry Homepage{% endblock %}
 
 {% block content %}
+{% if not user.is_authenticated %}
 <div class="d-flex flex-row flex-wrap justify-content-center">
 {% include 'core/card.html' with title="Start Checkout" description="Begin shopping" url='checkout' %}
 </div>
+{% endif %}
 {% if user.is_authenticated %}
 <div class="d-flex flex-row flex-wrap justify-content-center">
 {% include 'core/card.html' with title="Manage Inventory" description="Add/remove items" url='inventory' %}
 {% include 'core/card.html' with title="Print New Barcodes" description="print fresh sheet of barcodes" url='barcodes' %}
+{% include 'core/card.html' with title="View Recent Orders" description="view recent orders" url='recent_orders' %}
+
 </div>
 {% endif %}
 {% endblock %}

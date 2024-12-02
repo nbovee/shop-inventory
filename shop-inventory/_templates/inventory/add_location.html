@@ -3,11 +3,57 @@
 {% block title %}Add Location{% endblock %}
 
 {% block content %}
-    <h1 class="mt-4">Add Location</h1>
-    <form method="POST" class="mt-4">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Add Location</button>
-    </form>
-    <a href="{% url 'add_inventory' %}" class="btn btn-secondary mt-4">Back to Add Inventory</a>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Add New Location</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        {% if form.errors %}
+                            <div class="alert alert-danger">
+                                {% for field, errors in form.errors.items %}
+                                    {% for error in errors %}
+                                        <p class="mb-0">{{ error }}</p>
+                                    {% endfor %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="form-group">
+                            {{ form.name.label_tag }}
+                            {{ form.name }}
+                            <small class="form-text text-muted">Enter the name for the new location</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Location</button>
+                        <a href="{% url 'manage_inventory' %}" class="btn btn-secondary">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {% if inactive_locations %}
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Inactive Locations</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">These locations can be reactivated by entering their names above:</p>
+                    <ul class="list-group">
+                        {% for location in inactive_locations %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ location.name }}
+                                <span class="badge badge-secondary">Inactive</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
 {% endblock %}

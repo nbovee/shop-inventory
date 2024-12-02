@@ -4,6 +4,7 @@ from inventory.models import Inventory
 from .models import Order, OrderItem
 from django.utils import timezone
 import uuid
+from django.contrib import messages
 
 
 class AddToCartForm(forms.Form):
@@ -58,17 +59,22 @@ class AddToCartForm(forms.Form):
         return self.cart
 
 
-class ProcessOrderForm(forms.Form):
-    implicit_id = forms.CharField(
-        max_length=50,
-        required=True,
-        widget=forms.TextInput(
-            attrs={"class": "form-control", "placeholder": "Enter your ID"}
-        ),
-    )
+class ProcessOrderForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = ["implicit_id"]
+        widgets = {
+            "implicit_id": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Enter your Rowan email or ID",
+                }
+            )
+        }
 
     def __init__(self, *args, **kwargs):
         self.cart = kwargs.pop("cart", {})
+        self.request = kwargs.pop("request", None)
         super().__init__(*args, **kwargs)
 
     def clean(self):
@@ -77,46 +83,59 @@ class ProcessOrderForm(forms.Form):
             raise forms.ValidationError("Cart is empty")
         return cleaned_data
 
-    def save(self):
-        with transaction.atomic():
-            # Generate a unique order number
-            order_number = str(uuid.uuid4().hex[:8])
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.order_number = str(uuid.uuid4().hex[:8])
+        instance.date = timezone.now()
 
-            # Create the order
-            order = Order.objects.create(
-                order_number=order_number,
-                implicit_id=self.cleaned_data["implicit_id"],
-                date=timezone.now(),
-            )
+        if commit:
+            with transaction.atomic():
+                instance.save()
+                deactivated_items = []
 
-            # Process each item in the cart
-            for product_id, quantity in self.cart.items():
-                try:
-                    inventory_item = Inventory.objects.select_for_update().get(
-                        id=product_id
-                    )
-
-                    # Check if we have enough stock
-                    if inventory_item.quantity < quantity:
-                        raise forms.ValidationError(
-                            f"Insufficient stock for {inventory_item.base_item.name}"
+                # Process each item in the cart
+                for product_id, quantity in self.cart.items():
+                    try:
+                        inventory_item = Inventory.objects.select_for_update().get(
+                            id=product_id, active=True
                         )
 
-                    # Create order item
-                    OrderItem.objects.create(
-                        order=order,
-                        inventory_item=inventory_item,
-                        quantity=quantity,
-                        price_at_time=inventory_item.price,
+                        # Check if we have enough stock
+                        if inventory_item.quantity < quantity:
+                            raise forms.ValidationError(
+                                f"Insufficient stock for {inventory_item.base_item.name}"
+                            )
+
+                        # Create order item
+                        OrderItem.objects.create(
+                            order=instance,
+                            inventory_item=inventory_item,
+                            quantity=quantity,
+                        )
+
+                        # Update inventory
+                        inventory_item.quantity -= quantity
+
+                        # Check if item should be deactivated
+                        if (
+                            inventory_item.quantity == 0
+                            and not inventory_item.base_item.active
+                        ):
+                            inventory_item.active = False
+                            deactivated_items.append(inventory_item.base_item.name)
+
+                        inventory_item.save()
+
+                    except Inventory.DoesNotExist:
+                        raise forms.ValidationError(
+                            f"Product {product_id} no longer exists"
+                        )
+
+                # Add message about deactivated items if any
+                if deactivated_items and self.request:
+                    messages.info(
+                        self.request,
+                        f"The following items have been deactivated as they reached zero quantity: {', '.join(deactivated_items)}",
                     )
 
-                    # Update inventory
-                    inventory_item.quantity -= quantity
-                    inventory_item.save()
-
-                except Inventory.DoesNotExist:
-                    raise forms.ValidationError(
-                        f"Product {product_id} no longer exists"
-                    )
-
-            return order
+        return instance

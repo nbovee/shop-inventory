@@ -12,7 +12,7 @@
             "remoteRoot": "/usr/src/shop-inventory"
           }
         ],
-        "projectType": "django"
+        "projectType": "django",
       }
     }
   ]

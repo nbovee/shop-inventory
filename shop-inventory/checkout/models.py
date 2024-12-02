@@ -1,24 +1,50 @@
 from django.db import models
-from django.core.validators import EmailValidator, RegexValidator
+from django.core.validators import RegexValidator
 from django.utils import timezone
+from django.core.exceptions import ValidationError
 
 
-class Order(models.Model):
-    email_validator = EmailValidator(
-        message="Must be a valid Rowan email address",
-        allowlist=["students.rowan.edu", "rowan.edu"],
+def validate_email_or_numeric(value):
+    """Validate that the value is either a Rowan email or a 12-digit number."""
+    email_regex = r"^[a-zA-Z0-9._%+-]+@(students\.rowan\.edu|rowan\.edu)$"
+    email_validator = RegexValidator(
+        email_regex,
+        message="Must be a valid Rowan email address (@students.rowan.edu or @rowan.edu)",
     )
     numeric_validator = RegexValidator(
         r"^\d{12}$",
         message="Must be exactly 12 numeric characters",
     )
 
+    # Try both validators
+    email_valid = True
+    numeric_valid = True
+
+    try:
+        email_validator(value)
+    except ValidationError:
+        email_valid = False
+
+    try:
+        numeric_validator(value)
+    except ValidationError:
+        numeric_valid = False
+
+    # If neither validation passed, raise error
+    if not email_valid and not numeric_valid:
+        raise ValidationError(
+            "ID field must be either a valid Rowan email address or RowanCard"
+        )
+
+
+class Order(models.Model):
     order_number = models.CharField(max_length=8, unique=True)
     implicit_id = models.CharField(
-        max_length=255, validators=[email_validator, numeric_validator]
+        max_length=255,
+        validators=[validate_email_or_numeric],
+        help_text="Enter either your Rowan email or 12-digit ID",
     )
     date = models.DateTimeField(default=timezone.now)
-    completed = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Order #{self.order_number} ({self.implicit_id})"

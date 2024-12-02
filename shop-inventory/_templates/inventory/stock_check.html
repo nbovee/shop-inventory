@@ -3,13 +3,6 @@
 {% block title %}Inventory System - Stock Check{% endblock %}
 
 {% block content %}
-    {% if messages %}
-        <div class="alert alert-info mt-2">
-            {% for message in messages %}
-                <p>{{ message }}</p>
-            {% endfor %}
-        </div>
-    {% endif %}
 
     <tbody>
     {% for location, items in items_in_location.items %}
