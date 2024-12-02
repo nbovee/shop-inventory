@@ -10,7 +10,7 @@
 
         <!-- Main Content -->
         <div class="flex-grow-1">
-            <form method="POST" action="{% url 'checkout' %}" class="mb-1">
+            <form method="POST" action="{% url 'checkout:index' %}" class="mb-1">
                 {% csrf_token %}
                 <div class="input-group">
                     <input type="text" name="barcode" class="form-control" placeholder="Scan barcode" autofocus>
@@ -21,7 +21,7 @@
                 </div>
             </form>
 
-            <form method="GET" action="{% url 'checkout' %}" class="mb-4">
+            <form method="GET" action="{% url 'checkout:index' %}" class="mb-4">
                 <div class="input-group">
                     <input type="text" name="filter" class="form-control" placeholder="Enter item filter term" value="{{ request.GET.filter }}">
                     <div class="input-group-append">
@@ -49,7 +49,7 @@
                             <td>{{ item.base_item.variant }}</td>
                             <td>{{ item.quantity }}</td>
                             <td>
-                                <form method="POST" action="{% url 'checkout' %}" class="d-inline">
+                                <form method="POST" action="{% url 'checkout:index' %}" class="d-inline">
                                     {% csrf_token %}
                                     <input type="hidden" name="product_id" value="{{ item.id }}">
                                     <input type="hidden" name="quantity" value="1">
