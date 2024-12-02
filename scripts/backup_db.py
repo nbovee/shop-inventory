@@ -8,7 +8,7 @@ from pathlib import Path
 import shutil
 
 # Add the project directory to the Python path
-project_dir = Path(__file__).resolve().parent.parent.parent
+project_dir = Path(__file__).resolve().parent.parent / "shop-inventory"
 sys.path.append(str(project_dir))
 
 # Import Django settings to get DATABASE path
