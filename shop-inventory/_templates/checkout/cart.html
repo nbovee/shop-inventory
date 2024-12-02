@@ -1,37 +1,53 @@
 {% load checkout_filters %}
         <div class="flex-shrink-0 mr-2" style="width: 300px;">
             <div class="card sticky-top" style="top: 1rem;">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Shopping Cart</h5>
+                    <span class="badge badge-light" id="cart-count">
+                        {% with cart=request.session.cart %}
+                            {{ cart|length|default:"0" }}
+                        {% endwith %}
+                    </span>
                 </div>
                 <div class="card-body">
                     {% with cart=request.session.cart %}
                         {% if cart %}
-                            <ul class="list-unstyled">
+                            <ul class="list-group list-group-flush mb-3">
                             {% for product_id, quantity in cart.items %}
                                 {% with item=inventory_items|filter_by_id:product_id %}
-                                    <li class="mb-2">
-                                        <div class="d-flex justify-content-between align-items-right">
-                                            <span>{{ item.base_item.name }}</span>
-                                            <span> ({{item.base_item.variant}})</span>
-                                            <span class="badge badge-primary">x{{ quantity }}</span>
+                                    <li class="list-group-item px-0">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <div>{{ item.base_item.name }}</div>
+                                                <small class="text-muted">{{ item.base_item.variant }}</small>
+                                            </div>
+                                            <div class="d-flex align-items-center">
+                                                <span class="badge badge-primary badge-pill">x{{ quantity }}</span>
+                                                <form method="POST" action="{% url 'remove_from_cart' %}" class="ml-2">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="product_id" value="{{ item.id }}">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger">&times;</button>
+                                                </form>
+                                            </div>
                                         </div>
                                     </li>
                                 {% endwith %}
                             {% endfor %}
                             </ul>
-                            <hr>
-                            <form method="POST" action="{% url 'process_order' %}" class="mb-3">
+                            <form method="POST" action="{% url 'process_order' %}" class="mb-0">
                                 {% csrf_token %}
-                                <div class="form-group mb-3">
-                                    {% comment %} <label for="implicit_id">Student ID:</label> {% endcomment %}
-                                    <input type="text" name="implicit_id" id="implicit_id" class="form-control" placeholder="Student ID" required>
-                                    <small class="form-text text-muted">Please enter email, or scan RowanCard</small>
+                                <div class="form-group">
+                                    <input type="text" name="implicit_id" id="implicit_id"
+                                           class="form-control" placeholder="Student ID" required
+                                           autocomplete="off">
+                                    <small class="form-text text-muted">Please enter email or scan RowanCard</small>
                                 </div>
-                                <button type="submit" class="btn btn-success w-100">Process Order</button>
+                                <button type="submit" class="btn btn-success btn-block">
+                                    Process Order
+                                </button>
                             </form>
                         {% else %}
-                            <p class="text-muted mb-0">Your cart is empty.</p>
+                            <p class="text-muted text-center mb-0">Your cart is empty</p>
                         {% endif %}
                     {% endwith %}
                 </div>
