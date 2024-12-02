@@ -24,9 +24,9 @@
                             <form method="POST" action="{% url 'process_order' %}" class="mb-3">
                                 {% csrf_token %}
                                 <div class="form-group mb-3">
-                                    <label for="implicit_id">Student ID:</label>
+                                    {% comment %} <label for="implicit_id">Student ID:</label> {% endcomment %}
                                     <input type="text" name="implicit_id" id="implicit_id" class="form-control" placeholder="Student ID" required>
-                                    <small class="form-text text-muted">Please enter email, or tap then swipe RowanCard</small>
+                                    <small class="form-text text-muted">Please enter email, or scan RowanCard</small>
                                 </div>
                                 <button type="submit" class="btn btn-success w-100">Process Order</button>
                             </form>

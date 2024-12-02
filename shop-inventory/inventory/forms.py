@@ -6,12 +6,73 @@ class BaseItemForm(forms.ModelForm):
     class Meta:
         model = BaseItem
         fields = ["name", "variant"]
+        widgets = {
+            "name": forms.TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter item name"}
+            ),
+            "variant": forms.TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter item variant"}
+            ),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        name = cleaned_data.get("name")
+        variant = cleaned_data.get("variant")
+
+        if name and variant:
+            try:
+                # Check for inactive item with same name/variant
+                inactive_item = BaseItem.objects.get(
+                    name=name, variant=variant, active=False
+                )
+                # If found, reactivate it
+                inactive_item.activate()
+                raise forms.ValidationError(
+                    "This item was previously deactivated and has been restored.",
+                    code="reactivated",
+                )
+            except BaseItem.DoesNotExist:
+                # Check if active item with same name/variant exists
+                if BaseItem.objects.filter(
+                    name=name, variant=variant, active=True
+                ).exists():
+                    raise forms.ValidationError(
+                        "An item with this name and variant already exists.",
+                        code="exists",
+                    )
+        return cleaned_data
 
 
 class LocationForm(forms.ModelForm):
     class Meta:
         model = Location
         fields = ["name"]
+        widgets = {
+            "name": forms.TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter location name"}
+            )
+        }
+
+    def clean_name(self):
+        name = self.cleaned_data["name"]
+        try:
+            # Check for inactive location with same name
+            inactive_location = Location.objects.get(name=name, active=False)
+            # If found, reactivate it
+            inactive_location.active = True
+            inactive_location.save()
+            raise forms.ValidationError(
+                "This location was previously deactivated and has been restored.",
+                code="reactivated",
+            )
+        except Location.DoesNotExist:
+            # Check if active location with same name exists
+            if Location.objects.filter(name=name, active=True).exists():
+                raise forms.ValidationError(
+                    "A location with this name already exists.", code="exists"
+                )
+        return name
 
 
 class InventoryForm(forms.ModelForm):
@@ -27,18 +88,31 @@ class InventoryForm(forms.ModelForm):
 
         if base_item and location:
             try:
-                existing_item = Inventory.objects.get(
-                    base_item=base_item, location=location
+                # First check for inactive item
+                inactive_item = Inventory.objects.get(
+                    base_item=base_item, location=location, active=False
                 )
-                cleaned_data["quantity"] = existing_item.quantity + quantity
+                # If found, reactivate and update quantity
+                inactive_item.quantity = quantity
+                inactive_item.activate()
+                raise forms.ValidationError(
+                    "This inventory item was previously deactivated and has been restored."
+                )
             except Inventory.DoesNotExist:
-                pass
+                # Then check for active item
+                try:
+                    existing_item = Inventory.objects.get(
+                        base_item=base_item, location=location, active=True
+                    )
+                    cleaned_data["quantity"] = existing_item.quantity + quantity
+                except Inventory.DoesNotExist:
+                    pass
         return cleaned_data
 
 
 class RemoveInventoryForm(forms.Form):
-    base_item = forms.ModelChoiceField(queryset=BaseItem.objects.all())
-    location = forms.ModelChoiceField(queryset=Location.objects.all())
+    base_item = forms.ModelChoiceField(queryset=BaseItem.objects.filter(active=True))
+    location = forms.ModelChoiceField(queryset=Location.objects.filter(active=True))
     quantity = forms.IntegerField(min_value=1)
 
 
@@ -50,7 +124,52 @@ class EditInventoryForm(forms.ModelForm):
         model = Inventory
         fields = ["base_item", "location", "barcode", "quantity"]
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["base_item"].queryset = BaseItem.objects.filter(active=True)
+        self.fields["location"].queryset = Location.objects.filter(active=True)
+
 
 class StockUpdateForm(forms.Form):
     item_id = forms.IntegerField()
     delta_qty = forms.IntegerField()
+
+    def clean(self):
+        cleaned_data = super().clean()
+        item_id = cleaned_data.get("item_id")
+        delta_qty = cleaned_data.get("delta_qty")
+
+        if item_id and delta_qty is not None:
+            try:
+                inventory_item = Inventory.objects.get(id=item_id, active=True)
+
+                # Prevent adding quantity if base item is inactive
+                if delta_qty > 0 and not inventory_item.base_item.active:
+                    raise forms.ValidationError(
+                        "Cannot add quantity to items with inactive base items."
+                    )
+
+                # Check if reducing quantity would go below 0
+                if inventory_item.quantity + delta_qty < 0:
+                    raise forms.ValidationError("Cannot reduce quantity below 0")
+
+            except Inventory.DoesNotExist:
+                raise forms.ValidationError("Invalid inventory item")
+
+        return cleaned_data
+
+
+class RemoveLocationForm(forms.Form):
+    location = forms.ModelChoiceField(
+        queryset=Location.objects.filter(active=True),
+        empty_label="Select a location to remove",
+        widget=forms.Select(attrs={"class": "form-control", "autofocus": True}),
+    )
+
+
+class RemoveBaseItemForm(forms.Form):
+    base_item = forms.ModelChoiceField(
+        queryset=BaseItem.objects.filter(active=True).order_by("name", "variant"),
+        empty_label="Select an item to remove",
+        widget=forms.Select(attrs={"class": "form-control"}),
+    )

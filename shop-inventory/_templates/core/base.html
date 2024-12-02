@@ -27,6 +27,17 @@
         </div>
     </nav>
     <div class="container">
+        {% if messages %}
+        <div class="alert alert-info mt-2">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+            </div>
+        {% else %}
+        <div class="alert alert-info mt-2" style="visibility: hidden;">
+            <p>&nbsp;</p>
+        </div>
+        {% endif %}
         {% block content %}{% endblock content %}
     </div>
     </body>

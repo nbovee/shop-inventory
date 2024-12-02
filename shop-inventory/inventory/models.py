@@ -7,14 +7,21 @@ import uuid
 class BaseItem(models.Model):
     name = models.CharField(max_length=30)
     variant = models.CharField(max_length=30)
+    active = models.BooleanField(default=True)
 
     class Meta:
         unique_together = ("name", "variant")
 
-    active = models.BooleanField(default=True)
-
     def __str__(self):
         return "{} ({})".format(self.name, self.variant)
+
+    def deactivate(self):
+        self.active = False
+        self.save()
+
+    def activate(self):
+        self.active = True
+        self.save()
 
 
 class Location(models.Model):
@@ -30,9 +37,18 @@ class Inventory(models.Model):
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
     barcode = models.UUIDField(default=uuid.uuid4, editable=True, unique=True)
     quantity = models.PositiveIntegerField()
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         return "{} @ {}".format(self.base_item, self.location)
 
     class Meta:
         unique_together = ("base_item", "location")
+
+    def deactivate(self):
+        self.active = False
+        self.save()
+
+    def activate(self):
+        self.active = True
+        self.save()

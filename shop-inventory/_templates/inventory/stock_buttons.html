@@ -1,7 +1,9 @@
-<div class="btn-group btn-group-toggle" data-toggle="buttons">
-    {% include "inventory/stock_button.html" with item=item num=-10%}
-    {% include "inventory/stock_button.html" with item=item num=-1%}
-    {% include "inventory/stock_button.html" with item=item num=1%}
-    {% include "inventory/stock_button.html"  with item=item num=10%}
-</div>
-QTY
+<form method="POST" action="{% url 'stock_update' %}" class="btn-group" role="group">
+    {% csrf_token %}
+    <input type="hidden" name="item_id" value="{{ item.id }}">
+    <button type="submit" name="delta_qty" value="-10" class="btn btn-primary">-10</button>
+    <button type="submit" name="delta_qty" value="-1" class="btn btn-primary">-1</button>
+    <button type="submit" name="delta_qty" value="1" class="btn btn-primary">+1</button>
+    <button type="submit" name="delta_qty" value="10" class="btn btn-primary">+10</button>
+    <button type="button" class="btn btn-secondary" disabled>QTY</button>
+</form>
