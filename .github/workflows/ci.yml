@@ -5,9 +5,9 @@ on:
     branches:
       - main
     tags:
-      - '*'
+      - "*"
     paths-ignore:
-      - '*.md'
+      - "*.md"
   pull_request:
     branches: [main]
 
@@ -28,16 +28,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Test and submit coverage report
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "0.5.5"
+      - name: Set up python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ".python-version"
+      - name: Install dependencies
+        run: uv sync
+      - name: Run tests
         run: |
-          docker build -t shop-inventory:master .
-          docker run --rm -v $(pwd)/shop-inventory/:/usr/src/shop-inventory shop-inventory:master ./pytest.sh
-          pip install coveralls
-          cd shop-inventory && coveralls --service=github
+          uv run pytest
+      - name: Submit coverage report
+        uses: coverallsapp/github-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -54,7 +59,7 @@ jobs:
           # If you require the use of an apt proxy, set it here. This proxy setting will not
           # be included in the image, making it safe to use an apt-cacher or similar package
           # for development.
-          apt-proxy: ''
+          apt-proxy: ""
 
           # Compression to apply on final image (either "none", "zip", "xz" or "gz").
           compression: zip
@@ -71,7 +76,7 @@ jobs:
           disable-first-boot-user-rename: 0
 
           # Additional options to include in PIGEN_DOCKER_OPTS
-          docker-opts: ''
+          docker-opts: ""
 
           # Set whether a NOOBS image should be built as well. If enabled, the output
           # directory containing the NOOBS files will be saved as output variable
@@ -93,13 +98,13 @@ jobs:
           # require. Note that this is not affecting the final image. In order to add
           # additional packages, you need to add a respective 'XX-packages' file in your
           # custom stage.
-          extra-host-dependencies: ''
+          extra-host-dependencies: ""
 
           # Comma or whitespace separated list of additional modules to load on host before
           # running pi-gen. If your custom stage requires additional software or kernel
           # modules to be loaded, add them here. Note that this is not meant to configure
           # modules to be loaded in the target image.
-          extra-host-modules: ''
+          extra-host-modules: ""
 
           # Token to use for checking out pi-gen repo.
           github-token: ${{ github.token }}
@@ -108,7 +113,7 @@ jobs:
           hostname: shop-inventory
 
           # Final image name.
-          image-name: 'shop-inventory'
+          image-name: "shop-inventory"
 
           # Enabling this option will remove plenty of components from the GitHub Actions
           # runner that are not mandatory pre-requisites for a (vanilla) pi-gen build. This
@@ -128,7 +133,7 @@ jobs:
           locale: en_GB.UTF-8
 
           # Password of the intial user account, locked if empty.
-          password: ''
+          password: ""
 
           # Path where selected pi-gen ref will be checked out to. If the path does not yet
           # exist, it will be created (including its parents).
@@ -154,7 +159,7 @@ jobs:
           # FIRST_USER_NAME's ~/.ssh/authorized_keys. Obviously the value should therefore
           # be a valid authorized_keys file. Note that this does not automatically enable
           # SSH.
-          pubkey-ssh-first-user: ''
+          pubkey-ssh-first-user: ""
 
           # The release version to build images against. Valid values are jessie, stretch,
           # buster, bullseye, bookworm, and testing.
@@ -164,7 +169,7 @@ jobs:
           # Generating the root filesystem with capabilities enabled and running it from a
           # filesystem that does not support capabilities (like NFS) can cause issues. Only
           # enable this if you understand what it is.
-          setfcap: ''
+          setfcap: ""
 
           # List of stage name to execute in given order. Relative and absolute paths to
           # custom stage directories are allowed here. Note that by default pi-gen exports
@@ -183,10 +188,10 @@ jobs:
           verbose-output: false
 
           # Wifi country code of default network to connect to.
-          wpa-country: ''
+          wpa-country: ""
 
           # SSID of a default wifi network to connect to.
-          wpa-essid: ''
+          wpa-essid: ""
 
           # Password of default wifi network to connect to.
-          wpa-password: ''
+          wpa-password: ""
