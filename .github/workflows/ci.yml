@@ -41,10 +41,9 @@ jobs:
       - name: Run tests
         run: |
           uv run pytest
+          uv run coverage xml
       - name: Submit coverage report
         uses: coverallsapp/github-action@v2
-        with:
-          format: python
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
