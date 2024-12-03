@@ -18,7 +18,7 @@ def index(request):
         else:
             for error in form.non_field_errors():
                 messages.error(request, error)
-        return redirect("checkout")
+        return redirect("checkout:index")
 
     # Handle GET request
     filter_term = request.GET.get("filter", "")
@@ -36,12 +36,6 @@ def index(request):
 def get_cart(request):
     """Retrieve the cart from the session."""
     return request.session.get("cart", {})
-
-
-def view_cart(request):
-    """Display the cart."""
-    cart = get_cart(request)
-    return render(request, "checkout/cart.html", {"cart": cart})
 
 
 def process_order(request):
@@ -68,4 +62,4 @@ def process_order(request):
             for error in form.non_field_errors():
                 messages.error(request, error)
 
-    return redirect("checkout")
+    return redirect("index")
