@@ -43,3 +43,5 @@ exec gunicorn _core.wsgi:application \
     --capture-output \
     --pid run/gunicorn.pid \
     --timeout 120
+    --max-requests 1000
+    --max-requests-jitter 50
