@@ -1,3 +1,4 @@
+{% load env_tags %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,6 +13,10 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="{% url 'index' %}">Rowan Shop & Pantry</a>
+        {% get_env_var 'DEPLOYMENT_SITE' as deployment_site %}
+        {% if deployment_site %}
+            <span class="navbar-text">{{ deployment_site }}</span>
+        {% endif %}
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent">
             <span class="navbar-toggler-icon"></span>
         </button>
