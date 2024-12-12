@@ -4,7 +4,7 @@ FROM base as builder
 
 RUN mkdir /install
 WORKDIR /install
-COPY setup/requirements.txt ./
+COPY requirements.txt ./
 RUN pip install --no-cache-dir --prefix=/install -r ./requirements.txt
 
 FROM base
