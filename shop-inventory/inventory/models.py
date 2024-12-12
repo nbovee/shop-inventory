@@ -60,6 +60,7 @@ class Inventory(models.Model):
         max_length=36,  # UUID length is 36, UPC-A is 12, UPC-E is 8
         validators=[validate_upc],
         unique=True,
+        default=lambda: str(uuid.uuid4()),
     )
     quantity = models.PositiveIntegerField()
     active = models.BooleanField(default=True)
