@@ -53,6 +53,10 @@ class Location(models.Model):
         return "{}".format(self.name)
 
 
+def generate_uuid():
+    return str(uuid.uuid4())
+
+
 class Inventory(models.Model):
     base_item = models.ForeignKey(BaseItem, on_delete=models.CASCADE)
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
@@ -60,7 +64,7 @@ class Inventory(models.Model):
         max_length=36,  # UUID length is 36, UPC-A is 12, UPC-E is 8
         validators=[validate_upc],
         unique=True,
-        default=lambda: str(uuid.uuid4()),
+        default=generate_uuid,  # Use a named function instead of lambda
     )
     quantity = models.PositiveIntegerField()
     active = models.BooleanField(default=True)
