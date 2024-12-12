@@ -1,5 +1,26 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 import uuid
+import re
+
+
+def validate_upc(value):
+    # UPC-A is 12 digits
+    # UPC-E is 8 digits
+    if not re.match(r"^(\d{12}|\d{8})$", value):
+        if not is_valid_uuid(value):
+            raise ValidationError(
+                "Value must be either a valid UUID, UPC-A (12 digits), or UPC-E (8 digits)"
+            )
+
+
+def is_valid_uuid(value):
+    try:
+        uuid.UUID(str(value))
+        return True
+    except ValueError:
+        return False
+
 
 # Create your models here.
 
@@ -35,7 +56,11 @@ class Location(models.Model):
 class Inventory(models.Model):
     base_item = models.ForeignKey(BaseItem, on_delete=models.CASCADE)
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
-    barcode = models.UUIDField(default=uuid.uuid4, editable=True, unique=True)
+    barcode = models.CharField(
+        max_length=36,  # UUID length is 36, UPC-A is 12, UPC-E is 8
+        validators=[validate_upc],
+        unique=True,
+    )
     quantity = models.PositiveIntegerField()
     active = models.BooleanField(default=True)
 
