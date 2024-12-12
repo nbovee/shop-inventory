@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.utils import timezone
 from datetime import timedelta
@@ -86,7 +86,7 @@ def stock_update(request):
                     )
             except Exception as e:
                 messages.error(request, f"{item} could not be updated: {str(e)}")
-    return redirect("stock_check")
+    return redirect("inventory:stock_check")
 
 
 @login_required
@@ -286,21 +286,3 @@ def qrcode_sheet(request):
     result = barcode_page_generation()
     response = HttpResponse(result, content_type="application/pdf")
     return response
-
-
-@login_required
-@permission_required("inventory.add_baseitem", raise_exception=True)
-def recent_orders(request):
-    """Display orders from the last 30 days."""
-    thirty_days_ago = timezone.now() - timedelta(days=30)
-    recent_orders = (
-        Order.objects.filter(date__gte=thirty_days_ago)
-        .order_by("-date")
-        .prefetch_related(
-            "items", "items__inventory_item", "items__inventory_item__base_item"
-        )
-    )
-
-    return render(
-        request, "inventory/recent_orders.html", {"recent_orders": recent_orders}
-    )

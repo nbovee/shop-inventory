@@ -9,7 +9,7 @@
         {{ form.as_p }}
         <button type="submit" class="btn btn-danger">Remove Item</button>
     </form>
-    <a href="{% url 'remove_base_item' %}" class="btn btn-secondary mt-4">Remove Base Item</a>
-    <a href="{% url 'remove_location' %}" class="btn btn-secondary mt-4">Remove Location</a>
+    <a href="{% url 'inventory:remove_base_item' %}" class="btn btn-secondary mt-4">Remove Base Item</a>
+    <a href="{% url 'inventory:remove_location' %}" class="btn btn-secondary mt-4">Remove Location</a>
     <a href="{% url 'inventory:index' %}" class="btn btn-secondary mt-4">Back to Inventory</a>
 {% endblock %}

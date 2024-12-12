@@ -1,7 +1,11 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.db import models
+from django.utils import timezone
+from datetime import timedelta
+from django.contrib.auth.decorators import login_required, permission_required
 from inventory.models import Inventory
+from .models import Order
 from .forms import AddToCartForm, ProcessOrderForm
 
 
@@ -63,3 +67,21 @@ def process_order(request):
                 messages.error(request, error)
 
     return redirect("index")
+
+
+@login_required
+@permission_required("inventory.add_baseitem", raise_exception=True)
+def recent_orders(request):
+    """Display orders from the last 30 days."""
+    thirty_days_ago = timezone.now() - timedelta(days=30)
+    recent_orders = (
+        Order.objects.filter(date__gte=thirty_days_ago)
+        .order_by("-date")
+        .prefetch_related(
+            "items", "items__inventory_item", "items__inventory_item__base_item"
+        )
+    )
+
+    return render(
+        request, "checkout/recent_orders.html", {"recent_orders": recent_orders}
+    )

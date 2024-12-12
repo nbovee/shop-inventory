@@ -6,5 +6,6 @@ app_name = "checkout"
 
 urlpatterns = [
     path("", views.index, name="index"),
-    path("process_order/", views.process_order, name="process_order"),
+    path("process/", views.process_order, name="process_orders"),
+    path("recent/", views.recent_orders, name="recent_orders"),
 ]
