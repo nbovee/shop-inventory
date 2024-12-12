@@ -27,7 +27,7 @@ class AddToCartForm(forms.Form):
 
         try:
             if barcode:
-                self.inventory_item = Inventory.objects.get(base_item__barcode=barcode)
+                self.inventory_item = Inventory.objects.get(barcode=barcode)
                 cleaned_data["product_id"] = self.inventory_item.id
                 cleaned_data["quantity"] = 1
             else:
