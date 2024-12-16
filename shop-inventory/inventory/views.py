@@ -13,7 +13,7 @@ from django.core import exceptions as forms
 from .forms import (
     BaseItemForm,
     LocationForm,
-    InventoryForm,
+    AddInventoryForm,
     RemoveInventoryForm,
     EditInventoryForm,
     StockUpdateForm,
@@ -92,22 +92,22 @@ def stock_update(request):
 @login_required
 def add_inventory(request):
     if request.method == "POST":
-        form = InventoryForm(request.POST)
-        # is_valid() will be false if the item already exists
-        cleaned_data = form.clean()
-        inventory_item, created = Inventory.objects.get_or_create(
-            base_item=cleaned_data["base_item"],
-            location=cleaned_data["location"],
-        )
-        if created:
-            messages.success(request, "Inventory item added successfully.")
-        else:
-            inventory_item.quantity = cleaned_data["quantity"]
-            inventory_item.save()
-            messages.success(request, "Inventory item updated successfully.")
-        return redirect("add_inventory")
+        form = AddInventoryForm(request.POST)
+        try:
+            if form.is_valid():
+                form.save()
+                messages.success(request, "Inventory item added successfully.")
+                return redirect("inventory:add_inventory")
+        except forms.ValidationError as e:
+            if e.code == "reactivated":
+                messages.success(request, str(e))
+                return redirect("inventory:add_inventory")
+            elif e.code == "updated":
+                messages.success(request, str(e))
+                return redirect("inventory:add_inventory")
+            form.add_error(None, e)
     else:
-        form = InventoryForm()
+        form = AddInventoryForm()
     return render(request, "inventory/add_item.html", {"form": form})
 
 
@@ -145,11 +145,11 @@ def add_base_item(request):
             if form.is_valid():
                 form.save()
                 messages.success(request, "Base item added successfully.")
-                return redirect("manage_inventory")
+                return redirect("inventory:manage_inventory")
         except forms.ValidationError as e:
             if e.code == "reactivated":
                 messages.success(request, str(e))
-                return redirect("manage_inventory")
+                return redirect("inventory:manage_inventory")
             form.add_error(None, e)
     else:
         form = BaseItemForm()
@@ -202,7 +202,7 @@ def remove_base_item(request):
                     request, f"Base item '{base_item}' deactivated successfully."
                 )
 
-            return redirect("manage_inventory")
+            return redirect("inventory:manage_inventory")
     else:
         form = RemoveBaseItemForm()
     return render(request, "inventory/remove_base_item.html", {"form": form})
@@ -216,11 +216,11 @@ def add_location(request):
             if form.is_valid():
                 form.save()
                 messages.success(request, "Location added successfully.")
-                return redirect("manage_inventory")
+                return redirect("inventory:manage_inventory")
         except forms.ValidationError as e:
             if e.code == "reactivated":
                 messages.success(request, str(e))
-                return redirect("manage_inventory")
+                return redirect("inventory:manage_inventory")
             form.add_error("name", e)
     else:
         form = LocationForm()
@@ -251,7 +251,7 @@ def remove_location(request):
                 messages.success(
                     request, f"Location '{location.name}' removed successfully."
                 )
-            return redirect("manage_inventory")
+            return redirect("inventory:manage_inventory")
     else:
         form = RemoveLocationForm()
     return render(request, "inventory/remove_location.html", {"form": form})

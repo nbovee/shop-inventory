@@ -75,7 +75,7 @@ class LocationForm(forms.ModelForm):
         return name
 
 
-class InventoryForm(forms.ModelForm):
+class AddInventoryForm(forms.ModelForm):
     class Meta:
         model = Inventory
         fields = ["base_item", "location", "quantity", "barcode"]
@@ -86,27 +86,38 @@ class InventoryForm(forms.ModelForm):
         location = cleaned_data.get("location")
         quantity = cleaned_data.get("quantity")
 
-        if base_item and location:
+        if not all([base_item, location, quantity is not None]):
+            return cleaned_data
+
+        try:
+            # First check for inactive item
+            inactive_item = Inventory.objects.get(
+                base_item=base_item, location=location, active=False
+            )
+            # Reactivate the item and update its quantity
+            inactive_item.quantity = quantity
+            inactive_item.activate()
+            raise forms.ValidationError(
+                "This inventory item was previously deactivated and has been restored.",
+                code="reactivated",
+            )
+        except Inventory.DoesNotExist:
+            # Then check for active item
             try:
-                # First check for inactive item
-                inactive_item = Inventory.objects.get(
-                    base_item=base_item, location=location, active=False
+                existing_item = Inventory.objects.get(
+                    base_item=base_item, location=location, active=True
                 )
-                # If found, reactivate and update quantity
-                inactive_item.quantity = quantity
-                inactive_item.activate()
+                # Update existing item's quantity and barcode
+                existing_item.quantity += quantity
+                existing_item.save()
                 raise forms.ValidationError(
-                    "This inventory item was previously deactivated and has been restored."
+                    f"Updated existing inventory item. New quantity: {existing_item.quantity}",
+                    code="updated",
                 )
             except Inventory.DoesNotExist:
-                # Then check for active item
-                try:
-                    existing_item = Inventory.objects.get(
-                        base_item=base_item, location=location, active=True
-                    )
-                    cleaned_data["quantity"] = existing_item.quantity + quantity
-                except Inventory.DoesNotExist:
-                    pass
+                # Will create new item during form.save()
+                pass
+
         return cleaned_data
 
 
