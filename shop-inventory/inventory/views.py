@@ -131,7 +131,7 @@ def remove_inventory(request):
                     messages.error(request, "Not enough quantity to remove.")
             except Inventory.DoesNotExist:
                 messages.error(request, "Inventory item not found.")
-            return redirect("index")
+            return redirect("inventory:remove_inventory")
     else:
         form = RemoveInventoryForm()
     return render(request, "inventory/remove_item.html", {"form": form})
@@ -145,11 +145,11 @@ def add_base_item(request):
             if form.is_valid():
                 form.save()
                 messages.success(request, "Base item added successfully.")
-                return redirect("inventory:manage_inventory")
+                return redirect("inventory:add_base_item")
         except forms.ValidationError as e:
             if e.code == "reactivated":
                 messages.success(request, str(e))
-                return redirect("inventory:manage_inventory")
+                return redirect("inventory:add_base_item")
             form.add_error(None, e)
     else:
         form = BaseItemForm()
@@ -202,7 +202,7 @@ def remove_base_item(request):
                     request, f"Base item '{base_item}' deactivated successfully."
                 )
 
-            return redirect("inventory:manage_inventory")
+            return redirect("inventory:remove_base_item")
     else:
         form = RemoveBaseItemForm()
     return render(request, "inventory/remove_base_item.html", {"form": form})
@@ -216,11 +216,11 @@ def add_location(request):
             if form.is_valid():
                 form.save()
                 messages.success(request, "Location added successfully.")
-                return redirect("inventory:manage_inventory")
+                return redirect("inventory:add_location")
         except forms.ValidationError as e:
             if e.code == "reactivated":
                 messages.success(request, str(e))
-                return redirect("inventory:manage_inventory")
+                return redirect("inventory:add_location")
             form.add_error("name", e)
     else:
         form = LocationForm()
@@ -251,7 +251,7 @@ def remove_location(request):
                 messages.success(
                     request, f"Location '{location.name}' removed successfully."
                 )
-            return redirect("inventory:manage_inventory")
+            return redirect("inventory:remove_location")
     else:
         form = RemoveLocationForm()
     return render(request, "inventory/remove_location.html", {"form": form})
