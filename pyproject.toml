@@ -35,6 +35,9 @@ omit = [
     "manage.py",
     "*/__init__.py",
     "*/apps.py",
+    "*/management/commands/*",
+    "**/asgi.py",
+    "**/wsgi.py"
 ]
 [tool.coverage.report]
 skip_covered = true
