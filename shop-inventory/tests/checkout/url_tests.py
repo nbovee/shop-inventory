@@ -18,7 +18,7 @@ def test_checkout_index():
 def test_checkout_process_order():
     """Test the checkout process_order URL pattern"""
     url = reverse("checkout:process_order")
-    assert url == "/checkout/process_order/"
-    resolver = resolve("/checkout/process_order/")
+    assert url == "/checkout/process/"
+    resolver = resolve("/checkout/process/")
     assert resolver.url_name == "process_order"
     assert resolver.namespace == "checkout"
