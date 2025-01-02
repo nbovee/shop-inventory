@@ -20,31 +20,36 @@ def barcode_page_generation(rows=14, cols=11, dry_run=False):
     barcode_offset_x = int(0.53 * dpi)
     barcode_offset_y = int(0.91 * dpi)
 
-    if dry_run:
-        # Return dummy PDF bytes for testing
-        return b"%PDF-1.4\n%EOF\n"
-
     sheet_img = Image.new("1", (page_width, page_height), 1)
 
     for row in range(0, barcode_rows):
         for col in range(0, barcode_cols):
             id = uuid.uuid4()
-            # 22px size is 1px target border, 20x20 data
-            encoded = generate_barcode(
-                barcode_type="qrcode",
-                data=f"{id.hex}",
-                options={"version": "3"},
-                scale=1,
-            )
-            # scale 7.5 could be correct for this dpi but it takes int
-            barcode_img = encoded.convert("1").resize((barcode_size, barcode_size))
-            sheet_img.paste(
-                barcode_img,
-                (
-                    barcode_offset_x + col * barcode_spacing_x,
-                    barcode_offset_y + row * barcode_spacing_y,
-                ),
-            )
+            if not dry_run:
+                # 22px size is 1px target border, 20x20 data
+                encoded = generate_barcode(
+                    barcode_type="qrcode",
+                    data=f"{id.hex}",
+                    options={"version": "3"},
+                    scale=1,
+                )
+                # scale 7.5 could be correct for this dpi but it takes int
+                barcode_img = encoded.convert("1").resize((barcode_size, barcode_size))
+                sheet_img.paste(
+                    barcode_img,
+                    (
+                        barcode_offset_x + col * barcode_spacing_x,
+                        barcode_offset_y + row * barcode_spacing_y,
+                    ),
+                )
+            else:
+                sheet_img.paste(
+                    Image.new("1", (barcode_size, barcode_size), 1),
+                    (
+                        barcode_offset_x + col * barcode_spacing_x,
+                        barcode_offset_y + row * barcode_spacing_y,
+                    ),
+                )
 
     bytes = BytesIO()
     sheet_img.save(bytes, "PDF", resolution=dpi)
