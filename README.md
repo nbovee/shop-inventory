@@ -3,15 +3,13 @@
 This repository is the development repository for the Rowan Shop & Pantry Inventory System
 To contribute, please read the guidelines here : [Contributing.md](CONTRIBUTING.md)
 
-<hr>
-# Django + uv + VSCode + Docker = ❤️
 <div markdown="1">
 
 [![Build](https://github.com/nbovee/shop-inventory/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/nbovee/shop-inventory/actions/workflows/ci.yml)
 [![Coverage Status](https://coveralls.io/repos/github/nbovee/shop-inventory/badge.svg?branch=main)](https://coveralls.io/github/nbovee/shop-inventory?branch=main)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 </div>
-
+<hr>
 
 ## How to use
 
@@ -38,49 +36,44 @@ uv run pytest
 The pytest tool runs tests using pytest-django and pytest-cov (wrapping coverage). As a result, you will see an output like this in the terminal:
 ```console
 uv run pytest
-================================= test session starts ==================================
+============================================================= test session starts ==============================================================
 platform win32 -- Python 3.12.5, pytest-8.3.4, pluggy-1.5.0
 django: version: 4.2.16, settings: _core.settings (from ini)
 rootdir: C:\CODE\shop-inventory
 configfile: pyproject.toml
 plugins: cov-6.0.0, django-4.9.0
-collected 3 items
+collected 58 items
 
-shop-inventory\_core\tests.py .                                                   [ 33%]
-shop-inventory\inventory\tests.py .                                               [ 66%]
-shop-inventory\tests\test_exists.py .                                             [100%]
+shop-inventory\tests\checkout\test_views.py ........                                                                                      [ 13%]
+shop-inventory\tests\checkout\url_tests.py ..                                                                                             [ 17%]
+shop-inventory\tests\checkout\views_tests.py .......                                                                                      [ 29%]
+shop-inventory\tests\inventory\test_forms.py ............                                                                                 [ 50%]
+shop-inventory\tests\inventory\test_views.py ....................                                                                         [ 84%]
+shop-inventory\tests\url_tests.py ........                                                                                                [ 98%]
+shop-inventory\tests\inventory\tests.py .                                                                                                 [100%]
 
 ---------- coverage: platform win32, python 3.12.5-final-0 -----------
-Name                                                              Stmts   Miss  Cover   Missing
------------------------------------------------------------------------------------------------
-shop-inventory\_core\asgi.py                                          4      4     0%   10-16
-shop-inventory\_core\management\commands\backup_db.py                41     41     0%   1-78
-shop-inventory\_core\management\commands\loadtestdata.py             13     13     0%   1-19
-shop-inventory\_core\management\commands\safecreatesuperuser.py      23     23     0%   6-58
-shop-inventory\_core\models.py                                        7      1    86%   13
-shop-inventory\_core\settings.py                                     56      1    98%   200
-shop-inventory\_core\signals.py                                      28     20    29%   11-18, 24-49
-shop-inventory\_core\urls.py                                          6      6     0%   18-34
-shop-inventory\_core\views.py                                        17     17     0%   1-31
-shop-inventory\_core\wsgi.py                                          4      4     0%   10-16
-shop-inventory\checkout\forms.py                                     79     79     0%   1-141
-shop-inventory\checkout\models.py                                    32     17    47%   9-35, 50, 59
-shop-inventory\checkout\templatetags\checkout_filters.py              9      9     0%   1-13
-shop-inventory\checkout\urls.py                                       3      3     0%   1-5
-shop-inventory\checkout\views.py                                     42     42     0%   1-71
-shop-inventory\inventory\barcode_gen.py                              25     25     0%   1-47
-shop-inventory\inventory\forms.py                                    92     92     0%   1-171
-shop-inventory\inventory\models.py                                   37     11    70%   16, 19-20, 23-24, 32, 43, 49-50, 53-54
-shop-inventory\inventory\signals.py                                  35     23    34%   11-21, 25-44, 51-54, 59-62
-shop-inventory\inventory\urls.py                                      3      3     0%   1-4
-shop-inventory\inventory\views.py                                   176    176     0%   1-304
------------------------------------------------------------------------------------------------
-TOTAL                                                               748    610    18%
+Name                                                       Stmts   Miss  Cover   Missing
+----------------------------------------------------------------------------------------
+shop-inventory\_core\models.py                                 7      1    86%   13
+shop-inventory\_core\signals.py                               28      5    82%   18, 39-40, 48-49
+shop-inventory\_core\views.py                                 17      1    94%   12
+shop-inventory\checkout\forms.py                              79     12    85%   26, 30-32, 45, 83, 105, 124-125, 129-130, 136
+shop-inventory\checkout\models.py                             32      3    91%   35, 50, 59
+shop-inventory\checkout\templatetags\checkout_filters.py       9      4    56%   10-13
+shop-inventory\checkout\views.py                              49      5    90%   20-21, 61-62, 67
+shop-inventory\inventory\barcode_gen.py                       27      3    89%   30-38
+shop-inventory\inventory\forms.py                             95     12    87%   30-31, 63-65, 98-100, 111-113, 159
+shop-inventory\inventory\models.py                            51      6    88%   44-45, 79-80, 83-84
+shop-inventory\inventory\signals.py                           35      2    94%   21, 36
+shop-inventory\inventory\views.py                            175     51    71%   71, 78-79, 87-88, 101-110, 116-137, 149-155, 196-201, 207-208, 220-226, 256-257, 262
+----------------------------------------------------------------------------------------
+TOTAL                                                        689    105    85%
 
-6 files skipped due to complete coverage.
+8 files skipped due to complete coverage.
 
 
-================================== 3 passed in 0.74s ===================================
+============================================================== 58 passed in 7.77s ==============================================================
 ```
 
 #### Django settings
