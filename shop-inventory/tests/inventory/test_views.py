@@ -2,6 +2,7 @@ import pytest
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from inventory.models import BaseItem, Location, Inventory
+from unittest.mock import patch
 
 # Mark all tests in this file as requiring database access
 pytestmark = pytest.mark.django_db
@@ -198,9 +199,12 @@ def test_remove_location_with_inventory(client, admin_user, inventory_item):
 def test_qrcode_sheet_view(client, admin_user):
     """Test generating QR code sheet"""
     client.force_login(admin_user)
-    response = client.get(reverse("inventory:barcodes"))
-    assert response.status_code == 200
-    assert response["Content-Type"] == "application/pdf"
+    with patch("inventory.views.barcode_page_generation") as mock_gen:
+        mock_gen.return_value = b"%PDF-1.4\n%EOF\n"
+        response = client.get(reverse("inventory:barcodes"))
+        assert response.status_code == 200
+        assert response["Content-Type"] == "application/pdf"
+        mock_gen.assert_called_once_with()
 
 
 def test_stock_update_view_invalid_item(client, user):

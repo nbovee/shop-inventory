@@ -145,7 +145,8 @@ def test_barcode_generation():
         base_item=base_item, location=location, quantity=10, barcode="123456789012"
     )
 
-    # Generate barcode page with minimal dimensions
-    result = barcode_page_generation(rows=1, cols=1)
+    # Generate barcode page with minimal dimensions and dry run
+    result = barcode_page_generation(rows=1, cols=1, dry_run=True)
     assert result is not None
     assert isinstance(result, bytes)  # Should return PDF bytes
+    assert result.startswith(b"%PDF")  # Should be a PDF file

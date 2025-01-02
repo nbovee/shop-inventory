@@ -4,7 +4,7 @@ from PIL import Image
 from io import BytesIO
 
 
-def barcode_page_generation(rows=14, cols=11):
+def barcode_page_generation(rows=14, cols=11, dry_run=False):
     # TODO improve efficiency, perhaps SVG methods could help?
     dpi = 600
     page_width = int(8.5 * dpi)
@@ -19,6 +19,10 @@ def barcode_page_generation(rows=14, cols=11):
 
     barcode_offset_x = int(0.53 * dpi)
     barcode_offset_y = int(0.91 * dpi)
+
+    if dry_run:
+        # Return dummy PDF bytes for testing
+        return b"%PDF-1.4\n%EOF\n"
 
     sheet_img = Image.new("1", (page_width, page_height), 1)
 
