@@ -4,7 +4,7 @@ from PIL import Image
 from io import BytesIO
 
 
-def barcode_page_generation():
+def barcode_page_generation(rows=14, cols=11):
     # TODO improve efficiency, perhaps SVG methods could help?
     dpi = 600
     page_width = int(8.5 * dpi)
@@ -14,8 +14,8 @@ def barcode_page_generation():
     barcode_spacing_x = int(0.72 * dpi)
     barcode_spacing_y = int(0.69 * dpi)
 
-    barcode_rows = int(14)
-    barcode_cols = int(11)
+    barcode_rows = int(rows)
+    barcode_cols = int(cols)
 
     barcode_offset_x = int(0.53 * dpi)
     barcode_offset_y = int(0.91 * dpi)

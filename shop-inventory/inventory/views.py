@@ -270,7 +270,7 @@ def edit_inventory(request, pk):
         if form.is_valid():
             form.save(commit=True)
             messages.success(request, "Inventory item updated successfully.")
-            return redirect("inventory")
+            return redirect("inventory:index")
     else:
         form = EditInventoryForm(instance=inventory_item)
     return render(
