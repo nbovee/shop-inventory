@@ -1,21 +1,13 @@
 #!/bin/bash -e
 
 # Export environment variables for chroot
-export SHOP_HOSTNAME SHOP_INSTALL_DIR SHOP_WIFI_SSID SHOP_WIFI_PASSWORD
-export SHOP_DJANGO_SQLITE_DIR SHOP_DJANGO_STATIC_ROOT
+export SHOP_HOSTNAME SHOP_INSTALL_DIR SHOP_DJANGO_SQLITE_DIR SHOP_DJANGO_STATIC_ROOT
 
 # Configure WiFi hotspot
 on_chroot << EOF
 # Configure hostname
 echo "${SHOP_HOSTNAME}" > /etc/hostname
 sed -i "s/127.0.1.1.*/127.0.1.1\t${SHOP_HOSTNAME}/" /etc/hosts
-
-# Create WiFi hotspot with default credentials
-nmcli connection add type wifi ifname wlan0 con-name ${SHOP_WIFI_SSID} autoconnect yes ssid ${SHOP_WIFI_SSID} -- \
-    wifi-sec.key-mgmt wpa-psk wifi-sec.psk ${SHOP_WIFI_PASSWORD} \
-    ipv4.method shared
-
-nmcli connection modify ${SHOP_WIFI_SSID} connection.autoconnect yes connection.autoconnect-priority 100
 
 # Create required directories
 mkdir -p ${SHOP_INSTALL_DIR}
