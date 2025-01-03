@@ -64,5 +64,4 @@ RUN chmod +x /docker-entrypoint.sh /docker-cmd.sh && \
 
 EXPOSE $GUNICORN_PORT
 WORKDIR $DJANGO_BASE_DIR
-ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["/docker-cmd.sh"]

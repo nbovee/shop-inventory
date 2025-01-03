@@ -4,15 +4,47 @@ jobs:
   build:
     if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
+    env:
+      # Shop Inventory Configuration
+      SHOP_WIFI_SSID: "ShopInventory"
+      SHOP_WIFI_PASSWORD: ${{ secrets.SHOP_WIFI_PASSWORD }}
+      SHOP_HOSTNAME: "rowan-pantry"
+      SHOP_INSTALL_DIR: "/opt/shop-inventory"
+
+      # Django Settings
+      SHOP_DJANGO_SECRET_KEY: ${{ secrets.SHOP_DJANGO_SECRET_KEY }}
+      SHOP_DJANGO_DEBUG: "false"
+      SHOP_DJANGO_ALLOWED_HOSTS: "rowan-pantry,localhost,127.0.0.1"
+      SHOP_DJANGO_SQLITE_DIR: "/var/lib/shop-inventory"
+      SHOP_DJANGO_STATIC_ROOT: "/opt/shop-inventory/static"
+      SHOP_DJANGO_LANGUAGE_CODE: "en-us"
+      SHOP_DJANGO_TIME_ZONE: "America/New_York"
+      SHOP_DJANGO_CSRF_TRUSTED_ORIGINS: ""
+
+      # Admin Settings
+      SHOP_DJANGO_ADMIN_NAME: "Shop Admin"
+      SHOP_DJANGO_SUPERUSER_USERNAME: "admin"
+      SHOP_DJANGO_SUPERUSER_PASSWORD: ${{ secrets.SHOP_DJANGO_SUPERUSER_PASSWORD }}
+
+      # Backup Settings
+      SHOP_BACKUP_PASSWORD: ${{ secrets.SHOP_BACKUP_PASSWORD }}
+
+      # Gunicorn Settings
+      SHOP_GUNICORN_WORKERS: "3"
+      SHOP_GUNICORN_TIMEOUT: "120"
+      SHOP_GUNICORN_LOG_LEVEL: "info"
+      SHOP_GUNICORN_MAX_REQUESTS: "1000"
+      SHOP_GUNICORN_MAX_REQUESTS_JITTER: "100"
     steps:
       - uses: actions/checkout@v4
       - name: Build Raspberry Pi Image
         uses: usimd/pi-gen-action@v1
+        id: build
         with:
             ## Final Image Settings
 
             image-name: "${{ github.event.repository.name }}-${{ github.event.release.tag_name }}"
-            hostname: ${{ github.event.repository.name }}
+            hostname: ${SHOP_HOSTNAME}
 
             # Final image compression method & level (0-9, default 6)
             compression: zip
@@ -44,7 +76,7 @@ jobs:
             # images in stage2 (lite), stage4 and stage5. You probably want to hook in custom
             # stages before one of the exported stages. Otherwise, the action will make sure
             # any custom stage will include an image export directive.
-            stage-list: stage0 stage1 stage2 ./build-shop
+            stage-list: stage0 stage1 stage2 pi-gen-pantry
 
             # Only export the last stage.
             export-last-stage-only: true
@@ -98,3 +130,7 @@ jobs:
 
             # Print all output from pi-gen.
             verbose-output: true
+      - uses: actions/upload-artifact@v3
+        with:
+          name: pi-gen-image
+          path: ${{ steps.build.outputs.image-path }}

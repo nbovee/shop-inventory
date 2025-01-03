@@ -103,3 +103,72 @@ add volunteer and admin users
 - allow to go negative
 acknowledgesments page for sponsor and students
 shop logo/favicon?
+
+## GitHub Actions Configuration
+
+### Secure Environment Variables
+
+Some configuration values should not be hardcoded in the workflow file for security reasons. Instead, use GitHub Secrets to store sensitive information. Here's how to set them up:
+
+1. Go to your repository's Settings > Secrets and Variables > Actions
+2. Click "New repository secret"
+3. Add the following secrets:
+
+```yaml
+# Authentication
+SHOP_DJANGO_SECRET_KEY: "your-secure-secret-key"
+SHOP_DJANGO_SUPERUSER_PASSWORD: "secure-admin-password"
+
+# WiFi Hotspot
+SHOP_WIFI_PASSWORD: "secure-wifi-password"
+
+# Backup Configuration
+SHOP_BACKUP_PASSWORD: "secure-backup-password"
+```
+
+Then update the GitHub Actions workflow to use these secrets:
+
+```yaml
+env:
+  SHOP_WIFI_SSID: "ShopInventory"
+  SHOP_WIFI_PASSWORD: ${{ secrets.SHOP_WIFI_PASSWORD }}
+  SHOP_DJANGO_SECRET_KEY: ${{ secrets.SHOP_DJANGO_SECRET_KEY }}
+  SHOP_DJANGO_SUPERUSER_PASSWORD: ${{ secrets.SHOP_DJANGO_SUPERUSER_PASSWORD }}
+  # ... other non-sensitive variables ...
+```
+
+### Development vs Production Settings
+
+Some settings should be different between development and production:
+
+```yaml
+# Production (in GitHub Secrets)
+SHOP_DJANGO_DEBUG: "false"
+SHOP_DJANGO_ALLOWED_HOSTS: "rowan-pantry,localhost,127.0.0.1"
+
+# Development (can be in workflow file)
+SHOP_DJANGO_LANGUAGE_CODE: "en-us"
+SHOP_DJANGO_TIME_ZONE: "America/New_York"
+SHOP_GUNICORN_WORKERS: "3"
+```
+
+### First-time Setup
+
+1. Generate a secure Django secret key:
+   ```python
+   python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
+   ```
+
+2. Create strong passwords for:
+   - WiFi hotspot
+   - Django superuser
+   - Backup encryption
+
+3. Add these values as GitHub Secrets before running your first build
+
+### Security Notes
+
+- Never commit sensitive credentials to version control
+- Regularly rotate passwords and secret keys
+- Use environment-specific settings for development vs production
+- Consider using GitHub's environment feature to separate production and staging secrets

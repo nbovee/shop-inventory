@@ -1,0 +1,52 @@
+[Unit]
+Description=Rowan Shop & Pantry Inventory System
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+RuntimeDirectory=shop-inventory
+WorkingDirectory=/opt/shop-inventory
+
+# Django Settings
+Environment=DJANGO_SETTINGS_MODULE=_core.settings
+Environment=DJANGO_DEBUG=${SHOP_DJANGO_DEBUG}
+Environment=DJANGO_ALLOWED_HOSTS=${SHOP_DJANGO_ALLOWED_HOSTS}
+Environment=DJANGO_SQLITE_DIR=${SHOP_DJANGO_SQLITE_DIR}
+Environment=DJANGO_STATIC_ROOT=${SHOP_DJANGO_STATIC_ROOT}
+Environment=DJANGO_LANGUAGE_CODE=${SHOP_DJANGO_LANGUAGE_CODE}
+Environment=DJANGO_TIME_ZONE=${SHOP_DJANGO_TIME_ZONE}
+Environment=DJANGO_CSRF_TRUSTED_ORIGINS=${SHOP_DJANGO_CSRF_TRUSTED_ORIGINS}
+
+# Admin Settings
+Environment=DJANGO_ADMIN_NAME=${SHOP_DJANGO_ADMIN_NAME}
+Environment=DJANGO_SUPERUSER_USERNAME=${SHOP_DJANGO_SUPERUSER_USERNAME}
+Environment=DJANGO_SUPERUSER_PASSWORD=${SHOP_DJANGO_SUPERUSER_PASSWORD}
+
+# Gunicorn Settings
+Environment=SHOP_GUNICORN_WORKERS=${SHOP_GUNICORN_WORKERS}
+Environment=SHOP_GUNICORN_TIMEOUT=${SHOP_GUNICORN_TIMEOUT}
+Environment=SHOP_GUNICORN_LOG_LEVEL=${SHOP_GUNICORN_LOG_LEVEL}
+Environment=SHOP_GUNICORN_MAX_REQUESTS=${SHOP_GUNICORN_MAX_REQUESTS}
+Environment=SHOP_GUNICORN_MAX_REQUESTS_JITTER=${SHOP_GUNICORN_MAX_REQUESTS_JITTER}
+
+ExecStart=/opt/shop-inventory/start.sh
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=5
+PrivateTmp=true
+
+# Limit resource usage
+LimitNOFILE=1048576
+LimitNPROC=64
+
+# Security
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+PrivateDevices=true
+PrivateUsers=true
+
+[Install]
+WantedBy=multi-user.target
