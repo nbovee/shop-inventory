@@ -10,24 +10,24 @@ echo "${SHOP_HOSTNAME}" > /etc/hostname
 sed -i "s/127.0.1.1.*/127.0.1.1\t${SHOP_HOSTNAME}/" /etc/hosts
 
 # Create required directories
-mkdir -p ${SHOP_INSTALL_DIR}
-mkdir -p ${SHOP_DJANGO_SQLITE_DIR}
-mkdir -p ${SHOP_INSTALL_DIR}/logs
-mkdir -p ${SHOP_INSTALL_DIR}/run
-mkdir -p ${SHOP_DJANGO_STATIC_ROOT}
+mkdir -p "${SHOP_INSTALL_DIR}"
+mkdir -p "${SHOP_DJANGO_SQLITE_DIR}"
+mkdir -p "${SHOP_INSTALL_DIR}/logs"
+mkdir -p "${SHOP_INSTALL_DIR}/run"
+mkdir -p "${SHOP_DJANGO_STATIC_ROOT}"
 
 # Set up Python virtual environment
-python3 -m venv ${SHOP_INSTALL_DIR}/venv
-${SHOP_INSTALL_DIR}/venv/bin/pip install --upgrade pip
-${SHOP_INSTALL_DIR}/venv/bin/pip install -r /tmp/files/requirements.txt
+python3 -m venv "${SHOP_INSTALL_DIR}/venv"
+"${SHOP_INSTALL_DIR}/venv/bin/pip" install --upgrade pip
+"${SHOP_INSTALL_DIR}/venv/bin/pip" install -r /tmp/files/requirements.txt
 
 # Copy project files from the files directory
-cp -r /tmp/files/* ${SHOP_INSTALL_DIR}/
+cp -r /tmp/files/* "${SHOP_INSTALL_DIR}/"
 
 # Set up permissions
-chown -R www-data:www-data ${SHOP_INSTALL_DIR}
-chown -R www-data:www-data ${SHOP_DJANGO_SQLITE_DIR}
-chmod +x ${SHOP_INSTALL_DIR}/start.sh
+chown -R www-data:www-data "${SHOP_INSTALL_DIR}"
+chown -R www-data:www-data "${SHOP_DJANGO_SQLITE_DIR}"
+chmod +x "${SHOP_INSTALL_DIR}/start.sh"
 
 # Set up cron job for backups
 PYTHON_PATH="${SHOP_INSTALL_DIR}/venv/bin/python"
