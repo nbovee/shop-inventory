@@ -52,8 +52,8 @@ jobs:
         with:
             ## Final Image Settings
 
-            image-name: "${{ github.event.repository.name }}-${{ github.event.release.tag_name }}"
-            hostname: ${SHOP_HOSTNAME}
+            image-name: "${{ github.event.repository.name }}-${{ github.ref_name }}"
+            hostname: "${{ env.SHOP_HOSTNAME }}"
 
             # Final image compression method & level (0-9, default 6)
             compression: zip
