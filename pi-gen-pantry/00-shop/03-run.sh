@@ -1,7 +1,8 @@
 #!/bin/bash -e
 
 # Export environment variables for chroot
-export SHOP_WIFI_SSID SHOP_WIFI_PASSWORD
+export SHOP_WIFI_SSID=${SHOP_WIFI_SSID}
+export SHOP_WIFI_PASSWORD=${SHOP_WIFI_PASSWORD}
 
 on_chroot << EOF
 # Create first-boot service for WiFi configuration

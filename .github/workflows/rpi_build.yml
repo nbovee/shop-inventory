@@ -45,8 +45,6 @@ jobs:
       SHOP_GUNICORN_MAX_REQUESTS: "1000"
       SHOP_GUNICORN_MAX_REQUESTS_JITTER: "100"
     steps:
-      - name: envcheck
-        run: env
       - uses: actions/checkout@v4
       - name: Build Raspberry Pi Image
         uses: usimd/pi-gen-action@v1
