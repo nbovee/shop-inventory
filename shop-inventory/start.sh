@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+# Load environment variables
+. .env
+
 # Activate virtual environment
 source venv/bin/activate
 

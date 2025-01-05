@@ -11,4 +11,5 @@ ENABLE_SSH=1
 STAGE_LIST="stage0 stage1 stage2 pi-gen-pantry"
 DISABLE_FIRST_BOOT_USER_RENAME=1
 PRESERVE_CONTAINER=1
-PIGEN_DOCKER_OPTS="--volume $(pwd)/../pi-gen-pantry:/pi-gen/pi-gen-pantry"
+WPA_COUNTRY=US
+PIGEN_DOCKER_OPTS="--volume $(pwd)/../pi-gen-pantry:/pi-gen/pi-gen-pantry --volume $(pwd)/../shop-inventory/:/pi-gen/pi-gen-pantry/00-shop/files/shop-inventory/ --env-file $(pwd)/../shop-inventory/.env"
