@@ -4,12 +4,16 @@
 on_chroot << EOF
 # Collect static files
 cd "${SHOP_INSTALL_DIR}"
-"${SHOP_INSTALL_DIR}/venv/bin/python" manage.py collectstatic --noinput
+# activate venv
+source "${SHOP_INSTALL_DIR}/venv/bin/activate"
+which python
+echo "Collecting static files"
+python3 manage.py collectstatic --noinput
 
-# Create initial database
-"${SHOP_INSTALL_DIR}/venv/bin/python" manage.py migrate --noinput
+echo "Migrating database"
+python3 manage.py migrate --noinput
 
-# Create superuser
-"${SHOP_INSTALL_DIR}/venv/bin/python" manage.py createsuperuser --noinput
+echo "Creating first superuser"
+python3 manage.py createsuperuser --noinput
 
 EOF
