@@ -20,11 +20,11 @@ echo "Copy project files from the files directory"
 pwd
 # sleep 10000
 # somehow we are losing the ROOTFS_DIR variable, so atm we just hardcode it
-#/pi-gen/work/rowanPantry/rootfs/
-cp files/requirements.txt "/pi-gen/work/rowanPantry/pi-gen-pantry/rootfs${SHOP_INSTALL_DIR}"
+# /pi-gen/work/rowanPantry/rootfs/
 cp -r files/shop-inventory/* "/pi-gen/work/rowanPantry/pi-gen-pantry/rootfs${SHOP_INSTALL_DIR}"
-cp files/shop-inventory.service "/pi-gen/work/rowanPantry/pi-gen-pantry/rootfs/etc/systemd/system/"
-cp files/nginx-shop-inventory.conf "/pi-gen/work/rowanPantry/pi-gen-pantry/rootfs/etc/nginx/sites-available/"
+install -m 644 files/requirements.txt "/pi-gen/work/rowanPantry/pi-gen-pantry/rootfs${SHOP_INSTALL_DIR}"
+install -m 644 files/shop-inventory.service "/pi-gen/work/rowanPantry/pi-gen-pantry/rootfs/etc/systemd/system/"
+install -m 644 files/nginx-shop-inventory.conf "/pi-gen/work/rowanPantry/pi-gen-pantry/rootfs/etc/nginx/sites-available/"
 
 on_chroot << EOF
 echo "Set up permissions"
