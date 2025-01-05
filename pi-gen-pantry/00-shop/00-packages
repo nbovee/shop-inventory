@@ -1,5 +1,7 @@
 python3-full
+python3-dev
 network-manager
 nginx
 ghostscript
 libjpeg-dev
+zlib1g-dev

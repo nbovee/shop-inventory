@@ -9,10 +9,10 @@ sed -i "s/127.0.1.1.*/127.0.1.1\t${SHOP_HOSTNAME}/" /etc/hosts
 echo "Create required directories"
 echo "SHOP_INSTALL_DIR: ${SHOP_INSTALL_DIR}"
 mkdir -p "${SHOP_INSTALL_DIR}"
-mkdir -p "${SHOP_DJANGO_SQLITE_DIR}"
+mkdir -p "${DJANGO_SQLITE_DIR}"
 mkdir -p "${SHOP_INSTALL_DIR}/logs"
 mkdir -p "${SHOP_INSTALL_DIR}/run"
-mkdir -p "${SHOP_DJANGO_STATIC_ROOT}"
+mkdir -p "${DJANGO_STATIC_ROOT}"
 ls "${SHOP_INSTALL_DIR}"
 EOF
 
@@ -29,7 +29,7 @@ install -m 644 files/nginx-shop-inventory.conf "/pi-gen/work/rowanPantry/pi-gen-
 on_chroot << EOF
 echo "Set up permissions"
 chown -R www-data:www-data "${SHOP_INSTALL_DIR}"
-chown -R www-data:www-data "${SHOP_DJANGO_SQLITE_DIR}"
+chown -R www-data:www-data "${DJANGO_SQLITE_DIR}"
 chmod +x "${SHOP_INSTALL_DIR}/start.sh"
 
 echo "Set up Python virtual environment"
