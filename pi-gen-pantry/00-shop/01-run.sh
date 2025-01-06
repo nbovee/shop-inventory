@@ -25,6 +25,7 @@ cp -r files/shop-inventory/* "/pi-gen/work/rowanPantry/pi-gen-pantry/rootfs${SHO
 install -m 644 files/requirements.txt "/pi-gen/work/rowanPantry/pi-gen-pantry/rootfs${SHOP_INSTALL_DIR}"
 install -m 644 files/shop-inventory.service "/pi-gen/work/rowanPantry/pi-gen-pantry/rootfs/etc/systemd/system/"
 install -m 644 files/nginx-shop-inventory.conf "/pi-gen/work/rowanPantry/pi-gen-pantry/rootfs/etc/nginx/sites-available/"
+install -m 644 files/shop-wifi-setup.service "/pi-gen/work/rowanPantry/pi-gen-pantry/rootfs/etc/systemd/system/"
 
 on_chroot << EOF
 echo "Set up permissions"
@@ -45,8 +46,4 @@ echo "0 * * * * cd ${SHOP_INSTALL_DIR} && \${PYTHON_PATH} \${MANAGE_PY} backup_d
 echo "Configure nginx"
 ln -sf /etc/nginx/sites-available/nginx-shop-inventory.conf /etc/nginx/sites-enabled/
 rm -f /etc/nginx/sites-enabled/default
-
-echo "Enable services to start on boot"
-systemctl enable nginx
-systemctl enable shop-inventory
 EOF

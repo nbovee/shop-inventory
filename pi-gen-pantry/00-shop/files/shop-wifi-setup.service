@@ -1,0 +1,20 @@
+[Unit]
+Description=Shop WiFi Hotspot Setup
+After=network.target NetworkManager.service
+Before=shop-inventory.service
+
+[Service]
+Type=oneshot
+Environment=SHOP_WIFI_SSID=${SHOP_WIFI_SSID}
+Environment=SHOP_WIFI_PASSWORD=${SHOP_WIFI_PASSWORD}
+ExecStart=/bin/bash -c '\
+    if ! nmcli -q connection show "$SHOP_WIFI_SSID"; then \
+        nmcli connection add type wifi ifname wlan0 con-name "$SHOP_WIFI_SSID" autoconnect yes ssid "$SHOP_WIFI_SSID" -- \
+        wifi-sec.key-mgmt wpa-psk wifi-sec.psk "$SHOP_WIFI_PASSWORD" \
+        ipv4.method shared; \
+    fi && \
+    nmcli connection modify "$SHOP_WIFI_SSID" connection.autoconnect yes connection.autoconnect-priority 100'
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
