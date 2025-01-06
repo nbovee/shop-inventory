@@ -2,15 +2,18 @@
 set -e
 
 # Load environment variables
-. .env
+source .env
 
 # Activate virtual environment
 source venv/bin/activate
 
+# Create required directories
+mkdir -p logs run
+
 # Start Gunicorn
 exec gunicorn _core.wsgi:application \
     --name shop_inventory \
-    --bind unix:run/shop-inventory.sock \
+    --bind unix:/var/www/shop-inventory/run/shop-inventory.sock \
     --log-file logs/gunicorn.log \
     --access-logfile logs/access.log \
     --error-logfile logs/error.log \
