@@ -14,6 +14,6 @@ echo "Migrating database"
 python manage.py migrate --noinput
 
 echo "Creating first superuser"
-python manage.py createsuperuser --noinput
+python manage.py safecreatesuperuser --noinput
 
 EOF
