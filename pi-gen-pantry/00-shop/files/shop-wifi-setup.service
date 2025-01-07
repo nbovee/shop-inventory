@@ -5,8 +5,7 @@ Before=shop-inventory.service
 
 [Service]
 Type=oneshot
-Environment=SHOP_WIFI_SSID=${SHOP_WIFI_SSID}
-Environment=SHOP_WIFI_PASSWORD=${SHOP_WIFI_PASSWORD}
+EnvironmentFile=/opt/shop-inventory/.env
 ExecStart=/bin/bash -c '\
     if ! nmcli -q connection show "$SHOP_WIFI_SSID"; then \
         nmcli connection add type wifi ifname wlan0 con-name "$SHOP_WIFI_SSID" autoconnect yes ssid "$SHOP_WIFI_SSID" -- \

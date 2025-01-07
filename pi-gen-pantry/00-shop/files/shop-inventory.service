@@ -8,9 +8,8 @@ User=www-data
 Group=www-data
 RuntimeDirectory=shop-inventory
 WorkingDirectory=/opt/shop-inventory
-Environment="PATH=/opt/shop-inventory/venv/bin:$PATH"
 
-ExecStart=/opt/shop-inventory/venv/bin/python /opt/shop-inventory/start.sh
+ExecStart=/bin/bash start.sh
 ExecReload=/bin/kill -s HUP $MAINPID
 KillMode=mixed
 TimeoutStopSec=5
