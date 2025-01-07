@@ -27,7 +27,7 @@ install -m 644 files/nginx-shop-inventory.conf "/pi-gen/work/rowanPantry/pi-gen-
 install -m 644 files/shop-wifi-setup.service "/pi-gen/work/rowanPantry/pi-gen-pantry/rootfs/etc/systemd/system/"
 # explicitly copy the .env file
 echo "Copying .env file directly"
-install -m 644 files/.env "/pi-gen/work/rowanPantry/pi-gen-pantry/rootfs${SHOP_INSTALL_DIR}"
+install -m 644 files/shop-inventory/.env "/pi-gen/work/rowanPantry/pi-gen-pantry/rootfs${SHOP_INSTALL_DIR}"
 
 on_chroot << EOF
 echo "Set up permissions"
