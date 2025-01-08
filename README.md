@@ -30,9 +30,9 @@ cp .env.example .env
 3. Configure the following variables in `.env`:
 - `SHOP_DJANGO_SECRET_KEY`: Django's secret key
 - `SHOP_DJANGO_DEBUG`: Development mode ("true"/"false")
-- `SHOP_WIFI_PASSWORD`: WiFi hotspot password
+- `WIFI_PASS`: WiFi hotspot password
 - `SHOP_DJANGO_SUPERUSER_PASSWORD`: Admin password
-- `SHOP_BACKUP_PASSWORD`: Backup encryption password
+- `DJANGO_BACKUP_PASSWORD`: Backup encryption password
 
 > **Security Note**: Never commit the `.env` file to version control.
 
@@ -98,3 +98,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Contributing
 
 This repository contains the Rowan Shop & Pantry Inventory System. To contribute, please read our [Contributing Guidelines](CONTRIBUTING.md).
+
+## Notes
+https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-16-04#configure-nginx-to-proxy-pass-to-gunicorn
+https://medium.com/@deltazero/making-kioskpi-custom-raspberry-pi-os-image-using-pi-gen-99aac2cd8cb6
+https://github.com/deltazero-cz/kiosk.pi
+https://raspberrytips.com/access-point-setup-raspberry-pi/#setting-up-an-access-point-on-raspberry-pi-os-bookworm
+https://www.raspberrypi.org/documentation/configuration/wireless/access-point.md

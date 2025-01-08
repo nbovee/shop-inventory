@@ -3,9 +3,9 @@
 . "${BASE_DIR}/config"
 on_chroot << EOF
 # Collect static files
-cd "${SHOP_INSTALL_DIR}"
+cd "${APP_INSTALL_DIR}"
 # activate venv
-source "${SHOP_INSTALL_DIR}/venv/bin/activate"
+source "${APP_INSTALL_DIR}/venv/bin/activate"
 which python
 echo "Collecting static files"
 python manage.py collectstatic --noinput

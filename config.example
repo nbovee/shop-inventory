@@ -1,0 +1,70 @@
+# Pi-Gen Configuration
+PI_GEN_RELEASE="Project Name v1.0.0"
+IMG_NAME="projectName"
+RELEASE="bookworm"
+LOCALE_DEFAULT="en_US.UTF-8"
+TARGET_HOSTNAME="project-hostname"
+DISABLE_FIRST_BOOT_USER_RENAME=1
+FIRST_USER_NAME="user"
+FIRST_USER_PASS="password"
+KEYBOARD_KEYMAP="us"
+TIMEZONE_DEFAULT="America/New_York"
+ENABLE_SSH=1
+STAGE_LIST="stage0 stage1 stage2 custom-stage"
+PRESERVE_CONTAINER=1
+WPA_COUNTRY=US
+# note this uses Windows style envs/paths due to our use of WSL
+PIGEN_DOCKER_OPTS="--volume $(pwd)/../custom-stage:/pi-gen/custom-stage --volume $(pwd)/../project-name/:/pi-gen/custom-stage/00-project/files/project-name/"
+
+# Raspberry Pi Access Point Wifi Configuration
+WIFI_SSID=ProjectWiFi
+WIFI_PASS=wifi-password-here
+
+# Project Configuration
+APP_NAME=project-name
+APP_INSTALL_DIR=/var/www/${APP_NAME}
+APP_LOG_DIR=/var/log/${APP_NAME}
+APP_ENV_DIR=/etc/${APP_NAME}
+APP_RUN_DIR=/run/${APP_NAME}
+APP_USER=${FIRST_USER_NAME}
+APP_GROUP=www-data
+
+# Django Settings
+DJANGO_SECRET_KEY="change-this-to-a-secure-secret-key"
+DJANGO_DEBUG=false
+DJANGO_ALLOWED_HOSTS=hostname,localhost,127.0.0.1
+DJANGO_SQLITE_DIR=db
+DJANGO_STATIC_ROOT=staticfiles
+DJANGO_MEDIA_ROOT=media
+DJANGO_LANGUAGE_CODE=en-us
+DJANGO_TIME_ZONE=America/New_York
+DJANGO_CSRF_TRUSTED_ORIGINS=https://${TARGET_HOSTNAME},http://${TARGET_HOSTNAME},http://localhost,http://127.0.0.1
+DJANGO_SESSION_COOKIE_SECURE=true
+DJANGO_CSRF_COOKIE_SECURE=true
+DJANGO_SECURE_SSL_REDIRECT=true
+
+# Email Settings
+DJANGO_EMAIL_HOST=localhost
+DJANGO_EMAIL_PORT=25
+DJANGO_EMAIL_HOST_USER=
+DJANGO_EMAIL_HOST_PASSWORD=
+DJANGO_EMAIL_USE_TLS=false
+DJANGO_SERVER_EMAIL=root@localhost
+DJANGO_DEFAULT_FROM_EMAIL=webmaster@localhost
+DJANGO_ADMIN_NAME=
+DJANGO_ADMIN_EMAIL=
+
+# SafeCreateSuperuser Settings
+DJANGO_SUPERUSER_USERNAME=admin
+DJANGO_SUPERUSER_PASSWORD=change-this-password
+DJANGO_SUPERUSER_EMAIL=admin@example.com
+
+# Backup_DB Settings
+DJANGO_BACKUP_PASSWORD=change-this-backup-password
+
+# Gunicorn Settings
+GUNICORN_WORKERS=3
+GUNICORN_TIMEOUT=120
+GUNICORN_LOG_LEVEL=info
+GUNICORN_MAX_REQUESTS=1000
+GUNICORN_MAX_REQUESTS_JITTER=100
