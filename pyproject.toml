@@ -25,10 +25,10 @@ prod = [
 ]
 
 [tool.pytest.ini_options]
-pythonpath = "shop-inventory"
+pythonpath = "src/shop-inventory"
 DJANGO_SETTINGS_MODULE = "_core.settings"
 python_files = ["test.py", "tests.py", "test_*.py", "*_tests.py",]
-addopts = ["--cov=shop-inventory", "--cov-config=pyproject.toml",]
+addopts = ["--cov=src/shop-inventory", "--cov-config=pyproject.toml",]
 
 [tool.coverage.run]
 omit = [
