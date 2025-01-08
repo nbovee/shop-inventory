@@ -31,6 +31,8 @@ install -m 640 files/nginx-shop-inventory.conf "${ROOTFS_DIR}/etc/nginx/sites-av
 install -m 640 files/shop-wifi-setup.service "${ROOTFS_DIR}/etc/systemd/system/"
 install -m 640 files/shop-inventory-socket.conf "${ROOTFS_DIR}/usr/lib/tmpfiles.d/"
 install -m 640 files/shop-inventory-logs.conf "${ROOTFS_DIR}/usr/lib/tmpfiles.d/"
+install -m 640 files/dnsmasq.conf "${ROOTFS_DIR}/etc/dnsmasq.conf"
+
 echo "Copying config file"
 install -m 640 "${BASE_DIR}/config" "${ROOTFS_DIR}/etc/shop-inventory/config"
 

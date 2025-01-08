@@ -7,5 +7,6 @@ echo "Enable services to start on boot"
 systemctl enable shop-wifi-setup
 systemctl enable shop-inventory
 systemctl enable nginx
+systemctl enable dnsmasq
 
 EOF

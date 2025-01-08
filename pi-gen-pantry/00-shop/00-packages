@@ -6,3 +6,4 @@ ghostscript
 libjpeg-dev
 zlib1g-dev
 vim
+dnsmasq

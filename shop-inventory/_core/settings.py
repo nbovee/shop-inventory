@@ -157,8 +157,8 @@ MEDIA_URL = os.getenv("DJANGO_MEDIA_URL", "media/")
 # Static files during development (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = "_static/"
-STATICFILES_DIRS = [BASE_DIR / STATIC_URL]
+STATIC_URL = "static/"
+STATICFILES_DIRS = [BASE_DIR / "_static/", BASE_DIR / STATIC_URL]
 
 
 # Default primary key field type
