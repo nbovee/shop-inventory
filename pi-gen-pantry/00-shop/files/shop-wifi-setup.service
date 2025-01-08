@@ -5,14 +5,14 @@ Before=shop-inventory.service
 
 [Service]
 Type=oneshot
-EnvironmentFile=/opt/shop-inventory/.env
+EnvironmentFile=/etc/shop-inventory/config
 # a nmcli hotspot command could be used but I am not 100% sure it is supported on rPi
 ExecStart=/bin/bash -c '\
-    if ! nmcli -q c show "$SHOP_WIFI_SSID"; then \
-        nmcli c add type wifi ifname wlan0 con-name "$SHOP_WIFI_SSID" \
+    if ! nmcli -q c show "$WIFI_SSID"; then \
+        nmcli c add type wifi ifname wlan0 con-name "$WIFI_SSID" \
         autoconnect yes connection.autoconnect-priority 100 \
-        ssid "$SHOP_WIFI_SSID" \
-        wifi-sec.key-mgmt wpa-psk wifi-sec.psk "$SHOP_WIFI_PASSWORD" \
+        ssid "$WIFI_SSID" \
+        wifi-sec.key-mgmt wpa-psk wifi-sec.psk "$WIFI_PASS" \
         802-11-wireless.mode ap 802-11-wireless.band bg \
         ipv4.method shared; \
     fi'

@@ -29,10 +29,12 @@ class Command(BaseCommand):
         from django.conf import settings
 
         db_path = settings.DATABASES["default"]["NAME"]
-        backup_password = os.environ.get("BACKUP_PASSWORD")
+        backup_password = os.environ.get("DJANGO_BACKUP_PASSWORD")
 
         if not backup_password:
-            self.stderr.write("Error: BACKUP_PASSWORD environment variable not set")
+            self.stderr.write(
+                "Error: DJANGO_BACKUP_PASSWORD environment variable not set"
+            )
             return
 
         # Create timestamp for backup file
@@ -57,7 +59,7 @@ class Command(BaseCommand):
 
                 with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
                     zf.setpassword(backup_password.encode())
-                    zf.write(temp_db, "database.sqlite3")
+                    zf.write(temp_db, "db.sqlite3")
 
                 self.stdout.write(self.style.SUCCESS(f"Backup created at: {zip_path}"))
 

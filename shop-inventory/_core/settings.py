@@ -14,10 +14,16 @@ import os
 
 from pathlib import Path
 from _core import is_true, split_with_comma
+from dotenv import load_dotenv
+
+# load_dotenv does not override existing environment variables, so in development we simply load the overrides first
+load_dotenv("/etc/shop-inventory/config")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 CORE_APP = Path(__file__).resolve().parent
 BASE_DIR = CORE_APP.parent
+SQLITE_DIR = BASE_DIR / os.getenv("DJANGO_SQLITE_DIR", "db")
+STATIC_ROOT = BASE_DIR / os.getenv("DJANGO_STATIC_ROOT", "staticfiles")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -94,7 +100,7 @@ WSGI_APPLICATION = f"{CORE_APP.name}.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": Path(os.getenv("DJANGO_SQLITE_DIR", ".")) / "db.sqlite3",
+        "NAME": SQLITE_DIR / "db.sqlite3",
     }
 }
 
@@ -141,20 +147,17 @@ USE_TZ = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
-MEDIA_ROOT = os.getenv("DJANGO_MEDIA_ROOT", "")
+MEDIA_ROOT = BASE_DIR / os.getenv("DJANGO_MEDIA_ROOT", "media")
 
 # URL that handles the media served from MEDIA_ROOT.
 # Examples: "http://example.com/media/", "http://media.example.com/"
 MEDIA_URL = os.getenv("DJANGO_MEDIA_URL", "media/")
 
 
-# Static files (CSS, JavaScript, Images)
+# Static files during development (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = "_static/"
-
-STATIC_ROOT = os.getenv("DJANGO_STATIC_ROOT")
-
 STATICFILES_DIRS = [BASE_DIR / STATIC_URL]
 
 
@@ -195,42 +198,43 @@ DEFAULT_FROM_EMAIL = os.getenv("DJANGO_DEFAULT_FROM_EMAIL", "webmaster@localhost
 # People who get code error notifications. In the format
 # [('Full Name', 'email@example.com'), ('Full Name', 'anotheremail@example.com')]
 ADMIN_NAME = os.getenv("DJANGO_ADMIN_NAME", "")
-ADMIN_EMAIL = os.getenv("DJANGO_ADMIN_EMAIL")
+ADMIN_EMAIL = os.getenv("DJANGO_ADMIN_EMAIL", "")
 # if ADMIN_EMAIL:
 #     ADMINS = [(ADMIN_NAME, ADMIN_EMAIL)]
 
 
-# Log settings
+# Define the log directory from environment variable
+LOG_DIR = Path(os.getenv("APP_LOG_DIR", BASE_DIR / "logs"))
+
+# Logging configuration
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
         "verbose": {
-            # https://docs.python.org/3/library/logging.html#logrecord-attributes
-            "format": "{levelname} [{asctime}] -- {message}",
+            "format": "{levelname} {asctime} {module} {message}",
             "style": "{",
-        }
+        },
+        "simple": {
+            "format": "{levelname} {message}",
+            "style": "{",
+        },
     },
     "handlers": {
-        "console": {
-            "level": "INFO",
-            "class": "logging.StreamHandler",
-        },
-        "mail_admins": {
-            "level": "ERROR",
-            "class": "django.utils.log.AdminEmailHandler",
+        "file": {
+            "level": "DEBUG",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": LOG_DIR / "django.log",
+            "maxBytes": 1024 * 1024 * 5,  # 5 MB
+            "backupCount": 5,
+            "formatter": "verbose",
         },
     },
     "loggers": {
         "django": {
-            "handlers": ["console"],
-            "level": "INFO",
+            "handlers": ["file"],
+            "level": "DEBUG",
             "propagate": True,
-        },
-        "django.request": {
-            "handlers": ["mail_admins", "console"] if not DEBUG else ["console"],
-            "level": "ERROR",
-            "propagate": False,
         },
     },
 }

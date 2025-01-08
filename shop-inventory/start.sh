@@ -2,25 +2,35 @@
 set -e
 
 # Load environment variables
-source .env
+# service should already have sourced the config file
+# source /etc/shop-inventory/config
 
 # Activate virtual environment
-source venv/bin/activate
+source "${APP_INSTALL_DIR}/venv/bin/activate"
 
-# Create required directories
-mkdir -p logs run
+echo "Confirming python is in the virtual environment"
+which python
+
+echo "Collecting static files"
+python manage.py collectstatic --noinput
+
+echo "Migrating database"
+python manage.py migrate --noinput
+
+echo "Creating first superuser"
+python manage.py safecreatesuperuser --noinput
 
 # Start Gunicorn
 exec gunicorn _core.wsgi:application \
     --name shop_inventory \
-    --bind unix:/var/www/shop-inventory/run/shop-inventory.sock \
-    --log-file logs/gunicorn.log \
-    --access-logfile logs/access.log \
-    --error-logfile logs/error.log \
+    --bind unix:"${APP_RUN_DIR}/shop-inventory.sock" \
+    --log-file "${APP_LOG_DIR}/gunicorn.log" \
+    --access-logfile "${APP_LOG_DIR}/gunicorn-access.log" \
+    --error-logfile "${APP_LOG_DIR}/gunicorn-error.log" \
     --capture-output \
-    --pid run/gunicorn.pid \
-    --workers "${SHOP_GUNICORN_WORKERS}" \
-    --timeout "${SHOP_GUNICORN_TIMEOUT}" \
-    --log-level "${SHOP_GUNICORN_LOG_LEVEL}" \
-    --max-requests "${SHOP_GUNICORN_MAX_REQUESTS}" \
-    --max-requests-jitter "${SHOP_GUNICORN_MAX_REQUESTS_JITTER}"
+    --pid "${APP_RUN_DIR}/gunicorn.pid" \
+    --workers "${GUNICORN_WORKERS}" \
+    --timeout "${GUNICORN_TIMEOUT}" \
+    --log-level "${GUNICORN_LOG_LEVEL}" \
+    --max-requests "${GUNICORN_MAX_REQUESTS}" \
+    --max-requests-jitter "${GUNICORN_MAX_REQUESTS_JITTER}"
