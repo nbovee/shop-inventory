@@ -30,6 +30,7 @@ APP_USER=${FIRST_USER_NAME}
 APP_GROUP=www-data
 
 # Django Settings
+DJANGO_DEPLOYMENT_SITE=YourCity
 DJANGO_SECRET_KEY="change-this-to-a-secure-secret-key"
 DJANGO_DEBUG=false
 DJANGO_ALLOWED_HOSTS=hostname,localhost,127.0.0.1
