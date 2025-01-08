@@ -1,6 +1,6 @@
 # Shop Prototype Repository
 
-This repository is the development repository for the Rowan Shop & Pantry Inventory System. It is built with Django and compiled for Raspberry Pi using the pi-gen tool. VSCode, UV, Docker, and WSL are used for development as they were easy to onboard inexperienced developers with.
+This repository is the development repository for the Rowan Shop & Pantry Inventory System. Due to installation constraints where no WAN is available, it is built with Django and compiled for Raspberry Pi using the pi-gen tool. VSCode, UV, Docker, and WSL are used for development as they were easy to onboard inexperienced developers with.
 
 <div markdown="1">
 
@@ -13,6 +13,7 @@ This repository is the development repository for the Rowan Shop & Pantry Invent
 ## Django Development
 
 ### Initial Setup
+0. Install astral/uv, docker, and wsl as needed.
 
 1. Clone the repository with submodules and initialize the development environment:
 ```console
@@ -73,15 +74,15 @@ touch ./stage{3,4,5}/SKIP
 touch ./stage{4,5}/SKIP_IMAGES
 ```
 
-4. Build the image:
+4. Build the image (this directs to the build-docker.sh script within pi-gen, as we are using wsl to build the image):
 ```bash
-sudo ./build-docker.sh
+sudo ./build.sh
 ```
 
-The completed image will be available in `pi-gen/deploy`.
+The completed image will be available in `/deploy`.
 
 ### Raspberry Pi Setup
-> TODO: Document the process for setting up a local Raspberry Pi with the inventory system.
+The completed image can be flashed to a Raspberry Pi using the tool Raspberry Pi Imager.
 
 ## Acknowledgements
 
@@ -93,12 +94,6 @@ We extend our sincere gratitude to:
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Development Roadmap
-
-- [ ] Support UUID or 6-12 digit string for UPC-A/UPC-E barcodes
-- [ ] Implement volunteer and admin user roles
-- [ ] Create acknowledgments page
 
 ## Contributing
 
