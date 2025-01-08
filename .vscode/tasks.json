@@ -44,6 +44,12 @@
       "problemMatcher": []
     },
     {
+      "type": "shell",
+      "label": "shell: uv pip compile",
+      "command": "uv pip compile -o pi-gen-pantry/00-shop/files/requirements.txt pyproject.toml",
+      "problemMatcher": []
+    },
+    {
       "type": "docker-run",
       "label": "docker-run: debug",
       "dependsOn": ["docker-build"],

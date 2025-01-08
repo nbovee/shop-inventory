@@ -1,6 +1,8 @@
 # Shop Prototype Repository
 
-This repository is the development repository for the Rowan Shop & Pantry Inventory System. Due to installation constraints where no WAN is available, it is built with Django and compiled for Raspberry Pi using the pi-gen tool. VSCode, UV, Docker, and WSL are used for development as they were easy to onboard inexperienced developers with.
+This repository is the development repository for the Rowan Shop & Pantry Inventory System. Due to installation constraints where no WAN is available, it is built with Django and compiled for Raspberry Pi using the pi-gen tool for fully offline deployment. UV, Docker, WSL, and VSCode are used for development as they were easy to onboard inexperienced developers with.
+
+Effort has been taken to make this follow FHS (Filesystem Hierarchy Standard) as much as possible, rather than dumping all files into /app/, in order to make the build process easily templatable for other Raspberry Pi based projects. This is a design choice, to allow for easy reuse of the build process for other projects or multiple concurrent applications. The service files are used to automatically start the Django server on boot, without the security risks of running as root or with auto-login.
 
 <div markdown="1">
 
@@ -10,7 +12,7 @@ This repository is the development repository for the Rowan Shop & Pantry Invent
 </div>
 <hr>
 
-## Django Development
+## Development
 
 ### Initial Setup
 0. Install astral/uv, docker, and wsl as needed.
@@ -22,19 +24,19 @@ cd shop-inventory
 bash init.sh
 ```
 
-2. Create your environment file:
+2. Create your config file:
 ```bash
-cp .env.example .env
+cp config.example config
 ```
 
-3. Configure the following variables in `.env`:
-- `SHOP_DJANGO_SECRET_KEY`: Django's secret key
-- `SHOP_DJANGO_DEBUG`: Development mode ("true"/"false")
+1. Configure at least the following variables in `config`:
+- `DJANGO_SECRET_KEY`: Django's secret key
+- `DJANGO_DEBUG`: Development mode ("true"/"false")
 - `WIFI_PASS`: WiFi hotspot password
-- `SHOP_DJANGO_SUPERUSER_PASSWORD`: Admin password
+- `DJANGO_SUPERUSER_PASSWORD`: Admin password
 - `DJANGO_BACKUP_PASSWORD`: Backup encryption password
 
-> **Security Note**: Never commit the `.env` file to version control.
+> **Security Note**: Never commit the `config` file to version control.
 
 ### Running the Application
 
@@ -65,18 +67,14 @@ sudo update-binfmts --enable
 git submodule update --init
 ```
 
-3. Set up the build environment:
+3. Set up the links for the build environment and the skip files used by pi-gen:
 ```bash
-cp -r pi-gen-pantry/00-shop pi-gen/custom-stage
-cp config pi-gen/
-cd pi-gen
-touch ./stage{3,4,5}/SKIP
-touch ./stage{4,5}/SKIP_IMAGES
+bash init.sh
 ```
 
-4. Build the image (this directs to the build-docker.sh script within pi-gen, as we are using wsl to build the image):
+4. Build the image (this directs to the build-docker.sh script within pi-gen, as we are using WSL to build the image):
 ```bash
-sudo ./build.sh
+bash build.sh
 ```
 
 The completed image will be available in `/deploy`.
@@ -100,8 +98,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 This repository contains the Rowan Shop & Pantry Inventory System. To contribute, please read our [Contributing Guidelines](CONTRIBUTING.md).
 
 ## Notes
+We found the following resources helpful during development:
 https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-16-04#configure-nginx-to-proxy-pass-to-gunicorn
-https://medium.com/@deltazero/making-kioskpi-custom-raspberry-pi-os-image-using-pi-gen-99aac2cd8cb6
 https://github.com/deltazero-cz/kiosk.pi
 https://raspberrytips.com/access-point-setup-raspberry-pi/#setting-up-an-access-point-on-raspberry-pi-os-bookworm
 https://www.raspberrypi.org/documentation/configuration/wireless/access-point.md

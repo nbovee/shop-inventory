@@ -371,6 +371,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "django" },
+    { name = "gunicorn" },
     { name = "pillow" },
     { name = "python-dotenv" },
     { name = "treepoem" },
@@ -391,6 +392,7 @@ prod = [
 [package.metadata]
 requires-dist = [
     { name = "django", specifier = "<5" },
+    { name = "gunicorn", specifier = ">=23.0.0" },
     { name = "pillow", specifier = ">=11.0.0" },
     { name = "python-dotenv", specifier = ">=1.0.1" },
     { name = "treepoem", specifier = ">=3.25.0" },

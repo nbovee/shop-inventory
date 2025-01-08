@@ -2,14 +2,15 @@
 set -e
 
 # Load environment variables
-# service should already have sourced the config file
-# source /etc/shop-inventory/config
+# service should already have sourced the config file but some of the chaining seems to fail
+source /etc/shop-inventory/config
 
 # Activate virtual environment
 source "${APP_INSTALL_DIR}/venv/bin/activate"
 
-echo "Confirming python is in the virtual environment"
+echo "Confirming python & gunicorn are in the virtual environment"
 which python
+which gunicorn
 
 echo "Collecting static files"
 python manage.py collectstatic --noinput
