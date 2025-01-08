@@ -5,3 +5,5 @@ nginx
 ghostscript
 libjpeg-dev
 zlib1g-dev
+gunicorn
+vim

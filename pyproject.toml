@@ -7,6 +7,7 @@ requires-python = ">=3.11"
 dependencies = [
     "django<5",
     "pillow>=11.0.0",
+    "python-dotenv>=1.0.1",
     "treepoem>=3.25.0",
     "wait-for-it>=2.3.0",
 ]
