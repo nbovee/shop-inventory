@@ -10,7 +10,7 @@ usermod -aG ${APP_GROUP} root
 
 echo "Configure hostname"
 echo "${TARGET_HOSTNAME}" > /etc/hostname
-sed -i "s/127.0.1.1.*/127.0.1.1\t${TARGET_HOSTNAME}.local" /etc/hosts
+sed -i "s/127.0.1.1.*/127.0.1.1\t${TARGET_HOSTNAME}.local/" /etc/hosts
 # Add entries for the domain that clients will use
 echo "10.42.0.1\tpantry.local" >> /etc/hosts
 echo "127.0.0.1\tpantry.local" >> /etc/hosts
