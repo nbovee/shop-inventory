@@ -7,15 +7,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Rowan Shop & Pantry{% endblock title %}</title>
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
-
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="{% url 'index' %}">Rowan Shop & Pantry</a>
         {% get_env_var 'DJANGO_DEPLOYMENT_SITE' as deployment_site %}
-        {% if deployment_site %}
-            <span class="navbar-text">{{ deployment_site }}</span>
-        {% endif %}
+        <a class="navbar-brand" href="{% url 'index' %}">Rowan Shop & Pantry @ {{ deployment_site }}</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -44,6 +40,8 @@
         {% endif %}
         {% block content %}{% endblock content %}
     </div>
-        <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <!-- jQuery first, then Bootstrap Bundle with Popper -->
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
 </body>
 </html>
