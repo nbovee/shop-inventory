@@ -24,18 +24,6 @@
       "problemMatcher": []
     },
     {
-      "type": "shell",
-      "label": "shell: makemigrations",
-      "command": "docker exec -it shopinventory-dev python manage.py makemigrations",
-      "problemMatcher": []
-    },
-    {
-      "type": "shell",
-      "label": "shell: migrate",
-      "command": "docker exec -it shopinventory-dev python manage.py migrate",
-      "problemMatcher": []
-    },
-    {
       // shell is used here as vscode keeps docker-run tasks running for debugpy. This would then be reserving the default container name, blocking future tasks.
       "type": "shell",
       "label": "shell: ensure superuser",
@@ -80,6 +68,38 @@
         "file": "manage.py",
         "args": ["runserver", "0.0.0.0:8000", "--nothreading"]
       }
+    },
+    {
+      "type": "shell",
+      "label": "django: makemigrations with app",
+      "command": "${workspaceFolder}/src/shop-inventory/manage.py makemigrations ${input:djangoApp}",
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "type": "shell",
+      "label": "django: migrate with app",
+      "command": "${workspaceFolder}/src/shop-inventory/manage.py migrate ${input:djangoApp}",
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "id": "djangoApp",
+      "description": "Django app name (leave empty for all apps)",
+      "default": "",
+      "type": "promptString"
     }
   ]
 }

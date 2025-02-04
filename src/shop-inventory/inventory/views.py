@@ -19,6 +19,9 @@ from .forms import (
     StockUpdateForm,
     RemoveLocationForm,
     RemoveBaseItemForm,
+    AddItemToLocation,
+    NewBaseItemForm,
+    AddQuantityForm,
 )
 
 from .barcode_gen import barcode_page_generation
@@ -286,3 +289,113 @@ def qrcode_sheet(request):
     result = barcode_page_generation()
     response = HttpResponse(result, content_type="application/pdf")
     return response
+
+
+@login_required
+def add_item_to_location(request):
+    # Get all active locations for the buttons
+    locations = Location.objects.filter(active=True).order_by("name")
+
+    # Get the selected location if we're in entry mode
+    selected_location = None
+    if request.GET.get("location"):
+        selected_location = get_object_or_404(
+            Location, id=request.GET.get("location"), active=True
+        )
+
+    context = {
+        "locations": locations,
+        "selected_location": selected_location,
+    }
+
+    if selected_location:
+        if request.method == "POST":
+            action = request.POST.get("action")
+
+            if action == "scan_barcode":
+                form = AddItemToLocation(request.POST)
+                if form.is_valid():
+                    barcode = form.cleaned_data["barcode"]
+                    try:
+                        base_item = BaseItem.objects.get(barcode=barcode)
+                        # Item exists, show quantity form
+                        context["base_item"] = base_item
+                        context["quantity_form"] = AddQuantityForm()
+                        context["scan_form"] = form
+                        return render(
+                            request, "inventory/add_item_to_location.html", context
+                        )
+                    except BaseItem.DoesNotExist:
+                        # Item doesn't exist, show new item form
+                        context["new_item_form"] = NewBaseItemForm()
+                        context["barcode"] = barcode
+                        context["scan_form"] = form
+                        return render(
+                            request, "inventory/add_item_to_location.html", context
+                        )
+
+            elif action == "add_new_item":
+                form = NewBaseItemForm(request.POST)
+                if form.is_valid():
+                    barcode = request.POST.get("barcode")
+                    base_item = form.save(commit=False)
+                    base_item.barcode = barcode
+                    base_item.save()
+
+                    context["base_item"] = base_item
+                    context["quantity_form"] = AddQuantityForm()
+                    context["scan_form"] = AddItemToLocation()
+                    return render(
+                        request, "inventory/add_item_to_location.html", context
+                    )
+
+            elif action == "add_quantity":
+                base_item = get_object_or_404(
+                    BaseItem, id=request.POST.get("base_item_id")
+                )
+                form = AddQuantityForm(
+                    request.POST, base_item=base_item, location=selected_location
+                )
+                if form.is_valid():
+                    quantity = form.cleaned_data["quantity"]
+
+                    # Handle reactivation of inactive inventory
+                    if "reactivate_item" in form.cleaned_data:
+                        inventory_item = form.cleaned_data["reactivate_item"]
+                        inventory_item.quantity = quantity
+                        inventory_item.active = True
+                        inventory_item.save()
+                        messages.success(
+                            request,
+                            f"Reactivated inventory item with quantity {quantity}",
+                        )
+                    else:
+                        # Normal create/update flow
+                        inventory_item, created = Inventory.objects.get_or_create(
+                            base_item=base_item,
+                            location=selected_location,
+                            defaults={"quantity": quantity, "active": True},
+                        )
+
+                        if not created:
+                            inventory_item.quantity += quantity
+                            inventory_item.save()
+                            messages.success(
+                                request, f"Added {quantity} to {base_item}"
+                            )
+                        else:
+                            messages.success(
+                                request,
+                                f"Created new inventory item: {quantity} x {base_item}",
+                            )
+
+                    # Return to barcode scanning
+                    context["scan_form"] = AddItemToLocation()
+                    return render(
+                        request, "inventory/add_item_to_location.html", context
+                    )
+        else:
+            # GET request with selected location - show barcode form
+            context["scan_form"] = AddItemToLocation()
+
+    return render(request, "inventory/add_item_to_location.html", context)

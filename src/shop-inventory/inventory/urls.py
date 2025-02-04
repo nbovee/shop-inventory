@@ -15,4 +15,5 @@ urlpatterns = [
     path("barcodes", views.qrcode_sheet, name="barcodes"),
     path("stock_check/", views.stock_check, name="stock_check"),
     path("stock_update", views.stock_update, name="stock_update"),
+    path("add-to-location/", views.add_item_to_location, name="add_item_to_location"),
 ]
