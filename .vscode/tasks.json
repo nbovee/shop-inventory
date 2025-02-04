@@ -60,11 +60,11 @@
         // "envFiles": ["${workspaceFolder}/.env"],
         "volumes": [
           {
-            "localPath": "${workspaceFolder}/shop-inventory",
+            "localPath": "${workspaceFolder}/src/shop-inventory",
             "containerPath": "/usr/src/shop-inventory"
           },
           {
-            "localPath": "${workspaceFolder}/config",
+            "localPath": "${workspaceFolder}/src/config",
             "containerPath": "/etc/shop-inventory/config"
           }
         ],
