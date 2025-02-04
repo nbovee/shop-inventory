@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.http import HttpResponse
 
 """
 def index(request):
@@ -29,3 +30,22 @@ def user_login(request):
 def user_logout(request):
     logout(request)
     return redirect("index")
+
+
+def captive_portal_detect(request):
+    """
+    Handle iOS/iPadOS captive portal detection requests.
+    Returns a success page that indicates the device is connected to the internet.
+    """
+    html = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Success</title>
+    </head>
+    <body>
+        Success
+    </body>
+    </html>
+    """
+    return HttpResponse(html, content_type='text/html')

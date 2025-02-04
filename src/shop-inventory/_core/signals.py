@@ -25,8 +25,10 @@ def create_default_users(sender, **kwargs):
         User = get_user_model()
         # Define the default user data
         users = [
+            {"username": "admin", "password": "admin", "group": "Shop Manager"},
             {"username": "manager", "password": "manager", "group": "Shop Manager"},
             {"username": "employee", "password": "employee", "group": "Shop Employee"},
+            {"username": "volunteer", "password": "volunteer", "group": "Shop Employee"},
         ]
 
         for user_data in users:

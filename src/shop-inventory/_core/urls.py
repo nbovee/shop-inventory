@@ -24,6 +24,7 @@ from . import views
 
 urlpatterns = [
     path("", views.index, name="index"),
+    path("hotspot-detect.html", views.captive_portal_detect, name="captive_detect"),
     path("inventory/", include("inventory.urls")),
     path("checkout/", include("checkout.urls")),
     path("login/", views.user_login, name="login"),
