@@ -1,12 +1,12 @@
 {% extends 'core/base.html' %}
 
-{% block title %}Remove Product{% endblock %}
+{% block title %}Reactivate Product{% endblock %}
 
 {% block content %}
 <div class="container">
     <div class="card">
-        <div class="card-header bg-danger text-white">
-            <h5 class="mb-0">Remove Product</h5>
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">Reactivate Product</h5>
         </div>
         <div class="card-body">
             {% if messages %}
@@ -31,9 +31,9 @@
                 <div class="form-group">
                     {{ form.base_item.label_tag }}
                     {{ form.base_item }}
-                    <small class="form-text text-muted">Select the item you want to remove</small>
+                    <small class="form-text text-muted">Select the item you want to reactivate</small>
                 </div>
-                <button type="submit" class="btn btn-danger">Remove Item</button>
+                <button type="submit" class="btn btn-success">Reactivate Item</button>
                 <a href="{% url 'inventory:manage_inventory' %}" class="btn btn-secondary">Cancel</a>
             </form>
         </div>
