@@ -5,13 +5,13 @@ from .models import BaseItem, Location, Inventory
 class BaseItemForm(forms.ModelForm):
     class Meta:
         model = BaseItem
-        fields = ["name", "variant", "barcode"]
+        fields = ["name", "manufacturer", "barcode"]
         widgets = {
             "name": forms.TextInput(
                 attrs={"class": "form-control", "placeholder": "Enter item name"}
             ),
-            "variant": forms.TextInput(
-                attrs={"class": "form-control", "placeholder": "Enter item variant"}
+            "manufacturer": forms.TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter manufacturer"}
             ),
             "barcode": forms.TextInput(
                 attrs={"class": "form-control", "placeholder": "Enter barcode"}
@@ -21,13 +21,13 @@ class BaseItemForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         name = cleaned_data.get("name")
-        variant = cleaned_data.get("variant")
+        manufacturer = cleaned_data.get("manufacturer")
 
-        if name and variant:
+        if name and manufacturer:
             try:
-                # Check for inactive item with same name/variant
+                # Check for inactive item with same name/manufacturer
                 inactive_item = BaseItem.objects.get(
-                    name=name, variant=variant, active=False
+                    name=name, manufacturer=manufacturer, active=False
                 )
                 # If found, reactivate it
                 inactive_item.activate()
@@ -36,12 +36,12 @@ class BaseItemForm(forms.ModelForm):
                     code="reactivated",
                 )
             except BaseItem.DoesNotExist:
-                # Check if active item with same name/variant exists
+                # Check if active item with same name/manufacturer exists
                 if BaseItem.objects.filter(
-                    name=name, variant=variant, active=True
+                    name=name, manufacturer=manufacturer, active=True
                 ).exists():
                     raise forms.ValidationError(
-                        "An item with this name and variant already exists.",
+                        "An item with this name and manufacturer already exists.",
                         code="exists",
                     )
         return cleaned_data
@@ -182,7 +182,7 @@ class RemoveLocationForm(forms.Form):
 
 class RemoveBaseItemForm(forms.Form):
     base_item = forms.ModelChoiceField(
-        queryset=BaseItem.objects.filter(active=True).order_by("name", "variant"),
+        queryset=BaseItem.objects.filter(active=True).order_by("name", "manufacturer"),
         empty_label="Select an item to remove",
         widget=forms.Select(attrs={"class": "form-control"}),
     )
@@ -203,7 +203,7 @@ class AddItemToLocation(forms.Form):
 
 class NewBaseItemForm(BaseItemForm):
     class Meta(BaseItemForm.Meta):
-        fields = ["name", "variant"]  # barcode will be set from scan
+        fields = ["name", "manufacturer"]  # barcode will be set from scan
 
 
 class AddQuantityForm(forms.Form):
@@ -250,7 +250,7 @@ class AddQuantityForm(forms.Form):
 
 class ReactivateBaseItemForm(forms.Form):
     base_item = forms.ModelChoiceField(
-        queryset=BaseItem.objects.filter(active=False).order_by("name", "variant"),
+        queryset=BaseItem.objects.filter(active=False).order_by("name", "manufacturer"),
         empty_label="Select an item to reactivate",
         widget=forms.Select(attrs={"class": "form-control"}),
     )

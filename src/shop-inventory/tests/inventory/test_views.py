@@ -34,7 +34,7 @@ def admin_user():
 def base_item():
     return BaseItem.objects.create(
         name="Test Item",
-        variant="Test Variant",
+        manufacturer="Test Manufacturer",
     )
 
 
@@ -142,7 +142,7 @@ def test_edit_inventory_view(client, admin_user, inventory_item):
 def test_add_base_item_view(client, admin_user):
     """Test adding a new base item"""
     client.force_login(admin_user)
-    data = {"name": "New Item", "variant": "New Variant"}
+    data = {"name": "New Item", "manufacturer": "New Manufacturer"}
     response = client.post(reverse("inventory:add_base_item"), data)
     assert response.status_code == 302
     assert BaseItem.objects.filter(name="New Item").exists()
@@ -246,7 +246,7 @@ def test_remove_base_item_with_stock(client, admin_user, inventory_item):
 def test_add_base_item_duplicate(client, admin_user, base_item):
     """Test adding a duplicate base item"""
     client.force_login(admin_user)
-    data = {"name": base_item.name, "variant": base_item.variant}
+    data = {"name": base_item.name, "manufacturer": base_item.manufacturer}
     response = client.post(reverse("inventory:add_base_item"), data)
     assert response.status_code == 200  # Returns form with errors
 

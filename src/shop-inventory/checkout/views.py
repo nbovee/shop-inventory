@@ -29,7 +29,7 @@ def index(request):
     inventory_items = Inventory.objects.filter(
         (
             models.Q(base_item__name__icontains=filter_term)
-            | models.Q(base_item__variant__icontains=filter_term)
+            | models.Q(base_item__manufacturer__icontains=filter_term)
         )
         & models.Q(location__name__icontains="Floor")
         & models.Q(quantity__gt=0)

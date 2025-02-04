@@ -43,7 +43,7 @@ def floor_location():
 def base_item():
     return BaseItem.objects.create(
         name="Test Item",
-        variant="Test Variant",
+        manufacturer="Test Manufacturer",
     )
 
 

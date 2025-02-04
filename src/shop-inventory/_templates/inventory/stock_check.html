@@ -11,7 +11,7 @@
             <thead>
                 <tr>
                     <th scope="col">Item Name</th>
-                    <th scope="col">Variant</th>
+                    <th scope="col">Manufacturer</th>
                     <th scope="col">Location</th>
                     <th scope="col">Quantity</th>
                     <th scope="col">Actions</th>
@@ -20,8 +20,13 @@
             <tbody>
         {% for item in items %}
         <tr>
-            <td>{{ item.base_item.name }}</td>
-            <td>{{ item.base_item.variant }}</td>
+            <td>
+                {{ item.base_item.name }}
+                {% if not item.base_item.active %}
+                    <span class="badge badge-danger badge-pill">Inactive</span>
+                {% endif %}
+            </td>
+            <td>{{ item.base_item.manufacturer }}</td>
             <td>{{ item.location.name }}</td>
             <td>{{ item.quantity }}</td>
             <td>{% include "inventory/stock_buttons.html" with item=item %}</td>

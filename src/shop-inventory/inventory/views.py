@@ -160,7 +160,9 @@ def add_base_item(request):
         form = BaseItemForm()
 
     # Get list of inactive items for reference
-    inactive_items = BaseItem.objects.filter(active=False).order_by("name", "variant")
+    inactive_items = BaseItem.objects.filter(active=False).order_by(
+        "name", "manufacturer"
+    )
 
     return render(
         request,
@@ -246,9 +248,9 @@ def remove_location(request):
         form = RemoveLocationForm(request.POST)
         if form.is_valid():
             location = form.cleaned_data["location"]
-            if Inventory.objects.filter(location=location).exists():
+            if Inventory.objects.filter(location=location, active=True).exists():
                 messages.error(
-                    request, "Cannot remove location that has inventory items."
+                    request, "Cannot remove location that has active products."
                 )
             else:
                 location.active = False

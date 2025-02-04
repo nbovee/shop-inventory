@@ -28,9 +28,9 @@
                             <small class="form-text text-muted">Enter the name for the new item</small>
                         </div>
                         <div class="form-group">
-                            {{ form.variant.label_tag }}
-                            {{ form.variant }}
-                            <small class="form-text text-muted">Enter the variant for this item</small>
+                            {{ form.manufacturer.label_tag }}
+                            {{ form.manufacturer }}
+                            <small class="form-text text-muted">Enter the manufacturer for this item</small>
                         </div>
                         <button type="submit" class="btn btn-primary">Add Item</button>
                         <a href="{% url 'inventory:manage_inventory' %}" class="btn btn-secondary">Cancel</a>
@@ -46,20 +46,23 @@
                     <h5 class="mb-0">Inactive Items</h5>
                 </div>
                 <div class="card-body">
-                    <p class="text-muted">These items can be reactivated by entering their exact name and variant above:</p>
+                    <div class="text-muted">Inactive products can be reactivated here:</div>
+                    <a href="{% url 'inventory:reactivate_base_item' %}" class="btn btn-outline-info mb-3">
+                        Reactivate Here
+                    </a>
                     <div class="table-responsive">
                         <table class="table table-sm">
                             <thead>
                                 <tr>
                                     <th>Name</th>
-                                    <th>Variant</th>
+                                    <th>Manufacturer</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for item in inactive_items %}
                                 <tr>
                                     <td>{{ item.name }}</td>
-                                    <td>{{ item.variant }}</td>
+                                    <td>{{ item.manufacturer }}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
