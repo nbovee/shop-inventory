@@ -37,7 +37,7 @@
                     <thead class="thead">
                         <tr>
                             <th>Item Name</th>
-                            <th>Variant</th>
+                            <th>Manufacturer</th>
                             <th>Stock</th>
                             <th>Actions</th>
                         </tr>
@@ -46,7 +46,7 @@
                         {% for item in inventory_items %}
                         <tr>
                             <td>{{ item.base_item.name }}</td>
-                            <td>{{ item.base_item.variant }}</td>
+                            <td>{{ item.base_item.manufacturer }}</td>
                             <td>{{ item.quantity }}</td>
                             <td>
                                 <form method="POST" action="{% url 'checkout:index' %}" class="d-inline">

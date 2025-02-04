@@ -7,7 +7,7 @@
     <a href="{% url 'inventory:add_item_to_location' %}" class="btn btn-primary mt-4">Add Item(s) to Location</a>
 
     {% if perms.inventory.add_baseitem %}
-    <a href="{% url 'inventory:manage_inventory' %}" class="btn btn-secondary mt-4">Edit Locations</a>
+    <a href="{% url 'inventory:manage_inventory' %}" class="btn btn-secondary mt-4">Manager Inventory Control</a>
     {% endif %}
 
     <form method="GET" action="{% url 'inventory:index' %}" class="mt-4">
@@ -24,10 +24,10 @@
         <thead>
             <tr>
                 <th scope="col">Item Name</th>
-                <th scope="col">Variant</th>
+                <th scope="col">Manufacturer</th>
                 <th scope="col">Location</th>
                 <th scope="col">Quantity</th>
-                <th scope="col">Barcode</th>
+                {% comment %} <th scope="col">Barcode</th> {% endcomment %}
                 <th scope="col">Actions</th>
             </tr>
         </thead>
@@ -41,10 +41,10 @@
                             <span class="badge badge-danger badge-pill">Inactive</span>
                         {% endif %}
                     </td>
-                    <td>{{ item.base_item.variant }}</td>
+                    <td>{{ item.base_item.manufacturer }}</td>
                     <td>{{ item.location.name }}</td>
                     <td>{{ item.quantity }}</td>
-                    <td>{{ item.base_item.barcode }}</td>
+                    {% comment %} <td>{{ item.base_item.barcode }}</td> {% endcomment %}
                     <td>
                         <a href="{% url 'inventory:edit_inventory' item.pk %}" class="btn btn-warning btn-sm">Edit</a>
                     </td>

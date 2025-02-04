@@ -8,7 +8,7 @@ from checkout.models import Order
 
 @pytest.fixture
 def base_item():
-    return BaseItem.objects.create(name="Test Item", variant="Test Variant")
+    return BaseItem.objects.create(name="Test Item", manufacturer="Test Manufacturer")
 
 
 @pytest.fixture

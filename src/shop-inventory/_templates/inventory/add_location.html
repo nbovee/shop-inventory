@@ -41,15 +41,26 @@
                     <h5 class="mb-0">Inactive Locations</h5>
                 </div>
                 <div class="card-body">
-                    <p class="text-muted">These locations can be reactivated by entering their names above:</p>
-                    <ul class="list-group">
-                        {% for location in inactive_locations %}
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                {{ location.name }}
-                                <span class="badge badge-secondary">Inactive</span>
-                            </li>
-                        {% endfor %}
-                    </ul>
+                    <div class="text-muted">Inactive locations can be reactivated here:</div>
+                    <a href="{% url 'inventory:reactivate_location' %}" class="btn btn-outline-info mb-3">
+                        Reactivate Here
+                    </a>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for location in inactive_locations %}
+                                <tr>
+                                    <td>{{ location.name }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

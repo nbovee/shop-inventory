@@ -18,7 +18,7 @@ pytestmark = pytest.mark.django_db
 def base_item():
     return BaseItem.objects.create(
         name="Test Item",
-        variant="Test Variant",
+        manufacturer="Test Manufacturer",
     )
 
 
@@ -40,14 +40,14 @@ def inventory_item(base_item, location):
 
 def test_base_item_form_valid():
     """Test valid base item form"""
-    form = BaseItemForm({"name": "New Item", "variant": "New Variant"})
+    form = BaseItemForm({"name": "New Item", "manufacturer": "New Manufacturer"})
     assert form.is_valid()
 
 
 def test_base_item_form_duplicate():
     """Test duplicate base item form"""
-    BaseItem.objects.create(name="Test", variant="Test")
-    form = BaseItemForm({"name": "Test", "variant": "Test"})
+    BaseItem.objects.create(name="Test", manufacturer="Test")
+    form = BaseItemForm({"name": "Test", "manufacturer": "Test"})
     assert not form.is_valid()
     assert "already exists" in str(form.errors)
 
@@ -139,7 +139,7 @@ def test_remove_base_item_form_valid(base_item):
 def test_barcode_generation():
     """Test barcode page generation"""
     # Create some inventory items
-    base_item = BaseItem.objects.create(name="Test", variant="Test")
+    base_item = BaseItem.objects.create(name="Test", manufacturer="Test")
     location = Location.objects.create(name="Test")
     Inventory.objects.create(
         base_item=base_item, location=location, quantity=10, barcode="123456789012"

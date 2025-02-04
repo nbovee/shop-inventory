@@ -9,14 +9,6 @@
             <h5 class="mb-0">Reactivate Product</h5>
         </div>
         <div class="card-body">
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-
             <form method="POST">
                 {% csrf_token %}
                 {% if form.errors %}
@@ -34,7 +26,7 @@
                     <small class="form-text text-muted">Select the item you want to reactivate</small>
                 </div>
                 <button type="submit" class="btn btn-success">Reactivate Item</button>
-                <a href="{% url 'inventory:manage_inventory' %}" class="btn btn-secondary">Cancel</a>
+                <a href="{% url 'inventory:manage_inventory' %}" class="btn btn-secondary">Return</a>
             </form>
         </div>
     </div>

@@ -30,7 +30,7 @@ class BaseItem(models.Model):
         return str(uuid.uuid4())
 
     name = models.CharField(max_length=30)
-    variant = models.CharField(max_length=30)
+    manufacturer = models.CharField(max_length=30)
     active = models.BooleanField(default=True)
     barcode = models.CharField(
         max_length=36,  # UUID length is 36, UPC-A is 12, UPC-E is 8
@@ -40,10 +40,10 @@ class BaseItem(models.Model):
     )
 
     class Meta:
-        unique_together = ("name", "variant")
+        unique_together = ("name", "manufacturer")
 
     def __str__(self):
-        return "{} ({})".format(self.name, self.variant)
+        return "{} ({})".format(self.name, self.manufacturer)
 
     def deactivate(self):
         self.active = False
@@ -65,7 +65,6 @@ class Location(models.Model):
 class Inventory(models.Model):
     base_item = models.ForeignKey(BaseItem, on_delete=models.CASCADE)
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
-
     quantity = models.PositiveIntegerField()
     active = models.BooleanField(default=True)
 
