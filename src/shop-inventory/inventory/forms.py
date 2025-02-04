@@ -5,13 +5,16 @@ from .models import BaseItem, Location, Inventory
 class BaseItemForm(forms.ModelForm):
     class Meta:
         model = BaseItem
-        fields = ["name", "variant"]
+        fields = ["name", "variant", "barcode"]
         widgets = {
             "name": forms.TextInput(
                 attrs={"class": "form-control", "placeholder": "Enter item name"}
             ),
             "variant": forms.TextInput(
                 attrs={"class": "form-control", "placeholder": "Enter item variant"}
+            ),
+            "barcode": forms.TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter barcode"}
             ),
         }
 
@@ -78,7 +81,7 @@ class LocationForm(forms.ModelForm):
 class AddInventoryForm(forms.ModelForm):
     class Meta:
         model = Inventory
-        fields = ["base_item", "location", "quantity", "barcode"]
+        fields = ["base_item", "location", "quantity"]
 
     def clean(self):
         cleaned_data = super().clean()
@@ -128,12 +131,11 @@ class RemoveInventoryForm(forms.Form):
 
 
 class EditInventoryForm(forms.ModelForm):
-    barcode = forms.UUIDField()
     quantity = forms.IntegerField(min_value=0)
 
     class Meta:
         model = Inventory
-        fields = ["base_item", "location", "barcode", "quantity"]
+        fields = ["base_item", "location", "quantity"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -184,3 +186,63 @@ class RemoveBaseItemForm(forms.Form):
         empty_label="Select an item to remove",
         widget=forms.Select(attrs={"class": "form-control"}),
     )
+
+
+class AddItemToLocation(forms.Form):
+    barcode = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+                "placeholder": "Scan barcode",
+                "autofocus": True,
+            }
+        ),
+        label="Barcode",
+    )
+
+
+class NewBaseItemForm(BaseItemForm):
+    class Meta(BaseItemForm.Meta):
+        fields = ["name", "variant"]  # barcode will be set from scan
+
+
+class AddQuantityForm(forms.Form):
+    quantity = forms.IntegerField(
+        widget=forms.NumberInput(
+            attrs={
+                "class": "form-control",
+                "placeholder": "Enter quantity",
+                "autofocus": True,
+            }
+        ),
+        min_value=1,
+        label="Quantity to Add",
+    )
+
+    def __init__(self, *args, base_item=None, location=None, **kwargs):
+        self.base_item = base_item
+        self.location = location
+        super().__init__(*args, **kwargs)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        quantity = cleaned_data.get("quantity")
+
+        if all([self.base_item, self.location, quantity]):
+            try:
+                # First check for inactive item
+                inactive_item = Inventory.objects.get(
+                    base_item=self.base_item, location=self.location, active=False
+                )
+                # Will reactivate in view
+                cleaned_data["reactivate_item"] = inactive_item
+            except Inventory.DoesNotExist:
+                pass
+
+            # Prevent adding quantity if base item is inactive
+            if not self.base_item.active:
+                raise forms.ValidationError(
+                    "Cannot add quantity to items with inactive base items."
+                )
+
+        return cleaned_data

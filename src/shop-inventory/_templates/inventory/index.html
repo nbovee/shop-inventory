@@ -4,10 +4,10 @@
 
 {% block content %}
     <a href="{% url 'inventory:stock_check' %}" class="btn btn-secondary mt-4">Stock Check (Update Quantities)</a>
-    <a href="{% url 'inventory:add_inventory' %}" class="btn btn-primary mt-4">Add Inventory Item</a>
+    <a href="{% url 'inventory:add_item_to_location' %}" class="btn btn-primary mt-4">Add Item(s) to Location</a>
 
     {% if perms.inventory.add_baseitem %}
-    <a href="{% url 'inventory:manage_inventory' %}" class="btn btn-secondary mt-4">Edit Base Items & Locations</a>
+    <a href="{% url 'inventory:manage_inventory' %}" class="btn btn-secondary mt-4">Edit Locations</a>
     {% endif %}
 
     <form method="GET" action="{% url 'inventory:index' %}" class="mt-4">
