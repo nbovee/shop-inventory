@@ -15,7 +15,10 @@
                 <label for="password">Password</label>
                 <input type="password" class="form-control" id="password" name="password" required>
             </div>
-            <button type="submit" class="btn btn-primary">Login</button>
+            <div class="btn-group">
+                <button type="submit" class="btn btn-primary">Login</button>
+                <a href="{% url 'index' %}" class="btn btn-secondary">Return</a>
+            </div>
         </form>
     </div>
 {% endblock %}
