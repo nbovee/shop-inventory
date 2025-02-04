@@ -10,8 +10,8 @@ from .models import BaseItem, Location, Inventory
 def create_default_locations(sender, **kwargs):
     if sender.label == "inventory":
         locations = [
-            {"name": "Shop Floor"},
-            {"name": "Shop Pantry"},
+            {"name": "Shopfloor"},
+            {"name": "Storage"},
         ]
         for loc in locations:
             location, created = Location.objects.get_or_create(name=loc["name"])

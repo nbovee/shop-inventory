@@ -16,4 +16,8 @@ urlpatterns = [
     path("stock_check/", views.stock_check, name="stock_check"),
     path("stock_update", views.stock_update, name="stock_update"),
     path("add-to-location/", views.add_item_to_location, name="add_item_to_location"),
+    path(
+        "reactivate_base_item/", views.reactivate_base_item, name="reactivate_base_item"
+    ),
+    path("reactivate_location/", views.reactivate_location, name="reactivate_location"),
 ]

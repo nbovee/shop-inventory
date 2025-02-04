@@ -35,11 +35,16 @@
             {% if inventory_items.count != 0 %}
             {% for item in inventory_items %}
                 <tr>
-                    <td>{{ item.base_item.name }}</td>
+                    <td>
+                        {{ item.base_item.name }}
+                        {% if not item.base_item.active %}
+                            <span class="badge badge-danger badge-pill">Inactive</span>
+                        {% endif %}
+                    </td>
                     <td>{{ item.base_item.variant }}</td>
                     <td>{{ item.location.name }}</td>
                     <td>{{ item.quantity }}</td>
-                    <td>{{ item.barcode }}</td>
+                    <td>{{ item.base_item.barcode }}</td>
                     <td>
                         <a href="{% url 'inventory:edit_inventory' item.pk %}" class="btn btn-warning btn-sm">Edit</a>
                     </td>

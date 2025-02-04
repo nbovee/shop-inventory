@@ -22,6 +22,8 @@ from .forms import (
     AddItemToLocation,
     NewBaseItemForm,
     AddQuantityForm,
+    ReactivateBaseItemForm,
+    ReactivateLocationForm,
 )
 
 from .barcode_gen import barcode_page_generation
@@ -76,12 +78,12 @@ def stock_update(request):
                     )
                 else:
                     item.quantity = new_quantity
-                    # If base item is inactive and quantity reaches 0, deactivate inventory item
+                    # If product is inactive and quantity reaches 0, deactivate inventory item
                     if new_quantity == 0 and not item.base_item.active:
                         item.active = False
                         messages.info(
                             request,
-                            f"{item} has been deactivated as its base item was marked for removal.",
+                            f"{item} has been deactivated as its product was marked for removal.",
                         )
                     item.save()
                     messages.success(
@@ -147,7 +149,7 @@ def add_base_item(request):
         try:
             if form.is_valid():
                 form.save()
-                messages.success(request, "Base item added successfully.")
+                messages.success(request, "Product added successfully.")
                 return redirect("inventory:add_base_item")
         except forms.ValidationError as e:
             if e.code == "reactivated":
@@ -192,17 +194,17 @@ def remove_base_item(request):
                 if remaining_count > 0:
                     messages.warning(
                         request,
-                        f"Base item '{base_item}' deactivated. {remaining_count} inventory items still have stock "
+                        f"Product '{base_item}' deactivated. {remaining_count} inventory items still have stock "
                         "and will be deactivated when they reach zero quantity.",
                     )
                 else:
                     messages.success(
                         request,
-                        f"Base item '{base_item}' and all its inventory items have been deactivated.",
+                        f"Product '{base_item}' and all its inventory items have been deactivated.",
                     )
             else:
                 messages.success(
-                    request, f"Base item '{base_item}' deactivated successfully."
+                    request, f"Product '{base_item}' deactivated successfully."
                 )
 
             return redirect("inventory:remove_base_item")
@@ -399,3 +401,37 @@ def add_item_to_location(request):
             context["scan_form"] = AddItemToLocation()
 
     return render(request, "inventory/add_item_to_location.html", context)
+
+
+@login_required
+def reactivate_base_item(request):
+    if request.method == "POST":
+        form = ReactivateBaseItemForm(request.POST)
+        if form.is_valid():
+            base_item = form.cleaned_data["base_item"]
+            base_item.active = True
+            base_item.save()
+            messages.success(
+                request, f"Product '{base_item}' reactivated successfully."
+            )
+            return redirect("inventory:reactivate_base_item")
+    else:
+        form = ReactivateBaseItemForm()
+    return render(request, "inventory/reactivate_base_item.html", {"form": form})
+
+
+@login_required
+def reactivate_location(request):
+    if request.method == "POST":
+        form = ReactivateLocationForm(request.POST)
+        if form.is_valid():
+            location = form.cleaned_data["location"]
+            location.active = True
+            location.save()
+            messages.success(
+                request, f"Location '{location.name}' reactivated successfully."
+            )
+            return redirect("inventory:reactivate_location")
+    else:
+        form = ReactivateLocationForm()
+    return render(request, "inventory/reactivate_location.html", {"form": form})

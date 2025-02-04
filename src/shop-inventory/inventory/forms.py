@@ -156,10 +156,10 @@ class StockUpdateForm(forms.Form):
             try:
                 inventory_item = Inventory.objects.get(id=item_id, active=True)
 
-                # Prevent adding quantity if base item is inactive
+                # Prevent adding quantity if product is inactive
                 if delta_qty > 0 and not inventory_item.base_item.active:
                     raise forms.ValidationError(
-                        "Cannot add quantity to items with inactive base items."
+                        "Cannot add quantity to items with inactive products."
                     )
 
                 # Check if reducing quantity would go below 0
@@ -239,10 +239,26 @@ class AddQuantityForm(forms.Form):
             except Inventory.DoesNotExist:
                 pass
 
-            # Prevent adding quantity if base item is inactive
+            # Prevent adding quantity if product is inactive
             if not self.base_item.active:
                 raise forms.ValidationError(
-                    "Cannot add quantity to items with inactive base items."
+                    "Cannot add quantity to items with inactive products."
                 )
 
         return cleaned_data
+
+
+class ReactivateBaseItemForm(forms.Form):
+    base_item = forms.ModelChoiceField(
+        queryset=BaseItem.objects.filter(active=False).order_by("name", "variant"),
+        empty_label="Select an item to reactivate",
+        widget=forms.Select(attrs={"class": "form-control"}),
+    )
+
+
+class ReactivateLocationForm(forms.Form):
+    location = forms.ModelChoiceField(
+        queryset=Location.objects.filter(active=False).order_by("name"),
+        empty_label="Select a location to reactivate",
+        widget=forms.Select(attrs={"class": "form-control"}),
+    )
