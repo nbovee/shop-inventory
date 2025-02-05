@@ -6,9 +6,9 @@ from inventory.forms import (
     EditInventoryForm,
     StockUpdateForm,
     RemoveLocationForm,
-    RemoveBaseItemForm,
+    DeactivateBaseItemForm,
 )
-from inventory.models import BaseItem, Location, Inventory
+from inventory.models import Product, Location, InventoryEntry
 from inventory.barcode_gen import barcode_page_generation
 
 pytestmark = pytest.mark.django_db
@@ -16,7 +16,7 @@ pytestmark = pytest.mark.django_db
 
 @pytest.fixture
 def base_item():
-    return BaseItem.objects.create(
+    return Product.objects.create(
         name="Test Item",
         manufacturer="Test Manufacturer",
     )
@@ -31,7 +31,7 @@ def location():
 
 @pytest.fixture
 def inventory_item(base_item, location):
-    return Inventory.objects.create(
+    return InventoryEntry.objects.create(
         base_item=base_item,
         location=location,
         quantity=10,
@@ -46,7 +46,7 @@ def test_base_item_form_valid():
 
 def test_base_item_form_duplicate():
     """Test duplicate base item form"""
-    BaseItem.objects.create(name="Test", manufacturer="Test")
+    Product.objects.create(name="Test", manufacturer="Test")
     form = BaseItemForm({"name": "Test", "manufacturer": "Test"})
     assert not form.is_valid()
     assert "already exists" in str(form.errors)
@@ -132,16 +132,16 @@ def test_remove_location_form_valid(location):
 
 def test_remove_base_item_form_valid(base_item):
     """Test valid remove base item form"""
-    form = RemoveBaseItemForm({"base_item": base_item.id})
+    form = DeactivateBaseItemForm({"base_item": base_item.id})
     assert form.is_valid()
 
 
 def test_barcode_generation():
     """Test barcode page generation"""
     # Create some inventory items
-    base_item = BaseItem.objects.create(name="Test", manufacturer="Test")
+    base_item = Product.objects.create(name="Test", manufacturer="Test")
     location = Location.objects.create(name="Test")
-    Inventory.objects.create(
+    InventoryEntry.objects.create(
         base_item=base_item, location=location, quantity=10, barcode="123456789012"
     )
 

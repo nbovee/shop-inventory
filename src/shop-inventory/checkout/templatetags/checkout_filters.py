@@ -1,5 +1,5 @@
 from django import template
-from inventory.models import Inventory
+from inventory.models import InventoryEntry
 
 register = template.Library()
 
@@ -8,6 +8,6 @@ register = template.Library()
 def filter_by_id(items, item_id):
     """Get an inventory item by ID from a queryset."""
     try:
-        return Inventory.objects.get(id=item_id)
-    except Inventory.DoesNotExist:
+        return InventoryEntry.objects.get(id=item_id)
+    except InventoryEntry.DoesNotExist:
         return None

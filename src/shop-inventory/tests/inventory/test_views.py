@@ -1,7 +1,7 @@
 import pytest
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from inventory.models import BaseItem, Location, Inventory
+from inventory.models import Product, Location, InventoryEntry
 from unittest.mock import patch
 
 # Mark all tests in this file as requiring database access
@@ -32,7 +32,7 @@ def admin_user():
 
 @pytest.fixture
 def base_item():
-    return BaseItem.objects.create(
+    return Product.objects.create(
         name="Test Item",
         manufacturer="Test Manufacturer",
     )
@@ -47,7 +47,7 @@ def location():
 
 @pytest.fixture
 def inventory_item(base_item, location):
-    return Inventory.objects.create(
+    return InventoryEntry.objects.create(
         base_item=base_item,
         location=location,
         quantity=10,
@@ -113,7 +113,9 @@ def test_add_inventory_view(client, admin_user, base_item, location):
     }
     response = client.post(reverse("inventory:add_inventory"), data)
     assert response.status_code == 302  # Should redirect after successful addition
-    assert Inventory.objects.filter(base_item=base_item, location=location).exists()
+    assert InventoryEntry.objects.filter(
+        base_item=base_item, location=location
+    ).exists()
 
 
 def test_edit_inventory_view(client, admin_user, inventory_item):
@@ -145,7 +147,7 @@ def test_add_base_item_view(client, admin_user):
     data = {"name": "New Item", "manufacturer": "New Manufacturer"}
     response = client.post(reverse("inventory:add_base_item"), data)
     assert response.status_code == 302
-    assert BaseItem.objects.filter(name="New Item").exists()
+    assert Product.objects.filter(name="New Item").exists()
 
 
 def test_remove_base_item_view(client, admin_user, base_item, inventory_item):

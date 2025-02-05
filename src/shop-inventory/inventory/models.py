@@ -1,6 +1,5 @@
 from django.db import models
 from django.core.exceptions import ValidationError
-import uuid
 import re
 
 
@@ -15,17 +14,21 @@ def validate_barcode(value):
     #   R controls which D values map to product or manufacturer
     # We also support UUID codes, which are used as a last resort for items that do not have either of the above barcodes
 
-    if re.match(r"^\d{12}$", value):
+    if barcode_is_upc_a(value):
         digits = [int(d) for d in value]
         # UPC check digit validation:
         # 3x(sum of odd positions) + sum of even positions should be divisible by 10
         total = 3 * sum(digits[0:11:2]) + sum(digits[1:11:2])
-        if total % 10 != 19 - digits[12]:
+        if total % 10 == 0 and digits[12] == 0:
+            return True
+        elif total % 10 == 10 - digits[12]:
+            return True
+        else:
             raise ValidationError("UPC-A length but invalid check digit.")
-    elif re.match(r"^\d{8}$", value):
+    elif barcode_is_upc_e(value):
         # assume this is a UPC-E code, which we don't validate
         return True
-    elif len(uuid.UUID(str(value)).hex) == 36:
+    elif barcode_is_uuid(value):
         # assume we have scanned one of our custom uuid codes, which we dont validate
         return True
     raise ValidationError(
@@ -33,24 +36,44 @@ def validate_barcode(value):
     )
 
 
-class BaseItem(models.Model):
+def barcode_is_upc_a(value):
+    return re.match(r"^\d{12}$", value)
+
+
+def barcode_is_upc_e(value):
+    return re.match(r"^\d{8}$", value)
+
+
+def barcode_is_uuid(value):
+    return True if len(str(value)) == 32 else False
+
+
+def normalize_barcode(barcode):
+    """Normalize Type 2 UPCs by zeroing out the price portion
+    Return all others untouched"""
+    if len(barcode) == 12 and barcode[0] == "2":
+        barcode = f"{barcode[:6]}00000{barcode[-1]}"
+    return barcode
+
+
+class Product(models.Model):
     name = models.CharField(max_length=30)
     manufacturer = models.CharField(max_length=30)
     active = models.BooleanField(default=True)
     barcode = models.CharField(
-        max_length=36,  # UUID length is 36, UPC-A is 12, UPC-E is 8
+        max_length=32,  # UUID length is 32, UPC-A is 12, UPC-E is 8
         validators=[validate_barcode],
         unique=True,
     )
     normalized_barcode = models.CharField(
-        max_length=36,
+        max_length=32,
         editable=False,  # Only set programmatically
         db_index=True,
     )  # For efficient lookups
 
     def clean(self):
         # Check for duplicate name + manufacturer, excluding self
-        duplicate_name = BaseItem.objects.filter(
+        duplicate_name = Product.objects.filter(
             name=self.name, manufacturer=self.manufacturer
         )
         if self.pk:  # If editing existing item
@@ -63,11 +86,10 @@ class BaseItem(models.Model):
             )
 
         # Check for duplicate normalized barcode
+        test_barcode = normalize_barcode(self.barcode)
         if self.barcode.startswith("2") and len(self.barcode) == 12:
             # For Type 2 UPCs, check if any item exists with same first 6 digits
-            duplicate_barcode = BaseItem.objects.filter(
-                barcode__startswith="2", barcode__regex=f"^{self.barcode[:6]}\\d{{6}}$"
-            )
+            duplicate_barcode = Product.objects.filter(normalize_barcode=test_barcode)
             if self.pk:  # If editing existing item
                 duplicate_barcode = duplicate_barcode.exclude(pk=self.pk)
             if duplicate_barcode.exists():
@@ -78,12 +100,8 @@ class BaseItem(models.Model):
                 )
 
     def save(self, *args, **kwargs):
-        self.full_clean()  # This will call clean()
-        # Normalize Type 2 UPCs by zeroing out the price portion
-        if self.barcode.startswith("2") and len(self.barcode) == 12:
-            self.normalized_barcode = f"{self.barcode[:6]}00000{self.barcode[-1]}"
-        else:
-            self.normalized_barcode = self.barcode
+        self.full_clean()
+        self.normalized_barcode = normalize_barcode(self.barcode)
         super().save(*args, **kwargs)
 
     class Meta:
@@ -109,8 +127,8 @@ class Location(models.Model):
         return "{}".format(self.name)
 
 
-class Inventory(models.Model):
-    base_item = models.ForeignKey(BaseItem, on_delete=models.CASCADE)
+class InventoryEntry(models.Model):
+    base_item = models.ForeignKey(Product, on_delete=models.CASCADE)
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
     active = models.BooleanField(default=True)
@@ -127,4 +145,32 @@ class Inventory(models.Model):
 
     def activate(self):
         self.active = True
+        self.save()
+
+
+class ProductUUID(models.Model):
+    base_item = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name="uuid_barcodes"
+    )
+    uuid_barcode = models.CharField(
+        max_length=36,
+        unique=True,
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def active(self):
+        return self.base_item.active
+
+    def __str__(self):
+        return f"{self.uuid_barcode} -> {self.base_item}"
+
+    def deactivate(self):
+        self.base_item.active = False
+        self.base_item.save()
+        self.save()
+
+    def activate(self):
+        self.base_item.active = True
+        self.base_item.save()
         self.save()
