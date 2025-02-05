@@ -3,7 +3,7 @@ from .models import Product, Location, InventoryEntry, ProductUUID
 import uuid
 
 
-class BaseItemForm(forms.ModelForm):
+class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = ["name", "manufacturer", "barcode"]
@@ -181,7 +181,7 @@ class RemoveLocationForm(forms.Form):
     )
 
 
-class DeactivateBaseItemForm(forms.Form):
+class DeactivateProductForm(forms.Form):
     base_item = forms.ModelChoiceField(
         queryset=Product.objects.filter(active=True).order_by("name", "manufacturer"),
         empty_label="Select an item to deactivate",
@@ -202,8 +202,8 @@ class AddItemToLocation(forms.Form):
     )
 
 
-class BaseItemFromBarcodeForm(BaseItemForm):
-    class Meta(BaseItemForm.Meta):
+class ProductFromBarcodeForm(ProductForm):
+    class Meta(ProductForm.Meta):
         fields = ["name", "manufacturer"]  # barcode will be set from scan
 
 
@@ -249,7 +249,7 @@ class AddQuantityForm(forms.Form):
         return cleaned_data
 
 
-class ReactivateBaseItemForm(forms.Form):
+class ReactivateProductForm(forms.Form):
     base_item = forms.ModelChoiceField(
         queryset=Product.objects.filter(active=False).order_by("name", "manufacturer"),
         empty_label="Select an item to reactivate",

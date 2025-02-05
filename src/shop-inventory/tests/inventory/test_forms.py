@@ -1,12 +1,12 @@
 import pytest
 from inventory.forms import (
-    BaseItemForm,
+    ProductForm,
     LocationForm,
     AddInventoryForm,
     EditInventoryForm,
     StockUpdateForm,
     RemoveLocationForm,
-    DeactivateBaseItemForm,
+    DeactivateProductForm,
 )
 from inventory.models import Product, Location, InventoryEntry
 from inventory.barcode_gen import barcode_page_generation
@@ -40,14 +40,14 @@ def inventory_item(base_item, location):
 
 def test_base_item_form_valid():
     """Test valid base item form"""
-    form = BaseItemForm({"name": "New Item", "manufacturer": "New Manufacturer"})
+    form = ProductForm({"name": "New Item", "manufacturer": "New Manufacturer"})
     assert form.is_valid()
 
 
 def test_base_item_form_duplicate():
     """Test duplicate base item form"""
     Product.objects.create(name="Test", manufacturer="Test")
-    form = BaseItemForm({"name": "Test", "manufacturer": "Test"})
+    form = ProductForm({"name": "Test", "manufacturer": "Test"})
     assert not form.is_valid()
     assert "already exists" in str(form.errors)
 
@@ -132,7 +132,7 @@ def test_remove_location_form_valid(location):
 
 def test_remove_base_item_form_valid(base_item):
     """Test valid remove base item form"""
-    form = DeactivateBaseItemForm({"base_item": base_item.id})
+    form = DeactivateProductForm({"base_item": base_item.id})
     assert form.is_valid()
 
 

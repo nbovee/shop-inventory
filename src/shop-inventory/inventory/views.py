@@ -19,18 +19,18 @@ import uuid
 
 
 from .forms import (
-    BaseItemForm,
+    ProductForm,
     LocationForm,
     AddInventoryForm,
     RemoveInventoryForm,
     EditInventoryForm,
     StockUpdateForm,
     RemoveLocationForm,
-    DeactivateBaseItemForm,
+    DeactivateProductForm,
     AddItemToLocation,
-    BaseItemFromBarcodeForm,
+    ProductFromBarcodeForm,
     AddQuantityForm,
-    ReactivateBaseItemForm,
+    ReactivateProductForm,
     ReactivateLocationForm,
     UUIDItemForm,
     LinkUUIDForm,
@@ -155,7 +155,7 @@ def remove_inventory(request):
 @login_required
 def add_base_item(request):
     if request.method == "POST":
-        form = BaseItemForm(request.POST)
+        form = ProductForm(request.POST)
         try:
             if form.is_valid():
                 form.save()
@@ -167,7 +167,7 @@ def add_base_item(request):
                 return redirect("inventory:add_base_item")
             form.add_error(None, e)
     else:
-        form = BaseItemForm()
+        form = ProductForm()
 
     # Get list of inactive items for reference
     inactive_items = Product.objects.filter(active=False).order_by(
@@ -184,7 +184,7 @@ def add_base_item(request):
 @login_required
 def remove_base_item(request):
     if request.method == "POST":
-        form = DeactivateBaseItemForm(request.POST)
+        form = DeactivateProductForm(request.POST)
         if form.is_valid():
             base_item = form.cleaned_data["base_item"]
 
@@ -222,7 +222,7 @@ def remove_base_item(request):
 
             return redirect("inventory:remove_base_item")
     else:
-        form = DeactivateBaseItemForm()
+        form = DeactivateProductForm()
     return render(request, "inventory/remove_base_item.html", {"form": form})
 
 
@@ -392,14 +392,14 @@ def add_item_to_location(request):
                         )
                     except Product.DoesNotExist:
                         # Show new item form for non-UUID barcodes
-                        context["new_item_form"] = BaseItemFromBarcodeForm()
+                        context["new_item_form"] = ProductFromBarcodeForm()
                         context["barcode"] = barcode
                         context["scan_form"] = form
                         return render(
                             request, "inventory/add_item_to_location.html", context
                         )
             elif action == "add_new_item":
-                form = BaseItemFromBarcodeForm(request.POST)
+                form = ProductFromBarcodeForm(request.POST)
                 barcode = request.POST.get("barcode")
 
                 if form.is_valid():
@@ -506,7 +506,7 @@ def add_item_to_location(request):
                 if request.POST.get("create_new"):
                     context.update(
                         {
-                            "new_item_form": BaseItemFromBarcodeForm(),
+                            "new_item_form": ProductFromBarcodeForm(),
                             "barcode": uuid_barcode,  # Pass the UUID as the barcode
                             "scan_form": AddItemToLocation(),
                             "barcode_is_uuid": True,  # Add this to help template show correct message
@@ -578,7 +578,7 @@ def add_item_to_location(request):
 @login_required
 def reactivate_base_item(request):
     if request.method == "POST":
-        form = ReactivateBaseItemForm(request.POST)
+        form = ReactivateProductForm(request.POST)
         if form.is_valid():
             base_item = form.cleaned_data["base_item"]
             base_item.active = True
@@ -588,7 +588,7 @@ def reactivate_base_item(request):
             )
             return redirect("inventory:reactivate_base_item")
     else:
-        form = ReactivateBaseItemForm()
+        form = ReactivateProductForm()
     return render(request, "inventory/reactivate_base_item.html", {"form": form})
 
 
