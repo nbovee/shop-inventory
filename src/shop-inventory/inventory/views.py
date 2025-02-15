@@ -382,12 +382,11 @@ def add_item_to_location(request):
                         if not created:
                             inventory_item.quantity += quantity
                             inventory_item.save()
-                            messages.success(request, f"Added {quantity} to {product}")
-                        else:
-                            messages.success(
-                                request,
-                                f"Created new inventory item: {quantity} x {product}",
-                            )
+
+                        messages.success(
+                            request,
+                            f"Added {quantity} {product} to {inventory_item.location}",
+                        )
 
                     # Return to barcode scanning
                     context["scan_form"] = AddItemToLocation()
