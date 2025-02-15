@@ -290,7 +290,7 @@ def edit_inventory(request, pk):
 @login_required
 # @permission_required("add_baseitem", raise_exception=True)
 def qrcode_sheet(request):
-    result = barcode_page_generation()
+    result = barcode_page_generation(pages=10)
     response = HttpResponse(result, content_type="application/pdf")
     return response
 
