@@ -1,14 +1,14 @@
 import pytest
 from django.urls import reverse
 from django.contrib.messages import get_messages
-from inventory.models import Inventory, BaseItem, Location
+from inventory.models import Inventory, Product, Location
 from checkout.views import get_cart
 from checkout.models import Order
 
 
 @pytest.fixture
-def base_item():
-    return BaseItem.objects.create(name="Test Item", manufacturer="Test Manufacturer")
+def product():
+    return Product.objects.create(name="Test Item", manufacturer="Test Manufacturer")
 
 
 @pytest.fixture
@@ -17,8 +17,8 @@ def location():
 
 
 @pytest.fixture
-def inventory_item(base_item, location):
-    return Inventory.objects.create(base_item=base_item, location=location, quantity=10)
+def inventory_item(product, location):
+    return Inventory.objects.create(product=product, location=location, quantity=10)
 
 
 @pytest.fixture

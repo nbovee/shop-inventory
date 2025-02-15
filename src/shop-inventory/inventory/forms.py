@@ -1,10 +1,10 @@
 from django import forms
-from .models import BaseItem, Location, Inventory
+from .models import Product, Location, Inventory
 
 
-class BaseItemForm(forms.ModelForm):
+class ProductForm(forms.ModelForm):
     class Meta:
-        model = BaseItem
+        model = Product
         fields = ["name", "manufacturer", "barcode"]
         widgets = {
             "name": forms.TextInput(
@@ -26,7 +26,7 @@ class BaseItemForm(forms.ModelForm):
         if name and manufacturer:
             try:
                 # Check for inactive item with same name/manufacturer
-                inactive_item = BaseItem.objects.get(
+                inactive_item = Product.objects.get(
                     name=name, manufacturer=manufacturer, active=False
                 )
                 # If found, reactivate it
@@ -35,9 +35,9 @@ class BaseItemForm(forms.ModelForm):
                     "This item was previously deactivated and has been restored.",
                     code="reactivated",
                 )
-            except BaseItem.DoesNotExist:
+            except Product.DoesNotExist:
                 # Check if active item with same name/manufacturer exists
-                if BaseItem.objects.filter(
+                if Product.objects.filter(
                     name=name, manufacturer=manufacturer, active=True
                 ).exists():
                     raise forms.ValidationError(
@@ -81,21 +81,21 @@ class LocationForm(forms.ModelForm):
 class AddInventoryForm(forms.ModelForm):
     class Meta:
         model = Inventory
-        fields = ["base_item", "location", "quantity"]
+        fields = ["product", "location", "quantity"]
 
     def clean(self):
         cleaned_data = super().clean()
-        base_item = cleaned_data.get("base_item")
+        product = cleaned_data.get("product")
         location = cleaned_data.get("location")
         quantity = cleaned_data.get("quantity")
 
-        if not all([base_item, location, quantity is not None]):
+        if not all([product, location, quantity is not None]):
             return cleaned_data
 
         try:
             # First check for inactive item
             inactive_item = Inventory.objects.get(
-                base_item=base_item, location=location, active=False
+                product=product, location=location, active=False
             )
             # Reactivate the item and update its quantity
             inactive_item.quantity = quantity
@@ -108,7 +108,7 @@ class AddInventoryForm(forms.ModelForm):
             # Then check for active item
             try:
                 existing_item = Inventory.objects.get(
-                    base_item=base_item, location=location, active=True
+                    product=product, location=location, active=True
                 )
                 # Update existing item's quantity and barcode
                 existing_item.quantity += quantity
@@ -125,7 +125,7 @@ class AddInventoryForm(forms.ModelForm):
 
 
 class RemoveInventoryForm(forms.Form):
-    base_item = forms.ModelChoiceField(queryset=BaseItem.objects.filter(active=True))
+    product = forms.ModelChoiceField(queryset=Product.objects.filter(active=True))
     location = forms.ModelChoiceField(queryset=Location.objects.filter(active=True))
     quantity = forms.IntegerField(min_value=1)
 
@@ -135,11 +135,11 @@ class EditInventoryForm(forms.ModelForm):
 
     class Meta:
         model = Inventory
-        fields = ["base_item", "location", "quantity"]
+        fields = ["product", "location", "quantity"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["base_item"].queryset = BaseItem.objects.filter(active=True)
+        self.fields["product"].queryset = Product.objects.filter(active=True)
         self.fields["location"].queryset = Location.objects.filter(active=True)
 
 
@@ -157,7 +157,7 @@ class StockUpdateForm(forms.Form):
                 inventory_item = Inventory.objects.get(id=item_id, active=True)
 
                 # Prevent adding quantity if product is inactive
-                if delta_qty > 0 and not inventory_item.base_item.active:
+                if delta_qty > 0 and not inventory_item.product.active:
                     raise forms.ValidationError(
                         "Cannot add quantity to items with inactive products."
                     )
@@ -180,9 +180,9 @@ class RemoveLocationForm(forms.Form):
     )
 
 
-class RemoveBaseItemForm(forms.Form):
-    base_item = forms.ModelChoiceField(
-        queryset=BaseItem.objects.filter(active=True).order_by("name", "manufacturer"),
+class RemoveProductForm(forms.Form):
+    product = forms.ModelChoiceField(
+        queryset=Product.objects.filter(active=True).order_by("name", "manufacturer"),
         empty_label="Select an item to remove",
         widget=forms.Select(attrs={"class": "form-control"}),
     )
@@ -201,8 +201,8 @@ class AddItemToLocation(forms.Form):
     )
 
 
-class NewBaseItemForm(BaseItemForm):
-    class Meta(BaseItemForm.Meta):
+class NewProductForm(ProductForm):
+    class Meta(ProductForm.Meta):
         fields = ["name", "manufacturer"]  # barcode will be set from scan
 
 
@@ -219,8 +219,8 @@ class AddQuantityForm(forms.Form):
         label="Quantity to Add",
     )
 
-    def __init__(self, *args, base_item=None, location=None, **kwargs):
-        self.base_item = base_item
+    def __init__(self, *args, product=None, location=None, **kwargs):
+        self.product = product
         self.location = location
         super().__init__(*args, **kwargs)
 
@@ -228,11 +228,11 @@ class AddQuantityForm(forms.Form):
         cleaned_data = super().clean()
         quantity = cleaned_data.get("quantity")
 
-        if all([self.base_item, self.location, quantity]):
+        if all([self.product, self.location, quantity]):
             try:
                 # First check for inactive item
                 inactive_item = Inventory.objects.get(
-                    base_item=self.base_item, location=self.location, active=False
+                    product=self.product, location=self.location, active=False
                 )
                 # Will reactivate in view
                 cleaned_data["reactivate_item"] = inactive_item
@@ -240,7 +240,7 @@ class AddQuantityForm(forms.Form):
                 pass
 
             # Prevent adding quantity if product is inactive
-            if not self.base_item.active:
+            if not self.product.active:
                 raise forms.ValidationError(
                     "Cannot add quantity to items with inactive products."
                 )
@@ -248,9 +248,9 @@ class AddQuantityForm(forms.Form):
         return cleaned_data
 
 
-class ReactivateBaseItemForm(forms.Form):
-    base_item = forms.ModelChoiceField(
-        queryset=BaseItem.objects.filter(active=False).order_by("name", "manufacturer"),
+class ReactivateProductForm(forms.Form):
+    product = forms.ModelChoiceField(
+        queryset=Product.objects.filter(active=False).order_by("name", "manufacturer"),
         empty_label="Select an item to reactivate",
         widget=forms.Select(attrs={"class": "form-control"}),
     )

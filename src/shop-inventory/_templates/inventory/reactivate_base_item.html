@@ -9,7 +9,7 @@
             <h5 class="mb-0">Reactivate Product</h5>
         </div>
         <div class="card-body">
-            <form method="POST">
+            <form method="post">
                 {% csrf_token %}
                 {% if form.errors %}
                     <div class="alert alert-danger">
@@ -21,8 +21,8 @@
                     </div>
                 {% endif %}
                 <div class="form-group">
-                    {{ form.base_item.label_tag }}
-                    {{ form.base_item }}
+                    {{ form.product.label_tag }}
+                    {{ form.product }}
                     <small class="form-text text-muted">Select the item you want to reactivate</small>
                 </div>
                 <button type="submit" class="btn btn-success">Reactivate Item</button>

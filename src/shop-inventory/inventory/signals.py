@@ -3,7 +3,7 @@ from django.dispatch import receiver
 from django.db.models.signals import post_migrate
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
-from .models import BaseItem, Location, Inventory
+from .models import Product, Location, Inventory
 
 
 @receiver(post_migrate)
@@ -50,7 +50,7 @@ def add_models_permissions(group, models, delete=False):
 def create_shop_employee_permissions(sender, **kwargs):
     if sender.label == "inventory":
         group, created = Group.objects.get_or_create(name="Shop Employee")
-        models = [Inventory]  # Add other related models as needed
+        models = [Inventory, Product]  # Add other related models as needed
         add_models_permissions(group, models)
 
 
@@ -58,5 +58,5 @@ def create_shop_employee_permissions(sender, **kwargs):
 def create_shop_manager_permissions(sender, **kwargs):
     if sender.label == "inventory":
         group, created = Group.objects.get_or_create(name="Shop Manager")
-        models = [Inventory, BaseItem, Location]  # Add other related models as needed
+        models = [Inventory, Product, Location]  # Add other related models as needed
         add_models_permissions(group, models)

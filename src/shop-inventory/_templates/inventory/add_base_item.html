@@ -11,7 +11,7 @@
                     <h5 class="mb-0">Add New Product</h5>
                 </div>
                 <div class="card-body">
-                    <form method="POST">
+                    <form method="post">
                         {% csrf_token %}
                         {% if form.errors %}
                             <div class="alert alert-danger">
@@ -47,7 +47,7 @@
                 </div>
                 <div class="card-body">
                     <div class="text-muted">Inactive products can be reactivated here:</div>
-                    <a href="{% url 'inventory:reactivate_base_item' %}" class="btn btn-outline-info mb-3">
+                    <a href="{% url 'inventory:reactivate_product' %}" class="btn btn-outline-info mb-3">
                         Reactivate Here
                     </a>
                     <div class="table-responsive">

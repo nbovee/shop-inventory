@@ -31,14 +31,14 @@
                 <h5 class="mb-0">Add to {{ selected_location.name }}</h5>
             </div>
             <div class="card-body">
-                {% if base_item and quantity_form %}
+                {% if product and quantity_form %}
                     {# Show quantity form #}
-                    <form method="POST">
+                    <form method="post">
                         {% csrf_token %}
                         <input type="hidden" name="action" value="add_quantity">
-                        <input type="hidden" name="base_item_id" value="{{ base_item.id }}">
+                        <input type="hidden" name="product_id" value="{{ product.id }}">
 
-                        <h5>{{ base_item.name }} ({{ base_item.manufacturer }})</h5>
+                        <h5>{{ product.name }} ({{ product.manufacturer }})</h5>
                         <div class="form-group mb-3">
                             {{ quantity_form.quantity.label_tag }}
                             {{ quantity_form.quantity }}
@@ -51,7 +51,7 @@
                         <h6>New Item Detected</h6>
                         <p>Please verify this is a new item and enter its details carefully.</p>
                     </div>
-                    <form method="POST">
+                    <form method="post">
                         {% csrf_token %}
                         <input type="hidden" name="action" value="add_new_item">
                         <input type="hidden" name="barcode" value="{{ barcode }}">
@@ -67,20 +67,12 @@
                             {{ new_item_form.manufacturer }}
                             <small class="form-text text-muted">Verify the manufacturer information</small>
                         </div>
-                        <div class="alert alert-info">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="confirmCheck" required>
-                                <label class="form-check-label" for="confirmCheck">
-                                    I confirm this is a new item and the information above is correct
-                                </label>
-                            </div>
-                        </div>
                         <button type="submit" class="btn btn-primary">Create Item</button>
                         <a href="?location={{ selected_location.id }}" class="btn btn-secondary">Cancel</a>
                     </form>
                 {% else %}
                     {# Show barcode form #}
-                    <form method="POST">
+                    <form method="post">
                         {% csrf_token %}
                         <input type="hidden" name="action" value="scan_barcode">
 

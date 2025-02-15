@@ -2,7 +2,7 @@ import pytest
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
-from inventory.models import BaseItem, Location, Inventory
+from inventory.models import Product, Location, Inventory
 from checkout.models import Order, OrderItem
 
 # Mark all tests in this file as requiring database access
@@ -27,7 +27,7 @@ def staff_user():
         is_staff=True,
     )
     # Add necessary permissions
-    permission = Permission.objects.get(codename="add_baseitem")
+    permission = Permission.objects.get(codename="add_product")
     user.user_permissions.add(permission)
     return user
 
@@ -40,17 +40,17 @@ def floor_location():
 
 
 @pytest.fixture
-def base_item():
-    return BaseItem.objects.create(
+def product():
+    return Product.objects.create(
         name="Test Item",
         manufacturer="Test Manufacturer",
     )
 
 
 @pytest.fixture
-def inventory_item(base_item, floor_location):
+def inventory_item(product, floor_location):
     return Inventory.objects.create(
-        base_item=base_item,
+        product=product,
         location=floor_location,
         quantity=10,
     )

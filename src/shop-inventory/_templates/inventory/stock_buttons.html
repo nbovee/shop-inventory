@@ -1,4 +1,4 @@
-<form method="POST" action="{% url 'inventory:stock_update' %}" class="d-inline-block">
+<form method="post" action="{% url 'inventory:stock_update' %}" class="d-inline-block">
     {% csrf_token %}
     <input type="hidden" name="item_id" value="{{ item.id }}">
     <div class="btn-group" role="group" aria-label="Stock adjustment buttons">

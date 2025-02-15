@@ -7,8 +7,8 @@ urlpatterns = [
     path("", views.index, name="index"),
     path("add/", views.add_inventory, name="add_inventory"),
     path("edit/<int:pk>/", views.edit_inventory, name="edit_inventory"),
-    path("add_base_item/", views.add_base_item, name="add_base_item"),
-    path("remove_base_item/", views.remove_base_item, name="remove_base_item"),
+    path("add_product/", views.add_product, name="add_product"),
+    path("remove_product/", views.remove_product, name="remove_product"),
     path("add_location/", views.add_location, name="add_location"),
     path("remove_location/", views.remove_location, name="remove_location"),
     path("manage/", views.manage_inventory, name="manage_inventory"),
@@ -16,8 +16,6 @@ urlpatterns = [
     path("stock_check/", views.stock_check, name="stock_check"),
     path("stock_update", views.stock_update, name="stock_update"),
     path("add-to-location/", views.add_item_to_location, name="add_item_to_location"),
-    path(
-        "reactivate_base_item/", views.reactivate_base_item, name="reactivate_base_item"
-    ),
+    path("reactivate_product/", views.reactivate_product, name="reactivate_product"),
     path("reactivate_location/", views.reactivate_location, name="reactivate_location"),
 ]

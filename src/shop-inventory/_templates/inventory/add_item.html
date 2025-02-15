@@ -2,7 +2,7 @@
 {% block content %}
 
 <h1 class="mt-4">Add Inventory</h1>
-<form method="POST" class="mt-4">
+<form method="post" class="mt-4">
   {% csrf_token %} {{ form.as_p }}
   <button type="submit" class="btn btn-primary">Add Item</button>
 </form>
