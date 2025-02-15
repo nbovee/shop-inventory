@@ -4,7 +4,7 @@
 
 {% block content %}
     <h1 class="mt-4">Deactivate Location</h1>
-    <form method="POST" class="mt-4">
+    <form method="post" class="mt-4">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit" class="btn btn-danger">Deactivate Location</button>

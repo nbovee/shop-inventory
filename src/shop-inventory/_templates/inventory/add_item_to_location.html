@@ -95,7 +95,7 @@
                         <h6>New Item Detected</h6>
                         <p>Please verify this is a new item and enter its details carefully.</p>
                     </div>
-                    <form method="POST">
+                    <form method="post">
                         {% csrf_token %}
                         <input type="hidden" name="action" value="add_new_item">
                         <input type="hidden" name="barcode" value="{{ barcode }}">
@@ -111,22 +111,15 @@
                             {{ new_item_form.manufacturer }}
                             <small class="form-text text-muted">Verify the manufacturer information</small>
                         </div>
-                        <div class="alert alert-info">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="confirmCheck" required>
-                                <label class="form-check-label" for="confirmCheck">
-                                    I confirm this is a new item and the information above is correct
-                                </label>
-                            </div>
-                        </div>
                         <button type="submit" class="btn btn-primary">Create Item</button>
                         <a href="?location={{ selected_location.id }}" class="btn btn-secondary">Cancel</a>
                     </form>
                 {% else %}
-                    {# Show initial barcode form #}
-                    <form method="POST">
+                    {# Show barcode form #}
+                    <form method="post">
                         {% csrf_token %}
                         <input type="hidden" name="action" value="scan_barcode">
+
                         <div class="form-group mb-3">
                             {{ scan_form.barcode.label_tag }}
                             {{ scan_form.barcode }}

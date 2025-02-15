@@ -8,7 +8,10 @@ dependencies = [
     "django<5",
     "gunicorn>=23.0.0",
     "pillow>=11.0.0",
+    "pypdf2>=3.0.1",
     "python-dotenv>=1.0.1",
+    "qrcode[pil]>=8.0",
+    "tqdm>=4.67.1",
     "treepoem>=3.25.0",
     "wait-for-it>=2.3.0",
 ]

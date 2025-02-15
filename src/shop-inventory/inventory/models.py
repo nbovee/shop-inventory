@@ -127,17 +127,19 @@ class Location(models.Model):
         return "{}".format(self.name)
 
 
-class InventoryEntry(models.Model):
-    base_item = models.ForeignKey(Product, on_delete=models.CASCADE)
+class Inventory(models.Model):
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name="inventory_product"
+    )
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
     active = models.BooleanField(default=True)
 
     def __str__(self):
-        return "{} @ {}".format(self.base_item, self.location)
+        return "{} @ {}".format(self.product, self.location)
 
     class Meta:
-        unique_together = ("base_item", "location")
+        unique_together = ("product", "location")
 
     def deactivate(self):
         self.active = False

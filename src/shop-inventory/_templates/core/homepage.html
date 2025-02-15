@@ -5,16 +5,15 @@
 {% block content %}
 {% if not user.is_authenticated %}
 <div class="d-flex flex-row flex-wrap justify-content-center">
-{% include 'core/card.html' with title="Start Checkout" description="Begin shopping" url='checkout:index' %}
+{% include 'core/card.html' with title="Start Checkout" description="Begin Shopping." url='checkout:index' %}
 </div>
 {% endif %}
 {% if user.is_authenticated %}
 <div class="d-flex flex-row flex-wrap justify-content-center">
-{% include 'core/card.html' with title="Manage Inventory" description="Add/remove items" url='inventory:index' %}
-{% if perms.inventory.add_location %}
-{% include 'core/card.html' with title="Print New Barcodes" description="print fresh sheet of barcodes. LONG PROCESS, ~ 90 seconds." url='inventory:barcodes' %}
-{% include 'core/card.html' with title="View Recent Orders" description="view recent orders" url='checkout:recent_orders' %}
-{% endif %}
+{% include 'core/card.html' with title="Manage Inventory" description="Add/remove items." url='inventory:index' %}
+{% include 'core/card.html' with title="Print New Barcodes" description="Get 10 pages of barcodes. Print on Avery Presta 94503." url='inventory:barcodes' %}
+{% include 'core/card.html' with title="View Recent Orders" description="View recent orders." url='checkout:recent_orders' %}
+
 </div>
 {% endif %}
 {% endblock %}

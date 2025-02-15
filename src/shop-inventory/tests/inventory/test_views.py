@@ -1,7 +1,7 @@
 import pytest
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from inventory.models import Product, Location, InventoryEntry
+from inventory.models import Product, Location, Inventory
 from unittest.mock import patch
 
 # Mark all tests in this file as requiring database access
@@ -31,7 +31,7 @@ def admin_user():
 
 
 @pytest.fixture
-def base_item():
+def product():
     return Product.objects.create(
         name="Test Item",
         manufacturer="Test Manufacturer",
@@ -46,9 +46,9 @@ def location():
 
 
 @pytest.fixture
-def inventory_item(base_item, location):
-    return InventoryEntry.objects.create(
-        base_item=base_item,
+def inventory_item(product, location):
+    return Inventory.objects.create(
+        product=product,
         location=location,
         quantity=10,
     )
@@ -102,27 +102,25 @@ def test_stock_update_view_negative(client, user, inventory_item):
     assert inventory_item.quantity == initial_quantity  # Quantity shouldn't change
 
 
-def test_add_inventory_view(client, admin_user, base_item, location):
+def test_add_inventory_view(client, admin_user, product, location):
     """Test adding new inventory"""
     client.force_login(admin_user)
     data = {
-        "base_item": base_item.id,
+        "product": product.id,
         "location": location.id,
         "quantity": 5,
         "barcode": "123456789012",  # Adding required barcode field
     }
     response = client.post(reverse("inventory:add_inventory"), data)
     assert response.status_code == 302  # Should redirect after successful addition
-    assert InventoryEntry.objects.filter(
-        base_item=base_item, location=location
-    ).exists()
+    assert Inventory.objects.filter(product=product, location=location).exists()
 
 
 def test_edit_inventory_view(client, admin_user, inventory_item):
     """Test editing inventory"""
     client.force_login(admin_user)
     data = {
-        "base_item": inventory_item.base_item.id,
+        "product": inventory_item.product.id,
         "location": inventory_item.location.id,
         "quantity": 5,
         "barcode": inventory_item.barcode,
@@ -141,23 +139,23 @@ def test_edit_inventory_view(client, admin_user, inventory_item):
     assert inventory_item.quantity == 5
 
 
-def test_add_base_item_view(client, admin_user):
-    """Test adding a new base item"""
+def test_add_product_view(client, admin_user):
+    """Test adding a new product"""
     client.force_login(admin_user)
     data = {"name": "New Item", "manufacturer": "New Manufacturer"}
-    response = client.post(reverse("inventory:add_base_item"), data)
+    response = client.post(reverse("inventory:add_product"), data)
     assert response.status_code == 302
     assert Product.objects.filter(name="New Item").exists()
 
 
-def test_remove_base_item_view(client, admin_user, base_item, inventory_item):
-    """Test removing a base item"""
+def test_remove_product_view(client, admin_user, product, inventory_item):
+    """Test removing a product"""
     client.force_login(admin_user)
-    data = {"base_item": base_item.id}
-    response = client.post(reverse("inventory:remove_base_item"), data)
+    data = {"product": product.id}
+    response = client.post(reverse("inventory:remove_product"), data)
     assert response.status_code == 302
-    base_item.refresh_from_db()
-    assert not base_item.active
+    product.refresh_from_db()
+    assert not product.active
 
 
 def test_add_location_view(client, admin_user):
@@ -220,11 +218,11 @@ def test_stock_update_view_invalid_item(client, user):
     assert response.status_code == 302
 
 
-def test_add_inventory_view_invalid_data(client, admin_user, base_item):
+def test_add_inventory_view_invalid_data(client, admin_user, product):
     """Test adding inventory with invalid data"""
     client.force_login(admin_user)
     data = {
-        "base_item": base_item.id,
+        "product": product.id,
         "location": 99999,  # Invalid location ID
         "quantity": 5,
         "barcode": "123456789012",
@@ -233,23 +231,23 @@ def test_add_inventory_view_invalid_data(client, admin_user, base_item):
     assert response.status_code == 200  # Returns form with errors
 
 
-def test_remove_base_item_with_stock(client, admin_user, inventory_item):
-    """Test removing a base item that has stock"""
+def test_remove_product_with_stock(client, admin_user, inventory_item):
+    """Test removing a product that has stock"""
     client.force_login(admin_user)
-    data = {"base_item": inventory_item.base_item.id}
-    response = client.post(reverse("inventory:remove_base_item"), data)
+    data = {"product": inventory_item.product.id}
+    response = client.post(reverse("inventory:remove_product"), data)
     assert response.status_code == 302
-    inventory_item.base_item.refresh_from_db()
-    assert not inventory_item.base_item.active
+    inventory_item.product.refresh_from_db()
+    assert not inventory_item.product.active
     inventory_item.refresh_from_db()
     assert inventory_item.active  # Item should stay active until quantity is 0
 
 
-def test_add_base_item_duplicate(client, admin_user, base_item):
-    """Test adding a duplicate base item"""
+def test_add_product_duplicate(client, admin_user, product):
+    """Test adding a duplicate product"""
     client.force_login(admin_user)
-    data = {"name": base_item.name, "manufacturer": base_item.manufacturer}
-    response = client.post(reverse("inventory:add_base_item"), data)
+    data = {"name": product.name, "manufacturer": product.manufacturer}
+    response = client.post(reverse("inventory:add_product"), data)
     assert response.status_code == 200  # Returns form with errors
 
 

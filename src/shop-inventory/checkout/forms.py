@@ -38,7 +38,7 @@ class AddToCartForm(forms.Form):
             cart_quantity = int(self.cart.get(str(self.inventory_item.id), 0))
             if self.inventory_item.quantity < cart_quantity + cleaned_data["quantity"]:
                 raise forms.ValidationError(
-                    f"Insufficient quantity in inventory for {self.inventory_item.base_item.name}"
+                    f"Insufficient quantity in inventory for {self.inventory_item.product.name}"
                 )
 
         except InventoryEntry.DoesNotExist:
@@ -103,7 +103,7 @@ class ProcessOrderForm(forms.ModelForm):
                         # Check if we have enough stock
                         if inventory_item.quantity < quantity:
                             raise forms.ValidationError(
-                                f"Insufficient stock for {inventory_item.base_item.name}"
+                                f"Insufficient stock for {inventory_item.product.name}"
                             )
 
                         # Create order item
@@ -119,10 +119,10 @@ class ProcessOrderForm(forms.ModelForm):
                         # Check if item should be deactivated
                         if (
                             inventory_item.quantity == 0
-                            and not inventory_item.base_item.active
+                            and not inventory_item.product.active
                         ):
                             inventory_item.active = False
-                            deactivated_items.append(inventory_item.base_item.name)
+                            deactivated_items.append(inventory_item.product.name)
 
                         inventory_item.save()
 

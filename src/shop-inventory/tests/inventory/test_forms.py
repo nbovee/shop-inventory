@@ -6,16 +6,16 @@ from inventory.forms import (
     EditInventoryForm,
     StockUpdateForm,
     RemoveLocationForm,
-    DeactivateProductForm,
+    RemoveProductForm,
 )
-from inventory.models import Product, Location, InventoryEntry
+from inventory.models import Product, Location, Inventory
 from inventory.barcode_gen import barcode_page_generation
 
 pytestmark = pytest.mark.django_db
 
 
 @pytest.fixture
-def base_item():
+def product():
     return Product.objects.create(
         name="Test Item",
         manufacturer="Test Manufacturer",
@@ -30,22 +30,22 @@ def location():
 
 
 @pytest.fixture
-def inventory_item(base_item, location):
-    return InventoryEntry.objects.create(
-        base_item=base_item,
+def inventory_item(product, location):
+    return Inventory.objects.create(
+        product=product,
         location=location,
         quantity=10,
     )
 
 
-def test_base_item_form_valid():
-    """Test valid base item form"""
+def test_product_form_valid():
+    """Test valid product form"""
     form = ProductForm({"name": "New Item", "manufacturer": "New Manufacturer"})
     assert form.is_valid()
 
 
-def test_base_item_form_duplicate():
-    """Test duplicate base item form"""
+def test_product_form_duplicate():
+    """Test duplicate product form"""
     Product.objects.create(name="Test", manufacturer="Test")
     form = ProductForm({"name": "Test", "manufacturer": "Test"})
     assert not form.is_valid()
@@ -66,11 +66,11 @@ def test_location_form_duplicate():
     assert "already exists" in str(form.errors)
 
 
-def test_add_inventory_form_valid(base_item, location):
+def test_add_inventory_form_valid(product, location):
     """Test valid add inventory form"""
     form = AddInventoryForm(
         {
-            "base_item": base_item.id,
+            "product": product.id,
             "location": location.id,
             "quantity": 5,
             "barcode": "123456789012",
@@ -83,7 +83,7 @@ def test_add_inventory_form_invalid_barcode():
     """Test invalid barcode in add inventory form"""
     form = AddInventoryForm(
         {
-            "base_item": 1,
+            "product": 1,
             "location": 1,
             "quantity": 5,
             "barcode": "invalid",  # Invalid barcode format
@@ -97,7 +97,7 @@ def test_edit_inventory_form_valid(inventory_item):
     """Test valid edit inventory form"""
     form = EditInventoryForm(
         {
-            "base_item": inventory_item.base_item.id,
+            "product": inventory_item.product.id,
             "location": inventory_item.location.id,
             "quantity": 15,
             "barcode": inventory_item.barcode,
@@ -130,19 +130,19 @@ def test_remove_location_form_valid(location):
     assert form.is_valid()
 
 
-def test_remove_base_item_form_valid(base_item):
-    """Test valid remove base item form"""
-    form = DeactivateProductForm({"base_item": base_item.id})
+def test_remove_product_form_valid(product):
+    """Test valid remove product form"""
+    form = RemoveProductForm({"product": product.id})
     assert form.is_valid()
 
 
 def test_barcode_generation():
     """Test barcode page generation"""
     # Create some inventory items
-    base_item = Product.objects.create(name="Test", manufacturer="Test")
+    product = Product.objects.create(name="Test", manufacturer="Test")
     location = Location.objects.create(name="Test")
-    InventoryEntry.objects.create(
-        base_item=base_item, location=location, quantity=10, barcode="123456789012"
+    Inventory.objects.create(
+        product=product, location=location, quantity=10, barcode="123456789012"
     )
 
     # Generate barcode page with minimal dimensions and dry run

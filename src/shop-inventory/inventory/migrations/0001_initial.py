@@ -111,9 +111,17 @@ class Migration(migrations.Migration):
                         to="inventory.location",
                     ),
                 ),
+                (
+                    "product",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="inventory_product",
+                        to="inventory.product",
+                    ),
+                ),
             ],
             options={
-                "unique_together": {("base_item", "location")},
+                "unique_together": {("product", "location")},
             },
         ),
     ]

@@ -1,6 +1,6 @@
 [
   {
-    "model": "inventory.baseitem",
+    "model": "inventory.product",
     "pk": 1,
     "fields": {
       "name": "apple",
@@ -8,7 +8,7 @@
     }
   },
   {
-    "model": "inventory.baseitem",
+    "model": "inventory.product",
     "pk": 2,
     "fields": {
       "name": "orange",
@@ -16,7 +16,7 @@
     }
   },
   {
-    "model": "inventory.baseitem",
+    "model": "inventory.product",
     "pk": 3,
     "fields": {
       "name": "pizza",

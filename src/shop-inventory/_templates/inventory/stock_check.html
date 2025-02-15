@@ -21,12 +21,12 @@
         {% for item in items %}
         <tr>
             <td>
-                {{ item.base_item.name }}
-                {% if not item.base_item.active %}
+                {{ item.product.name }}
+                {% if not item.product.active %}
                     <span class="badge badge-danger badge-pill">Inactive</span>
                 {% endif %}
             </td>
-            <td>{{ item.base_item.manufacturer }}</td>
+            <td>{{ item.product.manufacturer }}</td>
             <td>{{ item.location.name }}</td>
             <td>{{ item.quantity }}</td>
             <td>{% include "inventory/stock_buttons.html" with item=item %}</td>

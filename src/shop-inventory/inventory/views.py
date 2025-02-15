@@ -7,7 +7,7 @@ from datetime import timedelta
 from .models import (
     Product,
     Location,
-    InventoryEntry,
+    Inventory,
     ProductUUID,
     barcode_is_uuid,
     normalize_barcode,
@@ -43,16 +43,16 @@ from .barcode_gen import barcode_page_generation
 def index(request):
     search_query = request.GET.get("search", None)
     if search_query:
-        inventory_items = InventoryEntry.objects.filter(
-            Q(base_item__name__icontains=search_query)
+        inventory_items = Inventory.objects.filter(
+            Q(product__name__icontains=search_query)
             | Q(location__name__icontains=search_query)
         )
     else:
-        inventory_items = InventoryEntry.objects.all()
+        inventory_items = Inventory.objects.all()
 
     # Get recent orders if user has permission
     recent_orders = None
-    if request.user.has_perm("inventory.add_baseitem"):
+    if request.user.has_perm("inventory.add_product"):
         thirty_days_ago = timezone.now() - timedelta(days=30)
         recent_orders = Order.objects.filter(date__gte=thirty_days_ago).order_by(
             "-date"
@@ -68,7 +68,7 @@ def stock_check(request):
     locations = Location.objects.all()
     items_in_location = {}
     for location in locations:
-        items_in_location[location] = InventoryEntry.objects.filter(location=location)
+        items_in_location[location] = Inventory.objects.filter(location=location)
     return render(
         request, "inventory/stock_check.html", {"items_in_location": items_in_location}
     )
@@ -79,7 +79,7 @@ def stock_update(request):
     if request.method == "POST":
         form = StockUpdateForm(request.POST)
         if form.is_valid():
-            item = InventoryEntry.objects.get(id=form.cleaned_data["item_id"])
+            item = Inventory.objects.get(id=form.cleaned_data["item_id"])
             try:
                 new_quantity = item.quantity + form.cleaned_data["delta_qty"]
                 if new_quantity < 0:
@@ -89,7 +89,7 @@ def stock_update(request):
                 else:
                     item.quantity = new_quantity
                     # If product is inactive and quantity reaches 0, deactivate inventory item
-                    if new_quantity == 0 and not item.base_item.active:
+                    if new_quantity == 0 and not item.product.active:
                         item.active = False
                         messages.info(
                             request,
@@ -131,12 +131,12 @@ def remove_inventory(request):
     if request.method == "POST":
         form = RemoveInventoryForm(request.POST)
         if form.is_valid():
-            base_item = form.cleaned_data["base_item"]
+            product = form.cleaned_data["product"]
             location = form.cleaned_data["location"]
             quantity = form.cleaned_data["quantity"]
             try:
-                inventory_item = InventoryEntry.objects.get(
-                    base_item=base_item, location=location, active=True
+                inventory_item = Inventory.objects.get(
+                    product=product, location=location, active=True
                 )
                 if inventory_item.quantity >= quantity:
                     inventory_item.quantity -= quantity
@@ -144,7 +144,7 @@ def remove_inventory(request):
                     messages.success(request, "Inventory item removed successfully.")
                 else:
                     messages.error(request, "Not enough quantity to remove.")
-            except InventoryEntry.DoesNotExist:
+            except Inventory.DoesNotExist:
                 messages.error(request, "Inventory item not found.")
             return redirect("inventory:remove_inventory")
     else:
@@ -153,18 +153,18 @@ def remove_inventory(request):
 
 
 @login_required
-def add_base_item(request):
+def add_product(request):
     if request.method == "POST":
         form = ProductForm(request.POST)
         try:
             if form.is_valid():
                 form.save()
                 messages.success(request, "Product added successfully.")
-                return redirect("inventory:add_base_item")
+                return redirect("inventory:add_product")
         except forms.ValidationError as e:
             if e.code == "reactivated":
                 messages.success(request, str(e))
-                return redirect("inventory:add_base_item")
+                return redirect("inventory:add_product")
             form.add_error(None, e)
     else:
         form = ProductForm()
@@ -176,25 +176,23 @@ def add_base_item(request):
 
     return render(
         request,
-        "inventory/add_base_item.html",
+        "inventory/add_product.html",
         {"form": form, "inactive_items": inactive_items},
     )
 
 
 @login_required
-def remove_base_item(request):
+def remove_product(request):
     if request.method == "POST":
         form = DeactivateProductForm(request.POST)
         if form.is_valid():
-            base_item = form.cleaned_data["base_item"]
+            product = form.cleaned_data["product"]
 
-            # Get all active inventory items for this base item
-            inventory_items = InventoryEntry.objects.filter(
-                base_item=base_item, active=True
-            )
+            # Get all active inventory items for this product
+            inventory_items = Inventory.objects.filter(product=product, active=True)
 
-            # Deactivate the base item
-            base_item.deactivate()
+            # Deactivate the product
+            product.deactivate()
 
             # Handle inventory items
             if inventory_items.exists():
@@ -207,20 +205,20 @@ def remove_base_item(request):
                 if remaining_count > 0:
                     messages.warning(
                         request,
-                        f"Product '{base_item}' deactivated. {remaining_count} inventory items still have stock "
+                        f"Product '{product}' deactivated. {remaining_count} inventory items still have stock "
                         "and will be deactivated when they reach zero quantity.",
                     )
                 else:
                     messages.success(
                         request,
-                        f"Product '{base_item}' and all its inventory items have been deactivated.",
+                        f"Product '{product}' and all its inventory items have been deactivated.",
                     )
             else:
                 messages.success(
-                    request, f"Product '{base_item}' deactivated successfully."
+                    request, f"Product '{product}' deactivated successfully."
                 )
 
-            return redirect("inventory:remove_base_item")
+            return redirect("inventory:remove_product")
     else:
         form = DeactivateProductForm()
     return render(request, "inventory/remove_base_item.html", {"form": form})
@@ -259,7 +257,7 @@ def remove_location(request):
         form = RemoveLocationForm(request.POST)
         if form.is_valid():
             location = form.cleaned_data["location"]
-            if InventoryEntry.objects.filter(location=location, active=True).exists():
+            if Inventory.objects.filter(location=location, active=True).exists():
                 messages.error(
                     request, "Cannot remove location that has active products."
                 )
@@ -282,7 +280,7 @@ def manage_inventory(request):
 
 @login_required
 def edit_inventory(request, pk):
-    inventory_item = get_object_or_404(InventoryEntry, pk=pk)
+    inventory_item = get_object_or_404(Inventory, pk=pk)
     if request.method == "POST":
         form = EditInventoryForm(request.POST, instance=inventory_item)
         if form.is_valid():
@@ -299,9 +297,9 @@ def edit_inventory(request, pk):
 
 
 @login_required
-# @permission_required("add_baseitem", raise_exception=True)
+# @permission_required("add_product", raise_exception=True)
 def qrcode_sheet(request):
-    result = barcode_page_generation()
+    result = barcode_page_generation(pages=10)
     response = HttpResponse(result, content_type="application/pdf")
     return response
 
@@ -347,12 +345,10 @@ def add_item_to_location(request):
                             )
 
                             # Update inventory
-                            inventory_item, created = (
-                                InventoryEntry.objects.get_or_create(
-                                    base_item=base_item,
-                                    location=selected_location,
-                                    defaults={"quantity": 1, "active": True},
-                                )
+                            inventory_item, created = Inventory.objects.get_or_create(
+                                base_item=base_item,
+                                location=selected_location,
+                                defaults={"quantity": 1, "active": True},
                             )
                             if not created:
                                 inventory_item.quantity += 1
@@ -419,7 +415,7 @@ def add_item_to_location(request):
                         )
 
                         # Create inventory entry with quantity 1
-                        InventoryEntry.objects.create(
+                        Inventory.objects.create(
                             base_item=base_item,
                             location=selected_location,
                             quantity=1,
@@ -452,12 +448,11 @@ def add_item_to_location(request):
                     return render(
                         request, "inventory/add_item_to_location.html", context
                     )
+
             elif action == "add_quantity":
-                base_item = get_object_or_404(
-                    Product, id=request.POST.get("base_item_id")
-                )
+                product = get_object_or_404(Product, id=request.POST.get("product_id"))
                 form = AddQuantityForm(
-                    request.POST, base_item=base_item, location=selected_location
+                    request.POST, product=product, location=selected_location
                 )
                 if form.is_valid():
                     quantity = form.cleaned_data["quantity"]
@@ -474,8 +469,8 @@ def add_item_to_location(request):
                         )
                     else:
                         # Normal create/update flow
-                        inventory_item, created = InventoryEntry.objects.get_or_create(
-                            base_item=base_item,
+                        inventory_item, created = Inventory.objects.get_or_create(
+                            product=product,
                             location=selected_location,
                             defaults={"quantity": quantity, "active": True},
                         )
@@ -483,14 +478,11 @@ def add_item_to_location(request):
                         if not created:
                             inventory_item.quantity += quantity
                             inventory_item.save()
-                            messages.success(
-                                request, f"Added {quantity} to {base_item}"
-                            )
-                        else:
-                            messages.success(
-                                request,
-                                f"Created new inventory item: {quantity} x {base_item}",
-                            )
+
+                        messages.success(
+                            request,
+                            f"Added {quantity} {product} to {inventory_item.location}",
+                        )
 
                     # Return to barcode scanning
                     context["scan_form"] = AddItemToLocation()
@@ -525,7 +517,7 @@ def add_item_to_location(request):
                     )
 
                     # Update or create inventory
-                    inventory_item, created = InventoryEntry.objects.get_or_create(
+                    inventory_item, created = Inventory.objects.get_or_create(
                         base_item=base_item,
                         location=selected_location,
                         defaults={"quantity": 1, "active": True},
@@ -576,20 +568,18 @@ def add_item_to_location(request):
 
 
 @login_required
-def reactivate_base_item(request):
+def reactivate_product(request):
     if request.method == "POST":
         form = ReactivateProductForm(request.POST)
         if form.is_valid():
-            base_item = form.cleaned_data["base_item"]
-            base_item.active = True
-            base_item.save()
-            messages.success(
-                request, f"Product '{base_item}' reactivated successfully."
-            )
-            return redirect("inventory:reactivate_base_item")
+            product = form.cleaned_data["product"]
+            product.active = True
+            product.save()
+            messages.success(request, f"Product '{product}' reactivated successfully.")
+            return redirect("inventory:reactivate_product")
     else:
         form = ReactivateProductForm()
-    return render(request, "inventory/reactivate_base_item.html", {"form": form})
+    return render(request, "inventory/reactivate_product.html", {"form": form})
 
 
 @login_required

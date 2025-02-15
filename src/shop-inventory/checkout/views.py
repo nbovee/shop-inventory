@@ -28,8 +28,8 @@ def index(request):
     filter_term = request.GET.get("filter", "")
     inventory_items = InventoryEntry.objects.filter(
         (
-            models.Q(base_item__name__icontains=filter_term)
-            | models.Q(base_item__manufacturer__icontains=filter_term)
+            models.Q(product__name__icontains=filter_term)
+            | models.Q(product__manufacturer__icontains=filter_term)
         )
         & models.Q(location__name__icontains="Floor")
         & models.Q(quantity__gt=0)
@@ -70,7 +70,7 @@ def process_order(request):
 
 
 @login_required
-@permission_required("inventory.add_baseitem", raise_exception=True)
+@permission_required("inventory.add_product", raise_exception=True)
 def recent_orders(request):
     """Display orders from the last 30 days."""
     thirty_days_ago = timezone.now() - timedelta(days=30)
@@ -78,7 +78,7 @@ def recent_orders(request):
         Order.objects.filter(date__gte=thirty_days_ago)
         .order_by("-date")
         .prefetch_related(
-            "items", "items__inventory_item", "items__inventory_item__base_item"
+            "items", "items__inventory_item", "items__inventory_item__product"
         )
     )
 

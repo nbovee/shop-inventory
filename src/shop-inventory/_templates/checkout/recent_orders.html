@@ -35,9 +35,9 @@
                             <ul class="list-unstyled mb-0">
                             {% for item in order.items.all %}
                                 <li>
-                                    <span class="font-weight-bold">{{ item.inventory_item.base_item.name }}</span>
-                                    {% if item.inventory_item.base_item.manufacturer %}
-                                        ({{ item.inventory_item.base_item.manufacturer }})
+                                    <span class="font-weight-bold">{{ item.inventory_item.product.name }}</span>
+                                    {% if item.inventory_item.product.manufacturer %}
+                                        ({{ item.inventory_item.product.manufacturer }})
                                     {% endif %}
                                     <span class="badge badge-primary">x{{ item.quantity }}</span>
                                 </li>
