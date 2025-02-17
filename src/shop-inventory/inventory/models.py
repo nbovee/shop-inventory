@@ -15,16 +15,8 @@ def validate_barcode(value):
     # We also support UUID codes, which are used as a last resort for items that do not have either of the above barcodes
 
     if barcode_is_upc_a(value):
-        digits = [int(d) for d in value]
-        # UPC check digit validation:
-        # 3x(sum of odd positions) + sum of even positions should be divisible by 10
-        total = 3 * sum(digits[0:11:2]) + sum(digits[1:11:2])
-        if total % 10 == 0 and digits[12] == 0:
-            return True
-        elif total % 10 == 10 - digits[12]:
-            return True
-        else:
-            raise ValidationError("UPC-A length but invalid check digit.")
+        # assume this is a UPC-A code, which we don't validate
+        return True
     elif barcode_is_upc_e(value):
         # assume this is a UPC-E code, which we don't validate
         return True
@@ -133,21 +125,12 @@ class Inventory(models.Model):
     )
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
-    active = models.BooleanField(default=True)
 
     def __str__(self):
         return "{} @ {}".format(self.product, self.location)
 
     class Meta:
         unique_together = ("product", "location")
-
-    def deactivate(self):
-        self.active = False
-        self.save()
-
-    def activate(self):
-        self.active = True
-        self.save()
 
 
 class ProductUUID(models.Model):

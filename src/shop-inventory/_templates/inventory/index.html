@@ -28,7 +28,6 @@
                 <th scope="col">Location</th>
                 <th scope="col">Quantity</th>
                 {% comment %} <th scope="col">Barcode</th> {% endcomment %}
-                <th scope="col">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -44,10 +43,6 @@
                     <td>{{ item.product.manufacturer }}</td>
                     <td>{{ item.location.name }}</td>
                     <td>{{ item.quantity }}</td>
-                    {% comment %} <td>{{ item.product.barcode }}</td> {% endcomment %}
-                    <td>
-                        <a href="{% url 'inventory:edit_inventory' item.pk %}" class="btn btn-warning btn-sm">Edit</a>
-                    </td>
                 </tr>
             {% endfor %}
             {%endif%}

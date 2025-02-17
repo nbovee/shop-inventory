@@ -125,37 +125,44 @@ class AddInventoryForm(forms.ModelForm):
         return cleaned_data
 
 
-class RemoveInventoryForm(forms.Form):
-    product = forms.ModelChoiceField(queryset=Product.objects.filter(active=True))
-    location = forms.ModelChoiceField(queryset=Location.objects.filter(active=True))
-    quantity = forms.IntegerField(min_value=1)
-
-
-class EditInventoryForm(forms.ModelForm):
-    quantity = forms.IntegerField(min_value=0)
-
-    class Meta:
-        model = Inventory
-        fields = ["product", "location", "quantity"]
+class InventoryQuantityUpdateForm(forms.Form):
+    product = forms.ModelChoiceField(
+        queryset=Product.objects.filter(active=True),
+        widget=forms.Select(attrs={"class": "form-control", "autofocus": True}),
+        label="Product",
+    )
+    location = forms.ModelChoiceField(
+        queryset=Location.objects.filter(active=True),
+        widget=forms.Select(attrs={"class": "form-control"}),
+        label="Location",
+    )
+    delta_qty = forms.IntegerField(
+        widget=forms.NumberInput(
+            attrs={"class": "form-control", "placeholder": "Enter quantity change"}
+        ),
+        label="Quantity Change",
+    )
 
     def __init__(self, *args, **kwargs):
+        product = kwargs.pop("product", None)
+        location = kwargs.pop("location", None)
         super().__init__(*args, **kwargs)
-        self.fields["product"].queryset = Product.objects.filter(active=True)
-        self.fields["location"].queryset = Location.objects.filter(active=True)
-
-
-class StockUpdateForm(forms.Form):
-    item_id = forms.IntegerField()
-    delta_qty = forms.IntegerField()
+        if product:
+            self.fields["product"].initial = product
+        if location:
+            self.fields["location"].initial = location
 
     def clean(self):
         cleaned_data = super().clean()
-        item_id = cleaned_data.get("item_id")
+        product = cleaned_data.get("product")
+        location = cleaned_data.get("location")
         delta_qty = cleaned_data.get("delta_qty")
 
-        if item_id and delta_qty is not None:
+        if all([product, location, delta_qty is not None]):
             try:
-                inventory_item = Inventory.objects.get(id=item_id, active=True)
+                inventory_item = Inventory.objects.get(
+                    product=product, location=location, active=True
+                )
 
                 # Prevent adding quantity if product is inactive
                 if delta_qty > 0 and not inventory_item.product.active:
@@ -168,12 +175,14 @@ class StockUpdateForm(forms.Form):
                     raise forms.ValidationError("Cannot reduce quantity below 0")
 
             except Inventory.DoesNotExist:
-                raise forms.ValidationError("Invalid inventory item")
+                raise forms.ValidationError(
+                    "No active inventory found for this product and location combination."
+                )
 
         return cleaned_data
 
 
-class RemoveLocationForm(forms.Form):
+class DeactivateLocationForm(forms.Form):
     location = forms.ModelChoiceField(
         queryset=Location.objects.filter(active=True),
         empty_label="Select a location to remove",
@@ -181,7 +190,7 @@ class RemoveLocationForm(forms.Form):
     )
 
 
-class RemoveProductForm(forms.Form):
+class DeactivateProductForm(forms.Form):
     product = forms.ModelChoiceField(
         queryset=Product.objects.filter(active=True).order_by("name", "manufacturer"),
         empty_label="Select a product to remove",
@@ -207,54 +216,17 @@ class ProductFromBarcodeForm(ProductForm):
         fields = ["name", "manufacturer"]  # barcode will be set from scan
 
 
-class AddQuantityForm(forms.Form):
-    quantity = forms.IntegerField(
-        widget=forms.NumberInput(
-            attrs={
-                "class": "form-control",
-                "placeholder": "Enter quantity",
-                "autofocus": True,
-            }
-        ),
-        min_value=1,
-        label="Quantity to Add",
-    )
-
-    def __init__(self, *args, product=None, location=None, **kwargs):
-        self.product = product
-        self.location = location
-        super().__init__(*args, **kwargs)
-
-    def clean(self):
-        cleaned_data = super().clean()
-        quantity = cleaned_data.get("quantity")
-
-        if all([self.product, self.location, quantity]):
-            try:
-                # First check for inactive item
-                inactive_item = Inventory.objects.get(
-                    product=self.product, location=self.location, active=False
-                )
-                # Will reactivate in view
-                cleaned_data["reactivate_item"] = inactive_item
-            except Inventory.DoesNotExist:
-                pass
-
-            # Prevent adding quantity if product is inactive
-            if not self.product.active:
-                raise forms.ValidationError(
-                    "Cannot add quantity to items with inactive products."
-                )
-
-        return cleaned_data
-
-
 class ReactivateProductForm(forms.Form):
     product = forms.ModelChoiceField(
         queryset=Product.objects.filter(active=False).order_by("name", "manufacturer"),
         empty_label="Select an item to reactivate",
         widget=forms.Select(attrs={"class": "form-control"}),
     )
+
+    def save(self):
+        product = self.cleaned_data["product"]
+        product.activate()  # Using the model's activate method
+        return product
 
 
 class ReactivateLocationForm(forms.Form):
@@ -263,6 +235,12 @@ class ReactivateLocationForm(forms.Form):
         empty_label="Select a location to reactivate",
         widget=forms.Select(attrs={"class": "form-control"}),
     )
+
+    def save(self):
+        location = self.cleaned_data["location"]
+        location.active = True
+        location.save()
+        return location
 
 
 class UUIDItemForm(forms.ModelForm):

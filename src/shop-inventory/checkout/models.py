@@ -52,9 +52,7 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
-    inventory_item = models.ForeignKey(
-        "inventory.InventoryEntry", on_delete=models.PROTECT
-    )
+    inventory_item = models.ForeignKey("inventory.Inventory", on_delete=models.PROTECT)
     quantity = models.PositiveIntegerField()
 
     def __str__(self):

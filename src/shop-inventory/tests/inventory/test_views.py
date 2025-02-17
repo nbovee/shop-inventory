@@ -116,29 +116,6 @@ def test_add_inventory_view(client, admin_user, product, location):
     assert Inventory.objects.filter(product=product, location=location).exists()
 
 
-def test_edit_inventory_view(client, admin_user, inventory_item):
-    """Test editing inventory"""
-    client.force_login(admin_user)
-    data = {
-        "product": inventory_item.product.id,
-        "location": inventory_item.location.id,
-        "quantity": 5,
-        "barcode": inventory_item.barcode,
-    }
-    response = client.get(
-        reverse("inventory:edit_inventory", kwargs={"pk": inventory_item.id})
-    )
-    assert response.status_code == 200
-
-    # Test POST request
-    response = client.post(
-        reverse("inventory:edit_inventory", kwargs={"pk": inventory_item.id}), data
-    )
-    assert response.status_code == 302  # Redirects after successful edit
-    inventory_item.refresh_from_db()
-    assert inventory_item.quantity == 5
-
-
 def test_add_product_view(client, admin_user):
     """Test adding a new product"""
     client.force_login(admin_user)

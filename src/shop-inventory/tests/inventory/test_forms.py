@@ -3,9 +3,8 @@ from inventory.forms import (
     ProductForm,
     LocationForm,
     AddInventoryForm,
-    EditInventoryForm,
-    StockUpdateForm,
-    RemoveLocationForm,
+    InventoryQuantityUpdateForm,
+    DeactivateLocationForm,
     RemoveProductForm,
 )
 from inventory.models import Product, Location, Inventory
@@ -93,29 +92,15 @@ def test_add_inventory_form_invalid_barcode():
     assert "barcode" in form.errors
 
 
-def test_edit_inventory_form_valid(inventory_item):
-    """Test valid edit inventory form"""
-    form = EditInventoryForm(
-        {
-            "product": inventory_item.product.id,
-            "location": inventory_item.location.id,
-            "quantity": 15,
-            "barcode": inventory_item.barcode,
-        },
-        instance=inventory_item,
-    )
-    assert form.is_valid()
-
-
 def test_stock_update_form_valid(inventory_item):
     """Test valid stock update form"""
-    form = StockUpdateForm({"item_id": inventory_item.id, "delta_qty": 5})
+    form = InventoryQuantityUpdateForm({"item_id": inventory_item.id, "delta_qty": 5})
     assert form.is_valid()
 
 
 def test_stock_update_form_negative(inventory_item):
     """Test stock update form with negative quantity"""
-    form = StockUpdateForm(
+    form = InventoryQuantityUpdateForm(
         {
             "item_id": inventory_item.id,
             "delta_qty": -5,  # Less than current quantity (10)
@@ -126,7 +111,7 @@ def test_stock_update_form_negative(inventory_item):
 
 def test_remove_location_form_valid(location):
     """Test valid remove location form"""
-    form = RemoveLocationForm({"location": location.id})
+    form = DeactivateLocationForm({"location": location.id})
     assert form.is_valid()
 
 

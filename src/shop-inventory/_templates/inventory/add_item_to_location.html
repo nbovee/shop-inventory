@@ -39,7 +39,7 @@
                     </div>
                     <form method="POST">
                         {% csrf_token %}
-                        <input type="hidden" name="action" value="scan_barcode">
+                        <input type="hidden" name="action" value="process_barcode">
                         <div class="form-group mb-3">
                             {{ scan_form.barcode.label_tag }}
                             {{ scan_form.barcode }}
@@ -118,7 +118,7 @@
                     {# Show barcode form #}
                     <form method="post">
                         {% csrf_token %}
-                        <input type="hidden" name="action" value="scan_barcode">
+                        <input type="hidden" name="action" value="process_barcode">
 
                         <div class="form-group mb-3">
                             {{ scan_form.barcode.label_tag }}

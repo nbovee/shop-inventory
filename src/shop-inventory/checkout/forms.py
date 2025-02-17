@@ -1,6 +1,6 @@
 from django import forms
 from django.db import transaction
-from inventory.models import InventoryEntry
+from inventory.models import Inventory
 from .models import Order, OrderItem
 from django.utils import timezone
 import uuid
@@ -27,11 +27,11 @@ class AddToCartForm(forms.Form):
 
         try:
             if barcode:
-                self.inventory_item = InventoryEntry.objects.get(barcode=barcode)
+                self.inventory_item = Inventory.objects.get(barcode=barcode)
                 cleaned_data["product_id"] = self.inventory_item.id
                 cleaned_data["quantity"] = 1
             else:
-                self.inventory_item = InventoryEntry.objects.get(id=product_id)
+                self.inventory_item = Inventory.objects.get(id=product_id)
                 cleaned_data["quantity"] = quantity
 
             # Check if adding this quantity would exceed available stock
@@ -41,7 +41,7 @@ class AddToCartForm(forms.Form):
                     f"Insufficient quantity in inventory for {self.inventory_item.product.name}"
                 )
 
-        except InventoryEntry.DoesNotExist:
+        except Inventory.DoesNotExist:
             raise forms.ValidationError("Product not found")
 
         return cleaned_data
@@ -96,7 +96,7 @@ class ProcessOrderForm(forms.ModelForm):
                 # Process each item in the cart
                 for product_id, quantity in self.cart.items():
                     try:
-                        inventory_item = InventoryEntry.objects.select_for_update().get(
+                        inventory_item = Inventory.objects.select_for_update().get(
                             id=product_id, active=True
                         )
 
@@ -126,7 +126,7 @@ class ProcessOrderForm(forms.ModelForm):
 
                         inventory_item.save()
 
-                    except InventoryEntry.DoesNotExist:
+                    except Inventory.DoesNotExist:
                         raise forms.ValidationError(
                             f"Product {product_id} no longer exists"
                         )

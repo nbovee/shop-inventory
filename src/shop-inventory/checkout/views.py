@@ -4,7 +4,7 @@ from django.db import models
 from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth.decorators import login_required, permission_required
-from inventory.models import InventoryEntry
+from inventory.models import Inventory
 from .models import Order
 from .forms import AddToCartForm, ProcessOrderForm
 
@@ -26,7 +26,7 @@ def index(request):
 
     # Handle GET request
     filter_term = request.GET.get("filter", "")
-    inventory_items = InventoryEntry.objects.filter(
+    inventory_items = Inventory.objects.filter(
         (
             models.Q(product__name__icontains=filter_term)
             | models.Q(product__manufacturer__icontains=filter_term)
