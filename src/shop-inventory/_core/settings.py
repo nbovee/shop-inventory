@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 import os
+from datetime import datetime
 
 from pathlib import Path
 from _core import is_true, split_with_comma
@@ -224,7 +225,7 @@ LOGGING = {
         "file": {
             "level": "DEBUG",
             "class": "logging.handlers.RotatingFileHandler",
-            "filename": LOG_DIR / "django.log",
+            "filename": LOG_DIR / f"django-{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.log",
             "maxBytes": 1024 * 1024 * 5,  # 5 MB
             "backupCount": 5,
             "formatter": "verbose",

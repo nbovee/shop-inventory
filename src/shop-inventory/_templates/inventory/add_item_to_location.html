@@ -13,9 +13,14 @@
                 <div class="row">
                     {% for location in locations %}
                         <div class="col-md-3 mb-3">
-                            <a href="?location={{ location.id }}" class="btn btn-outline-primary btn-block">
-                                {{ location.name }}
-                            </a>
+                            <form method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="select_location">
+                                <input type="hidden" name="location_id" value="{{ location.id }}">
+                                <button type="submit" class="btn btn-outline-primary btn-block">
+                                    {{ location.name }}
+                                </button>
+                            </form>
                         </div>
                     {% empty %}
                         <div class="col">
@@ -31,98 +36,52 @@
                 <h5 class="mb-0">Add to {{ selected_location.name }}</h5>
             </div>
             <div class="card-body">
-                {% if current_base_item %}
-                    {# Show UUID scanning mode #}
-                    <div class="alert alert-info">
-                        <h6>Adding UUIDs to: {{ current_base_item.name }} ({{ current_base_item.manufacturer }})</h6>
-                        <p>Scan each UUID barcode to add it to this product</p>
-                    </div>
-                    <form method="POST">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" value="process_barcode">
-                        <div class="form-group mb-3">
-                            {{ scan_form.barcode.label_tag }}
-                            {{ scan_form.barcode }}
-                        </div>
-                    </form>
-                    {% if show_finish_button %}
-                        <form method="POST" class="mt-3">
-                            {% csrf_token %}
-                            <input type="hidden" name="action" value="finish_uuid_linking">
-                            <button type="submit" class="btn btn-success">Finish Adding UUIDs</button>
-                        </form>
-                    {% endif %}
-                {% elif link_form %}
-                    {# Show UUID linking form #}
-                    <div class="alert alert-info">
-                        <h6>Link UUID Barcode</h6>
-                        <p>Select an existing product or create a new one for UUID: {{ uuid_barcode }}</p>
-                    </div>
-                    <form method="POST">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" value="link_uuid">
-                        <input type="hidden" name="uuid_barcode" value="{{ uuid_barcode }}">
-                        <div class="form-group mb-3">
-                            {{ link_form.base_item.label_tag }}
-                            {{ link_form.base_item }}
-                            <small class="form-text text-muted">{{ link_form.base_item.help_text }}</small>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Link to Selected Product</button>
-                    </form>
-                    <form method="POST" class="mt-3">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" value="add_new_item">
-                        <input type="hidden" name="barcode" value="{{ uuid_barcode }}">
-                        <button type="submit" name="create_new" value="1" class="btn btn-secondary">Create New Product</button>
-                    </form>
-                {% elif base_item and quantity_form %}
-                    {# Show quantity form for UPC items #}
-                    <form method="POST">
+                {% if form_type == 'quantity_form' %}
+                    {# Show quantity form #}
+                    <form method="post">
                         {% csrf_token %}
                         <input type="hidden" name="action" value="add_quantity">
-                        <input type="hidden" name="base_item_id" value="{{ base_item.id }}">
 
                         <h5>{{ base_item.name }} ({{ base_item.manufacturer }})</h5>
                         <div class="form-group mb-3">
-                            {{ quantity_form.quantity.label_tag }}
-                            {{ quantity_form.quantity }}
+                            {{ form.quantity.label_tag }}
+                            {{ form.quantity }}
                         </div>
                         <button type="submit" class="btn btn-primary">Add Quantity</button>
                     </form>
-                {% elif new_item_form %}
+                {% elif form_type == 'new_item_form' %}
                     {# Show new item form #}
-                    <div class="alert alert-warning">
-                        <h6>New Item Detected</h6>
-                        <p>Please verify this is a new item and enter its details carefully.</p>
-                    </div>
                     <form method="post">
                         {% csrf_token %}
                         <input type="hidden" name="action" value="add_new_item">
-                        <input type="hidden" name="barcode" value="{{ barcode }}">
 
                         <h5>New Item {% if barcode_is_uuid %}(UUID: {{ barcode }}){% else %}(Barcode: {{ barcode }}){% endif %}</h5>
                         <div class="form-group mb-3">
-                            {{ new_item_form.name.label_tag }}
-                            {{ new_item_form.name }}
+                            {{ form.name.label_tag }}
+                            {{ form.name }}
                             <small class="form-text text-muted">Double-check the item name is correct</small>
                         </div>
                         <div class="form-group mb-3">
-                            {{ new_item_form.manufacturer.label_tag }}
-                            {{ new_item_form.manufacturer }}
+                            {{ form.manufacturer.label_tag }}
+                            {{ form.manufacturer }}
                             <small class="form-text text-muted">Verify the manufacturer information</small>
                         </div>
-                        <button type="submit" class="btn btn-primary">Create Item</button>
-                        <a href="?location={{ selected_location.id }}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary mb-1">Create Item</button>
                     </form>
-                {% else %}
+                    <form method="post" class="d-inline"">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="cancel">
+                        <button type="submit" class="btn btn-secondary">Cancel</button>
+                    </form>
+                {% elif form_type == 'scan_form' %}
                     {# Show barcode form #}
                     <form method="post">
                         {% csrf_token %}
                         <input type="hidden" name="action" value="process_barcode">
 
                         <div class="form-group mb-3">
-                            {{ scan_form.barcode.label_tag }}
-                            {{ scan_form.barcode }}
+                            {{ form.barcode.label_tag }}
+                            {{ form.barcode }}
                         </div>
                     </form>
                 {% endif %}

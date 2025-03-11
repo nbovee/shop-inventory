@@ -28,23 +28,29 @@ def validate_barcode(value):
     )
 
 
-def barcode_is_upc_a(value):
-    return re.match(r"^\d{12}$", value)
-
-
-def barcode_is_upc_e(value):
-    return re.match(r"^\d{8}$", value)
-
-
-def barcode_is_uuid(value):
-    return True if len(str(value)) == 32 else False
+def is_valid_uuid(value):
+    try:
+        uuid.UUID(str(value))
+        return True
+    except ValueError:
+        return False
 
 
 def normalize_barcode(barcode):
-    """Normalize Type 2 UPCs by zeroing out the price portion
-    Return all others untouched"""
-    if len(barcode) == 12 and barcode[0] == "2":
-        barcode = f"{barcode[:6]}00000{barcode[-1]}"
+    """
+    Normalize barcode value:
+    - For number system 2 barcodes (variable weight items), keep only the first 6 digits
+    - Otherwise, return the original barcode
+    """
+    # Check if it's a UUID first
+    if is_valid_uuid(barcode):
+        return barcode
+    
+    # For UPC-A barcodes
+    if len(barcode) == 12 and barcode.startswith('2'):
+        # For number system 2, we only keep the first 6 digits (system digit + 5 item digits)
+        return barcode[:6]
+    
     return barcode
 
 
@@ -56,51 +62,26 @@ class Product(models.Model):
         max_length=32,  # UUID length is 32, UPC-A is 12, UPC-E is 8
         validators=[validate_barcode],
         unique=True,
+        default=generate_uuid,  # Use a named function instead of lambda
     )
+    # New field for normalized barcode
     normalized_barcode = models.CharField(
-        max_length=32,
-        editable=False,  # Only set programmatically
+        max_length=36,
         db_index=True,
-    )  # For efficient lookups
-
-    def clean(self):
-        # Check for duplicate name + manufacturer, excluding self
-        duplicate_name = Product.objects.filter(
-            name=self.name, manufacturer=self.manufacturer
-        )
-        if self.pk:  # If editing existing item
-            duplicate_name = duplicate_name.exclude(pk=self.pk)
-        if duplicate_name.exists():
-            raise ValidationError(
-                {
-                    "name": f'An item named "{self.name}" from "{self.manufacturer}" already exists'
-                }
-            )
-
-        # Check for duplicate normalized barcode
-        test_barcode = normalize_barcode(self.barcode)
-        if self.barcode.startswith("2") and len(self.barcode) == 12:
-            # For Type 2 UPCs, check if any item exists with same first 6 digits
-            duplicate_barcode = Product.objects.filter(normalize_barcode=test_barcode)
-            if self.pk:  # If editing existing item
-                duplicate_barcode = duplicate_barcode.exclude(pk=self.pk)
-            if duplicate_barcode.exists():
-                raise ValidationError(
-                    {
-                        "barcode": f"An item with this product code ({self.barcode[:6]}) already exists"
-                    }
-                )
-
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        self.normalized_barcode = normalize_barcode(self.barcode)
-        super().save(*args, **kwargs)
+        unique=True,
+        editable=False,  # This field shouldn't be directly editable in forms/admin
+    )
 
     class Meta:
         unique_together = (("name", "manufacturer"),)
 
     def __str__(self):
         return "{} ({})".format(self.name, self.manufacturer)
+
+    def save(self, *args, **kwargs):
+        # Set the normalized barcode before saving
+        self.normalized_barcode = normalize_barcode(self.barcode)
+        super().save(*args, **kwargs)
 
     def deactivate(self):
         self.active = False
