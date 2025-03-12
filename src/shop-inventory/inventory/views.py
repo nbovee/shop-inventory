@@ -9,6 +9,7 @@ from checkout.models import Order
 from django.http import HttpResponse
 from django.core import exceptions as forms
 from django.contrib.auth.decorators import permission_required
+import uuid
 
 from .forms import (
     AddProductForm,
@@ -103,7 +104,10 @@ def add_product(request):
         form = AddProductForm(request.POST)
         try:
             if form.is_valid():
-                form.save()
+                product = form.save(commit=False)
+                # Generate and assign UUID barcode after validation
+                product.barcode = str(uuid.uuid4())
+                product.save()
                 messages.success(request, "Product added successfully.")
                 return redirect("inventory:add_product")
         except forms.ValidationError as e:
