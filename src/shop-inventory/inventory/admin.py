@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Product, Location, Inventory, ProductUUID
+from .models import Product, Location, Inventory
 
 # Register your models here.
-admin.site.register((Product, Location, Inventory, ProductUUID))
+admin.site.register((Product, Location, Inventory))

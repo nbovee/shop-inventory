@@ -48,4 +48,4 @@ def captive_portal_detect(request):
     </body>
     </html>
     """
-    return HttpResponse(html, content_type='text/html')
+    return HttpResponse(html, content_type="text/html")

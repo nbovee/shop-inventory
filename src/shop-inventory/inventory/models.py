@@ -3,6 +3,19 @@ from django.core.exceptions import ValidationError
 import re
 
 
+def barcode_is_upc_a(value):
+    # Check if the value consists of exactly 12 digits
+    return bool(re.match(r"^\d{12}$", value))
+
+
+def barcode_is_upc_e(value):
+    return bool(re.match(r"^\d{8}$", value))
+
+
+def barcode_is_uuid(value):
+    return bool(re.match(r"^[0-9a-fA-F]{32}$", value))
+
+
 def validate_barcode(value):
     # https://en.wikipedia.org/wiki/Universal_Product_Code
     # UPC-A is 12 digits; SLLLLLRRRRRC
@@ -28,14 +41,6 @@ def validate_barcode(value):
     )
 
 
-def is_valid_uuid(value):
-    try:
-        uuid.UUID(str(value))
-        return True
-    except ValueError:
-        return False
-
-
 def normalize_barcode(barcode):
     """
     Normalize barcode value:
@@ -43,14 +48,11 @@ def normalize_barcode(barcode):
     - Otherwise, return the original barcode
     """
     # Check if it's a UUID first
-    if is_valid_uuid(barcode):
-        return barcode
-    
     # For UPC-A barcodes
-    if len(barcode) == 12 and barcode.startswith('2'):
+    if barcode_is_uuid(barcode) and barcode.startswith("2"):
         # For number system 2, we only keep the first 6 digits (system digit + 5 item digits)
         return barcode[:6]
-    
+
     return barcode
 
 
@@ -62,7 +64,6 @@ class Product(models.Model):
         max_length=32,  # UUID length is 32, UPC-A is 12, UPC-E is 8
         validators=[validate_barcode],
         unique=True,
-        default=generate_uuid,  # Use a named function instead of lambda
     )
     # New field for normalized barcode
     normalized_barcode = models.CharField(
@@ -114,29 +115,29 @@ class Inventory(models.Model):
         unique_together = ("product", "location")
 
 
-class ProductUUID(models.Model):
-    base_item = models.ForeignKey(
-        Product, on_delete=models.CASCADE, related_name="uuid_barcodes"
-    )
-    uuid_barcode = models.CharField(
-        max_length=36,
-        unique=True,
-    )
-    created_at = models.DateTimeField(auto_now_add=True)
+# class ProductUUID(models.Model):
+#     base_item = models.ForeignKey(
+#         Product, on_delete=models.CASCADE, related_name="uuid_barcodes"
+#     )
+#     uuid_barcode = models.CharField(
+#         max_length=36,
+#         unique=True,
+#     )
+#     created_at = models.DateTimeField(auto_now_add=True)
 
-    @property
-    def active(self):
-        return self.base_item.active
+#     @property
+#     def active(self):
+#         return self.base_item.active
 
-    def __str__(self):
-        return f"{self.uuid_barcode} -> {self.base_item}"
+#     def __str__(self):
+#         return f"{self.uuid_barcode} -> {self.base_item}"
 
-    def deactivate(self):
-        self.base_item.active = False
-        self.base_item.save()
-        self.save()
+#     def deactivate(self):
+#         self.base_item.active = False
+#         self.base_item.save()
+#         self.save()
 
-    def activate(self):
-        self.base_item.active = True
-        self.base_item.save()
-        self.save()
+#     def activate(self):
+#         self.base_item.active = True
+#         self.base_item.save()
+#         self.save()
