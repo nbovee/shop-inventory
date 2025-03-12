@@ -33,14 +33,26 @@ from .barcode_gen import barcode_page_generation
 @permission_required("inventory.view_inventory", raise_exception=True)
 def index(request):
     search_query = request.GET.get("search", None)
-    if search_query:
-        inventory_items = Inventory.objects.filter(
-            Q(product__name__icontains=search_query)
-            | Q(location__name__icontains=search_query)
-        )
-    else:
-        inventory_items = Inventory.objects.all()
-
+    
+    # Get all locations
+    locations = Location.objects.all()
+    items_in_location = {}
+    
+    for location in locations:
+        # If search query exists, filter inventory items for this location
+        if search_query:
+            inventory_items = Inventory.objects.filter(
+                Q(product__name__icontains=search_query) | 
+                Q(location__name__icontains=search_query),
+                location=location
+            )
+        else:
+            inventory_items = Inventory.objects.filter(location=location)
+        
+        # Store the inventory items as 'list' attribute for the location
+        location.list = inventory_items
+        items_in_location[location] = location
+    
     # Get recent orders if user has permission
     recent_orders = None
     if request.user.has_perm("inventory.add_product"):
@@ -49,7 +61,7 @@ def index(request):
             "-date"
         )
 
-    context = {"inventory_items": inventory_items, "recent_orders": recent_orders}
+    context = {"items_in_location": items_in_location, "recent_orders": recent_orders}
 
     return render(request, "inventory/index.html", context)
 
@@ -104,11 +116,26 @@ def add_product(request):
         form = AddProductForm(request.POST)
         try:
             if form.is_valid():
+                # Extract location and quantity from form data
+                location = form.cleaned_data['location']
+                quantity = form.cleaned_data['quantity']
+                
+                # Create and save the product
                 product = form.save(commit=False)
-                # Generate and assign UUID barcode after validation
-                product.barcode = str(uuid.uuid4())
+                # Use the barcode from the form (which was pre-generated)
+                if not product.barcode:
+                    product.barcode = str(uuid.uuid4().hex)
                 product.save()
-                messages.success(request, "Product added successfully.")
+                
+                # Create inventory entry
+                inventory = Inventory(
+                    product=product,
+                    location=location,
+                    quantity=quantity
+                )
+                inventory.save()
+                
+                messages.success(request, f"Product added successfully and {quantity} added to {location}.")
                 return redirect("inventory:add_product")
         except forms.ValidationError as e:
             if e.code == "reactivated":
@@ -116,7 +143,9 @@ def add_product(request):
                 return redirect("inventory:add_product")
             form.add_error(None, e)
     else:
-        form = AddProductForm()
+        # Pre-generate barcode for new form
+        initial_data = {'barcode': str(uuid.uuid4().hex)}
+        form = AddProductForm(initial=initial_data)
 
     # Get list of inactive items for reference
     inactive_items = Product.objects.filter(active=False).order_by(

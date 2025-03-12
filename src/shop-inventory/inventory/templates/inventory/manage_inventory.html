@@ -7,7 +7,8 @@
 
     <div class="mt-4">
         <h2>Products</h2>
-        <a href="{% url 'inventory:add_product' %}" class="btn btn-primary mt-2">Add Product <small>(used for produce)</small></a>
+        # TODO: allow employees to add non-barcoded products and edit
+        <a href="{% url 'inventory:add_product' %}" class="btn btn-primary mt-2">Add Non-barcodedProduct <small>(used for produce)</small></a>
         <a href="{% url 'inventory:edit_product' %}" class="btn btn-primary mt-2">Edit Product</a>
         <a href="{% url 'inventory:reactivate_product' %}" class="btn btn-success mt-2">Reactivate Product</a>
         <a href="{% url 'inventory:remove_product' %}" class="btn btn-danger mt-2">Deactivate Product</a>

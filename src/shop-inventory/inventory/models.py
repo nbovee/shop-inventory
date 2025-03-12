@@ -49,7 +49,7 @@ def normalize_barcode(barcode):
     """
     # Check if it's a UUID first
     # For UPC-A barcodes
-    if barcode_is_uuid(barcode) and barcode.startswith("2"):
+    if barcode_is_upc_a(barcode) and barcode.startswith("2"):
         # For number system 2, we only keep the first 6 digits (system digit + 5 item digits)
         return barcode[:6]
 

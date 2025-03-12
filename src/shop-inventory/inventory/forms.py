@@ -3,18 +3,29 @@ from .models import Product, Location, Inventory, validate_barcode
 
 
 class AddProductForm(forms.ModelForm):
+    location = forms.ModelChoiceField(
+        queryset=Location.objects.filter(active=True).order_by('name'),
+        empty_label="Select a location",
+        widget=forms.Select(attrs={"class": "form-control"}),
+        required=True
+    )
+    quantity = forms.IntegerField(
+        min_value=1,
+        widget=forms.NumberInput(attrs={"class": "form-control", "value": "1"}),
+        initial=1,
+        required=True
+    )
+    barcode = forms.CharField(widget=forms.HiddenInput(), required=False)
+
     class Meta:
         model = Product
-        fields = ["name", "manufacturer", "barcode"]
+        fields = ["name", "manufacturer", "barcode", "location", "quantity"]
         widgets = {
             "name": forms.TextInput(
                 attrs={"class": "form-control", "placeholder": "Enter item name"}
             ),
             "manufacturer": forms.TextInput(
                 attrs={"class": "form-control", "placeholder": "Enter manufacturer"}
-            ),
-            "barcode": forms.TextInput(
-                attrs={"class": "form-control", "placeholder": "Enter barcode"}
             ),
         }
 

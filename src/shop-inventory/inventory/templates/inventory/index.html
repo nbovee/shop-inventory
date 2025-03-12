@@ -21,14 +21,12 @@
 
     <h2 class="mt-4">Current Inventory</h2>
 
-    {% if inventory_items.count != 0 %}
-        {% regroup inventory_items by location as location_list %}
+    {% for location, items in items_in_location.items %}
 
-        {% for location in location_list %}
             <div class="card mt-4">
                 <div class="card-header bg-light">
-                    <h4>{{ location.grouper.name }}</h4>
-                    {% if not location.grouper.active %}
+                    <h4>{{ location.name }}</h4>
+                    {% if not location.active %}
                         <span class="badge badge-danger badge-pill">Inactive</span>
                     {% endif %}
                 </div>
@@ -59,7 +57,4 @@
                 </div>
             </div>
         {% endfor %}
-    {% else %}
-        <div class="alert alert-info mt-3">No inventory items found.</div>
-    {% endif %}
 {% endblock %}
