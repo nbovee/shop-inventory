@@ -6,13 +6,24 @@ from .models import User
 
 @admin.register(User)
 class CustomAdmin(UserAdmin):
-    pass
+    # Add custom fields here
+    list_display = ("username", "is_active")
+    list_filter = ("is_active",)
+    search_fields = ("username",)
+    ordering = ("username",)
 
+    fieldsets = (
+        (None, {"fields": ("username", "password")}),
+        ("Permissions", {"fields": ("is_active", "groups", "user_permissions")}),
+        ("Important dates", {"fields": ("last_login", "date_joined")}),
+    )
 
-#     # Add custom fields here
-#     list_display = ("email", "is_staff")
-#     fieldsets = (
-#         (None, {"fields": ("email", "password")}),
-#         ("Personal info", {"fields": ("first_name", "last_name")}),
-#         ("Permissions", {"fields": ("is_staff", "is_active")}),
-#     )
+    add_fieldsets = (
+        (
+            None,
+            {
+                "classes": ("wide",),
+                "fields": ("username", "password1", "password2"),
+            },
+        ),
+    )

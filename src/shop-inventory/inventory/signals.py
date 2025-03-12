@@ -29,7 +29,8 @@ def add_models_permissions(group, models, permissions):
         content_type = ContentType.objects.get_for_model(model)
         permission_create = [
             Permission.objects.get(
-                content_type=content_type, codename=f"{permission}_{model._meta.model_name}"
+                content_type=content_type,
+                codename=f"{permission}_{model._meta.model_name}",
             )
             for permission in permissions
         ]
@@ -45,12 +46,12 @@ def create_shop_employee_permissions(sender, **kwargs):
     if sender.label == "inventory":
         group, created = Group.objects.get_or_create(name="Shop Employee")
         models = [Inventory, Product]  # Add other related models as needed
-        add_models_permissions(group, models, ["add", "update"])
+        add_models_permissions(group, models, ["add", "change", "view"])
 
 
 @receiver(post_migrate)
 def create_shop_manager_permissions(sender, **kwargs):
     if sender.label == "inventory":
         group, created = Group.objects.get_or_create(name="Shop Manager")
-        models = [Inventory, Product, Location, User]  # Add other related models as needed
-        add_models_permissions(group, models, ["add", "update", "change", "delete"])
+        models = [Inventory, Product, Location]  # Add other related models as needed
+        add_models_permissions(group, models, ["add", "change", "delete", "view"])
