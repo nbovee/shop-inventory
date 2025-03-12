@@ -1,6 +1,5 @@
 from django import forms
-from .models import Product, Location, Inventory, ProductUUID
-import uuid
+from .models import Product, Location, Inventory, validate_upc
 
 
 class ProductForm(forms.ModelForm):
@@ -125,32 +124,14 @@ class AddInventoryForm(forms.ModelForm):
         return cleaned_data
 
 
-class InventoryQuantityUpdateForm(forms.Form):
-    product = forms.ModelChoiceField(
-        queryset=Product.objects.filter(active=True),
-        widget=forms.Select(attrs={"class": "form-control", "autofocus": True}),
-        label="Product",
-    )
-    location = forms.ModelChoiceField(
-        queryset=Location.objects.filter(active=True),
-        widget=forms.Select(attrs={"class": "form-control"}),
-        label="Location",
-    )
-    delta_qty = forms.IntegerField(
-        widget=forms.NumberInput(
-            attrs={"class": "form-control", "placeholder": "Enter quantity change"}
-        ),
-        label="Quantity Change",
-    )
+class RemoveInventoryForm(forms.Form):
+    product = forms.ModelChoiceField(queryset=Product.objects.filter(active=True))
+    location = forms.ModelChoiceField(queryset=Location.objects.filter(active=True))
+    quantity = forms.IntegerField(min_value=1)
 
-    def __init__(self, *args, **kwargs):
-        product = kwargs.pop("product", None)
-        location = kwargs.pop("location", None)
-        super().__init__(*args, **kwargs)
-        if product:
-            self.fields["product"].initial = product
-        if location:
-            self.fields["location"].initial = location
+class StockUpdateForm(forms.Form):
+    item_id = forms.IntegerField()
+    delta_qty = forms.IntegerField()
 
     def clean(self):
         cleaned_data = super().clean()
@@ -208,10 +189,12 @@ class AddItemToLocation(forms.Form):
             }
         ),
         label="Barcode",
+        validators=[validate_upc],
     )
+    
 
 
-class ProductFromBarcodeForm(ProductForm):
+class NewProductForm(ProductForm):
     class Meta(ProductForm.Meta):
         fields = ["name", "manufacturer"]  # barcode will be set from scan
 
@@ -236,65 +219,48 @@ class ReactivateLocationForm(forms.Form):
         widget=forms.Select(attrs={"class": "form-control"}),
     )
 
-    def save(self):
-        location = self.cleaned_data["location"]
-        location.active = True
-        location.save()
-        return location
 
-
-class UUIDItemForm(forms.ModelForm):
+class EditProductForm(forms.ModelForm):
     class Meta:
-        model = ProductUUID
-        fields = ["base_item", "uuid_barcode"]
+        model = Product
+        fields = ["name", "manufacturer"]
         widgets = {
-            "uuid_barcode": forms.TextInput(
-                attrs={"class": "form-control", "placeholder": "Scan UUID barcode"}
+            "name": forms.TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter item name"}
+            ),
+            "manufacturer": forms.TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter manufacturer"}
             ),
         }
 
-    def clean_uuid_barcode(self):
-        uuid_barcode = self.cleaned_data["uuid_barcode"]
-        try:
-            # Ensure it's a valid UUID
-            uuid_value = uuid.UUID(str(uuid_barcode))
-            return uuid_value
-        except ValueError:
-            raise forms.ValidationError("Invalid UUID format")
-
-    def clean(self):
-        cleaned_data = super().clean()
-        base_item = cleaned_data.get("base_item")
-
-        # Check that base_item is active
-        if base_item and not base_item.active:
-            raise forms.ValidationError("Cannot add UUID to inactive item")
-
-        return cleaned_data
-
-
-class LinkUUIDForm(forms.Form):
-    base_item = forms.ModelChoiceField(
-        queryset=Product.objects.filter(active=True).order_by("name", "manufacturer"),
-        empty_label="Select a product",
-        widget=forms.Select(attrs={"class": "form-control"}),
-        required=False,  # Allow empty for new item flow
-    )
-
     def __init__(self, *args, **kwargs):
+        self.instance_id = kwargs.pop('instance_id', None)
         super().__init__(*args, **kwargs)
-        self.fields[
-            "base_item"
-        ].help_text = "Select existing product or click 'Create New Product' below"
 
     def clean(self):
         cleaned_data = super().clean()
-        base_item = cleaned_data.get("base_item")
-        create_new = self.data.get("create_new")
+        name = cleaned_data.get("name")
+        manufacturer = cleaned_data.get("manufacturer")
 
-        if not base_item and not create_new:
-            raise forms.ValidationError(
-                "Please either select a product or create a new one"
-            )
-
+        if name and manufacturer:
+            # Check if another product with same name/manufacturer exists (excluding this one)
+            duplicate_exists = Product.objects.filter(
+                name=name, 
+                manufacturer=manufacturer, 
+                active=True
+            ).exclude(id=self.instance.id).exists()
+            
+            if duplicate_exists:
+                raise forms.ValidationError(
+                    "Another item with this name and manufacturer already exists.",
+                    code="exists",
+                )
         return cleaned_data
+
+
+class SelectProductForm(forms.Form):
+    product = forms.ModelChoiceField(
+        queryset=Product.objects.filter(active=True).order_by("name", "manufacturer"),
+        empty_label="Select a product to edit",
+        widget=forms.Select(attrs={"class": "form-control"}),
+    )

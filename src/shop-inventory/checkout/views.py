@@ -42,6 +42,25 @@ def get_cart(request):
     return request.session.get("cart", {})
 
 
+def remove_from_cart(request):
+    """Remove an item from the cart."""
+    if request.method == "POST":
+        product_id = request.POST.get("product_id")
+        if product_id:
+            # Get the current cart
+            cart = get_cart(request)
+
+            # Remove the item if it exists in the cart
+            if product_id in cart:
+                del cart[product_id]
+                request.session["cart"] = cart
+                messages.success(request, "Item removed from cart.")
+            else:
+                messages.error(request, "Item not found in cart.")
+
+    return redirect("checkout:index")
+
+
 def process_order(request):
     """Process the order based on the cart in the session."""
     cart = get_cart(request)
@@ -70,7 +89,7 @@ def process_order(request):
 
 
 @login_required
-@permission_required("inventory.add_product", raise_exception=True)
+@permission_required("checkout.view_order", raise_exception=True)
 def recent_orders(request):
     """Display orders from the last 30 days."""
     thirty_days_ago = timezone.now() - timedelta(days=30)

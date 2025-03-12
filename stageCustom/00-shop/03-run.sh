@@ -18,8 +18,6 @@ python manage.py collectstatic --noinput
 echo "Migrating database"
 python manage.py migrate --noinput
 
-echo "Creating first superuser"
-python manage.py safecreatesuperuser --noinput
 USEREOF
 
 EOF

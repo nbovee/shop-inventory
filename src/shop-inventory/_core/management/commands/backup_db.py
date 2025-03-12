@@ -4,6 +4,10 @@ import zipfile
 import glob
 from datetime import datetime
 import shutil
+import logging
+
+# Set up logger
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -32,9 +36,7 @@ class Command(BaseCommand):
         backup_password = os.environ.get("DJANGO_BACKUP_PASSWORD")
 
         if not backup_password:
-            self.stderr.write(
-                "Error: DJANGO_BACKUP_PASSWORD environment variable not set"
-            )
+            logger.error("DJANGO_BACKUP_PASSWORD environment variable not set")
             return
 
         # Create timestamp for backup file
@@ -45,7 +47,7 @@ class Command(BaseCommand):
         backup_drives = self.find_backup_drives()
 
         if not backup_drives:
-            self.stderr.write("No backup drives found with .shopbackup file")
+            logger.error("No backup drives found with .shopbackup file")
             return
 
         # Create a temporary copy of the database
@@ -61,7 +63,7 @@ class Command(BaseCommand):
                     zf.setpassword(backup_password.encode())
                     zf.write(temp_db, "db.sqlite3")
 
-                self.stdout.write(self.style.SUCCESS(f"Backup created at: {zip_path}"))
+                logger.info(f"Backup created at: {zip_path}")
 
                 # Keep only the 5 most recent backups
                 existing_backups = sorted(
@@ -70,9 +72,7 @@ class Command(BaseCommand):
                 if len(existing_backups) > 5:
                     for old_backup in existing_backups[:-5]:
                         os.remove(old_backup)
-                        self.stdout.write(
-                            self.style.SUCCESS(f"Removed old backup: {old_backup}")
-                        )
+                        logger.info(f"Removed old backup: {old_backup}")
 
         finally:
             # Clean up temporary file

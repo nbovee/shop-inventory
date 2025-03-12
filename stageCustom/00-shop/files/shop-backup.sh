@@ -1,0 +1,48 @@
+#!/bin/bash
+
+# Script to mount USB drives and run django backup command
+set -e
+
+# Path to Django project
+PROJECT_PATH="/path/to/shop-inventory"  # Adjust this to the correct path
+
+# Function to check and mount USB drives
+mount_usb_drives() {
+    # Get list of all available block devices that might be USB drives
+    for device in $(lsblk -rno NAME,TRAN | grep "usb" | cut -d' ' -f1); do
+        # Get device path
+        dev_path="/dev/$device"
+
+        # Create mount point if it doesn't exist
+        mount_point="/media/$device"
+        if [ ! -d "$mount_point" ]; then
+            mkdir -p "$mount_point"
+        fi
+
+        # Check if already mounted
+        if ! grep -q "$dev_path" /proc/mounts; then
+            # Try to mount the device
+            if mount "$dev_path" "$mount_point"; then
+                echo "Mounted $dev_path to $mount_point"
+            else
+                echo "Failed to mount $dev_path"
+            fi
+        else
+            echo "$dev_path is already mounted"
+        fi
+    done
+}
+
+# Mount any connected USB drives
+mount_usb_drives
+
+# Run the Django backup command
+cd "$PROJECT_PATH"
+
+# Activate virtual environment if using one
+# source /path/to/venv/bin/activate
+
+# Run the backup command
+python manage.py backup_db
+
+exit 0

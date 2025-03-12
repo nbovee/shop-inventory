@@ -1,0 +1,94 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Add Item to Location{% endblock %}
+
+{% block content %}
+<div class="container">
+    {% if not selected_location %}
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Select Location</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for location in locations %}
+                        <div class="col-md-3 mb-3">
+                            <form method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="select_location">
+                                <input type="hidden" name="location_id" value="{{ location.id }}">
+                                <button type="submit" class="btn btn-outline-primary btn-block">
+                                    {{ location.name }}
+                                </button>
+                            </form>
+                        </div>
+                    {% empty %}
+                        <div class="col">
+                            <p class="text-muted">No active locations available. Please add a location first.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Add to {{ selected_location.name }}</h5>
+            </div>
+            <div class="card-body">
+                {% if form_type == 'quantity_form' %}
+                    {# Show quantity form #}
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="add_quantity">
+
+                        <h5>{{ base_item.name }} ({{ base_item.manufacturer }})</h5>
+                        <div class="form-group mb-3">
+                            {{ form.quantity.label_tag }}
+                            {{ form.quantity }}
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Quantity</button>
+                    </form>
+                {% elif form_type == 'new_item_form' %}
+                    {# Show new item form #}
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="add_new_item">
+
+                        <h5>New Item {% if barcode_is_uuid %}(UUID: {{ barcode }}){% else %}(Barcode: {{ barcode }}){% endif %}</h5>
+                        <div class="form-group mb-3">
+                            {{ form.name.label_tag }}
+                            {{ form.name }}
+                            <small class="form-text text-muted">Double-check the item name is correct</small>
+                        </div>
+                        <div class="form-group mb-3">
+                            {{ form.manufacturer.label_tag }}
+                            {{ form.manufacturer }}
+                            <small class="form-text text-muted">Verify the manufacturer information</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary mb-1">Create Item</button>
+                    </form>
+
+                {% elif form_type == 'scan_form' %}
+                    {# Show barcode form #}
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="process_barcode">
+
+                        <div class="form-group mb-3">
+                            {{ form.barcode.label_tag }}
+                            {{ form.barcode }}
+                        </div>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+
+                    <form method="post" class="d-inline"">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="cancel">
+                        <button type="submit" class="btn btn-secondary">Cancel</button>
+                    </form>
+</div>
+{% endblock %}

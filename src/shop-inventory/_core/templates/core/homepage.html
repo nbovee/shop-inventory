@@ -12,8 +12,9 @@
 <div class="d-flex flex-row flex-wrap justify-content-center">
 {% include 'core/card.html' with title="Manage Inventory" description="Add/remove items." url='inventory:index' %}
 {% include 'core/card.html' with title="Print New Barcodes" description="Get 10 pages of barcodes. Print on Avery Presta 94503." url='inventory:barcodes' %}
+{% if perms.checkout.view_order %}
 {% include 'core/card.html' with title="View Recent Orders" description="View recent orders." url='checkout:recent_orders' %}
-
+{% endif %}
 </div>
 {% endif %}
 {% endblock %}

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 import os
+from datetime import datetime
 
 from pathlib import Path
 from _core import is_true, split_with_comma
@@ -79,7 +80,6 @@ AUTHENTICATION_BACKENDS = (("django.contrib.auth.backends.ModelBackend"),)
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "_templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -195,13 +195,9 @@ SERVER_EMAIL = os.getenv("DJANGO_SERVER_EMAIL", "root@localhost")
 # Default email address to use for various automated correspondence from the site managers.
 DEFAULT_FROM_EMAIL = os.getenv("DJANGO_DEFAULT_FROM_EMAIL", "webmaster@localhost")
 
-# People who get code error notifications. In the format
-# [('Full Name', 'email@example.com'), ('Full Name', 'anotheremail@example.com')]
-ADMIN_NAME = os.getenv("DJANGO_ADMIN_NAME", "")
-ADMIN_EMAIL = os.getenv("DJANGO_ADMIN_EMAIL", "")
-# if ADMIN_EMAIL:
-#     ADMINS = [(ADMIN_NAME, ADMIN_EMAIL)]
-
+# Admin credentials
+DJANGO_ADMIN_USERNAME = os.getenv("DJANGO_ADMIN_USERNAME")
+DJANGO_ADMIN_PASSWORD = os.getenv("DJANGO_ADMIN_PASSWORD")
 
 # Define the log directory from environment variable
 LOG_DIR = Path(os.getenv("APP_LOG_DIR", BASE_DIR / "logs"))
@@ -224,7 +220,8 @@ LOGGING = {
         "file": {
             "level": "DEBUG",
             "class": "logging.handlers.RotatingFileHandler",
-            "filename": LOG_DIR / "django.log",
+            "filename": LOG_DIR
+            / f"django-{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.log",
             "maxBytes": 1024 * 1024 * 5,  # 5 MB
             "backupCount": 5,
             "formatter": "verbose",

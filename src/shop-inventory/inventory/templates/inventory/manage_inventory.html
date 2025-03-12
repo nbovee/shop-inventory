@@ -1,6 +1,6 @@
 {% extends 'core/base.html' %}
 
-{% block title %}Manage Products and Locations{% endblock %}
+{% block title %}Manager Actions{% endblock %}
 
 {% block content %}
     <h1 class="mt-4">Manage Products and Locations</h1>
@@ -8,8 +8,9 @@
     <div class="mt-4">
         <h2>Products</h2>
         <a href="{% url 'inventory:add_product' %}" class="btn btn-primary mt-2">Add Product <small>(not often needed)</small></a>
-        <a href="{% url 'inventory:reactivate_product' %}" class="btn btn-success mt-2">Reactivate Item</a>
-        <a href="{% url 'inventory:remove_product' %}" class="btn btn-danger mt-2">Deactivate Item</a>
+        <a href="{% url 'inventory:edit_product' %}" class="btn btn-primary mt-2">Edit Product</a>
+        <a href="{% url 'inventory:reactivate_product' %}" class="btn btn-success mt-2">Reactivate Product</a>
+        <a href="{% url 'inventory:remove_product' %}" class="btn btn-danger mt-2">Deactivate Product</a>
     </div>
 
     <div class="mt-4">

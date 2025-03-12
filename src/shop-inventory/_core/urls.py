@@ -18,11 +18,13 @@ Including another URLconf
 from django.urls import include, path
 from django.conf.urls.static import static
 from django.conf import settings
+from django.contrib import admin
 
 from . import views
 
 
 urlpatterns = [
+    path("admin/", admin.site.urls),
     path("", views.index, name="index"),
     path("hotspot-detect.html", views.captive_portal_detect, name="captive_detect"),
     path("inventory/", include("inventory.urls")),

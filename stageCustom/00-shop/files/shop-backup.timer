@@ -1,0 +1,11 @@
+[Unit]
+Description=Run Shop Inventory Backup Service Hourly
+Requires=shop-backup.service
+
+[Timer]
+Unit=shop-backup.service
+OnBootSec=1min
+OnUnitActiveSec=5min
+
+[Install]
+WantedBy=timers.target
