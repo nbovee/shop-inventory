@@ -7,14 +7,22 @@ set -e
 PROJECT_PATH="/path/to/shop-inventory"  # Adjust this to the correct path
 
 # Function to check and mount USB drives
+# TODO: confirm functionality
 mount_usb_drives() {
+    # Create base mount directory with proper permissions
+    MOUNT_BASE="/tmp/shop-backup-mounts"
+    if [ ! -d "$MOUNT_BASE" ]; then
+        mkdir -p "$MOUNT_BASE"
+        chmod 755 "$MOUNT_BASE"
+    fi
+
     # Get list of all available block devices that might be USB drives
     for device in $(lsblk -rno NAME,TRAN | grep "usb" | cut -d' ' -f1); do
         # Get device path
         dev_path="/dev/$device"
 
         # Create mount point if it doesn't exist
-        mount_point="/media/$device"
+        mount_point="$MOUNT_BASE/$device"
         if [ ! -d "$mount_point" ]; then
             mkdir -p "$mount_point"
         fi
