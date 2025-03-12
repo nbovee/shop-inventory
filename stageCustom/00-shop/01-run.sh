@@ -60,4 +60,11 @@ chmod +x "${APP_INSTALL_DIR}/manage.py"
 echo "Configure nginx"
 ln -sf /etc/nginx/sites-available/nginx-shop-inventory.conf /etc/nginx/sites-enabled/
 rm -f /etc/nginx/sites-enabled/default
+
+echo "Checking for and removing existing test database file if present"
+if [ -f "${APP_INSTALL_DIR}/${DJANGO_SQLITE_DIR}/testdb.sqlite3" ]; then
+    echo "Removing existing database file"
+    rm -f "${APP_INSTALL_DIR}/${DJANGO_SQLITE_DIR}/testdb.sqlite3"
+fi
+
 EOF

@@ -103,6 +103,8 @@ DATABASES = {
         "NAME": SQLITE_DIR / "db.sqlite3",
     }
 }
+if DEBUG:
+    DATABASES["default"]["NAME"] = SQLITE_DIR / "testdb.sqlite3"
 
 # Custom User Model
 AUTH_USER_MODEL = f"{CORE_APP.name}.User"
