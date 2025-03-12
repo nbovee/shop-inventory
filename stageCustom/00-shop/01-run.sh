@@ -32,9 +32,12 @@ echo "Copying systemd service & configuration files"
 install -m 640 files/shop-inventory.service "${ROOTFS_DIR}/etc/systemd/system/"
 install -m 640 files/nginx-shop-inventory.conf "${ROOTFS_DIR}/etc/nginx/sites-available/"
 install -m 640 files/shop-wifi-setup.service "${ROOTFS_DIR}/etc/systemd/system/"
+install -m 640 files/shop-backup.service "${ROOTFS_DIR}/etc/systemd/system/"
+install -m 640 files/shop-backup.timer "${ROOTFS_DIR}/etc/systemd/system/"
 install -m 640 files/shop-inventory-socket.conf "${ROOTFS_DIR}/usr/lib/tmpfiles.d/"
 install -m 640 files/shop-inventory-logs.conf "${ROOTFS_DIR}/usr/lib/tmpfiles.d/"
 install -m 640 files/dnsmasq.conf "${ROOTFS_DIR}/etc/dnsmasq.conf"
+install -m 755 files/shop-backup.sh "${ROOTFS_DIR}/usr/local/bin/"
 
 echo "Copying config file"
 install -m 640 "${BASE_DIR}/config" "${ROOTFS_DIR}/etc/shop-inventory/config"
@@ -53,9 +56,6 @@ chown -R ${APP_USER}:${APP_GROUP} "${APP_LOG_DIR}"
 chown -R ${APP_USER}:${APP_GROUP} "${APP_RUN_DIR}"
 chmod +x "${APP_INSTALL_DIR}/start.sh"
 chmod +x "${APP_INSTALL_DIR}/manage.py"
-
-echo "Set up cron job for backups"
-echo "0 * * * * ${APP_INSTALL_DIR}/venv/bin/python ${APP_INSTALL_DIR}/manage.py backup_db >> ${APP_LOG_DIR}/backup.log 2>&1" | crontab -u ${APP_USER} -
 
 echo "Configure nginx"
 ln -sf /etc/nginx/sites-available/nginx-shop-inventory.conf /etc/nginx/sites-enabled/

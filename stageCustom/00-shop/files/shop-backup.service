@@ -1,0 +1,13 @@
+[Unit]
+Description=Shop Inventory Database Backup Service
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/shop-backup.sh
+User=pantry
+Group=www-data
+Environment="DJANGO_BACKUP_PASSWORD=${DJANGO_BACKUP_PASSWORD}"
+
+[Install]
+WantedBy=multi-user.target

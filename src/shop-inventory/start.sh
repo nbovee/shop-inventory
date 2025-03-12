@@ -18,9 +18,6 @@ python manage.py collectstatic --noinput
 echo "Migrating database"
 python manage.py migrate --noinput
 
-echo "Creating first superuser"
-python manage.py safecreatesuperuser --noinput
-
 # Start Gunicorn
 exec gunicorn _core.wsgi:application \
     --name shop_inventory \
