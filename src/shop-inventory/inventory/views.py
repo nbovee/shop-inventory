@@ -11,14 +11,14 @@ from django.core import exceptions as forms
 from django.contrib.auth.decorators import permission_required
 
 from .forms import (
-    ProductForm,
-    LocationForm,
-    RemoveInventoryForm,
-    StockUpdateForm,
-    RemoveLocationForm,
-    RemoveProductForm,
-    AddItemToLocation,
-    ProductFromBarcodeForm,
+    AddProductForm,
+    AddLocationForm,
+    InventoryQuantityUpdateForm,
+    DeactivateLocationForm,
+    DeactivateProductForm,
+    AddQuantityForm,
+    NewProductForm,
+    BarcodeForm,
     ReactivateProductForm,
     ReactivateLocationForm,
     EditProductForm,
@@ -97,37 +97,10 @@ def stock_update(request):
 
 
 @login_required
-@permission_required("inventory.delete_inventory", raise_exception=True)
-def remove_inventory(request):
-    if request.method == "POST":
-        form = RemoveInventoryForm(request.POST)
-        if form.is_valid():
-            product = form.cleaned_data["product"]
-            location = form.cleaned_data["location"]
-            quantity = form.cleaned_data["quantity"]
-            try:
-                inventory_item = Inventory.objects.get(
-                    product=product, location=location, active=True
-                )
-                if inventory_item.quantity >= quantity:
-                    inventory_item.quantity -= quantity
-                    inventory_item.save()
-                    messages.success(request, "Inventory item removed successfully.")
-                else:
-                    messages.error(request, "Not enough quantity to remove.")
-            except Inventory.DoesNotExist:
-                messages.error(request, "Inventory item not found.")
-            return redirect("inventory:remove_inventory")
-    else:
-        form = RemoveInventoryForm()
-    return render(request, "inventory/remove_item.html", {"form": form})
-
-
-@login_required
 @permission_required("inventory.add_product", raise_exception=True)
 def add_product(request):
     if request.method == "POST":
-        form = ProductForm(request.POST)
+        form = AddProductForm(request.POST)
         try:
             if form.is_valid():
                 form.save()
@@ -139,7 +112,7 @@ def add_product(request):
                 return redirect("inventory:add_product")
             form.add_error(None, e)
     else:
-        form = ProductForm()
+        form = AddProductForm()
 
     # Get list of inactive items for reference
     inactive_items = Product.objects.filter(active=False).order_by(
@@ -162,38 +135,19 @@ def remove_product(request):
             product = form.cleaned_data["product"]
 
             # Get all active inventory items for this product
-            inventory_items = Inventory.objects.filter(product=product, active=True)
+            product = Product.objects.get(
+                id=form.cleaned_data["product"].id, active=True
+            )
 
             # Deactivate the product
-            product.deactivate()
+            product.active = False
+            product.save()
 
-            # Handle inventory items
-            if inventory_items.exists():
-                inventory_count = inventory_items.count()
-                zero_quantity_count = inventory_items.filter(quantity=0).update(
-                    active=False
-                )
-                remaining_count = inventory_count - zero_quantity_count
-
-                if remaining_count > 0:
-                    messages.warning(
-                        request,
-                        f"Product '{product}' deactivated. {remaining_count} inventory items still have stock "
-                        "and will be deactivated when they reach zero quantity.",
-                    )
-                else:
-                    messages.success(
-                        request,
-                        f"Product '{product}' and all its inventory items have been deactivated.",
-                    )
-            else:
-                messages.success(
-                    request, f"Product '{product}' deactivated successfully."
-                )
+            messages.success(request, f"Product '{product}' deactivated successfully.")
 
             return redirect("inventory:remove_product")
     else:
-        form = RemoveProductForm()
+        form = DeactivateProductForm()
 
     # Get active products for context
     active_products = Product.objects.filter(active=True).order_by(
@@ -211,7 +165,7 @@ def remove_product(request):
 @permission_required("inventory.add_location", raise_exception=True)
 def add_location(request):
     if request.method == "POST":
-        form = LocationForm(request.POST)
+        form = AddLocationForm(request.POST)
         try:
             if form.is_valid():
                 form.save()
@@ -223,7 +177,7 @@ def add_location(request):
                 return redirect("inventory:add_location")
             form.add_error("name", e)
     else:
-        form = LocationForm()
+        form = AddLocationForm()
 
     # Get list of inactive locations for reference
     inactive_locations = Location.objects.filter(active=False).order_by("name")
@@ -242,16 +196,12 @@ def remove_location(request):
         form = DeactivateLocationForm(request.POST)
         if form.is_valid():
             location = form.cleaned_data["location"]
-            if Inventory.objects.filter(location=location, active=True).exists():
-                messages.error(
-                    request, "Cannot remove location that has active products."
-                )
-            else:
-                location.active = False
-                location.save()
-                messages.success(
-                    request, f"Location '{location.name}' removed successfully."
-                )
+
+            location.active = False
+            location.save()
+            messages.success(
+                request, f"Location '{location.name}' removed successfully."
+            )
             return redirect("inventory:remove_location")
     else:
         form = DeactivateLocationForm()
@@ -270,194 +220,6 @@ def qrcode_sheet(request):
     result = barcode_page_generation(pages=10)
     response = HttpResponse(result, content_type="application/pdf")
     return response
-
-
-def handle_process_barcode(request, form, selected_location, context):
-    barcode = form.cleaned_data["barcode"]
-
-    if barcode_is_uuid(barcode):
-        return handle_uuid_barcode(request, barcode, selected_location, context)
-    else:
-        return handle_upc_barcode(request, barcode, selected_location, context)
-
-
-def handle_uuid_barcode(request, barcode, selected_location, context):
-    if "current_base_item" in request.session:
-        base_item = Product.objects.get(pk=request.session["current_base_item"])
-        ProductUUID.objects.create(base_item=base_item, uuid_barcode=barcode)
-        inventory_item, created = Inventory.objects.get_or_create(
-            base_item=base_item,
-            location=selected_location,
-            defaults={"quantity": 1, "active": True},
-        )
-        if not created:
-            inventory_item.quantity += 1
-            inventory_item.save()
-
-        messages.success(
-            request,
-            f"Added UUID barcode to {base_item}. Scan another UUID barcode to add it to the same product, or click 'Finish Linking' to complete the process.",
-        )
-        context.update(
-            {
-                "scan_form": AddItemToLocation(),
-                "current_base_item": base_item,
-                "show_finish_button": True,
-            }
-        )
-    else:
-        context["uuid_barcode"] = barcode
-        context["link_form"] = LinkUUIDForm()
-        context["scan_form"] = AddItemToLocation(request.POST)
-        messages.info(
-            request,
-            f"Scanned UUID barcode {barcode}. Please select an existing product to link this barcode to, or create a new product.",
-        )
-    return render(request, "inventory/add_item_to_location.html", context)
-
-
-def handle_upc_barcode(request, barcode, selected_location, context):
-    try:
-        base_item = Product.objects.get(normalized_barcode=normalize_barcode(barcode))
-        context["base_item"] = base_item
-        context["quantity_form"] = InventoryQuantityUpdateForm()
-        context["scan_form"] = AddItemToLocation(request.POST)
-        return render(request, "inventory/add_item_to_location.html", context)
-    except Product.DoesNotExist:
-        context["new_item_form"] = ProductFromBarcodeForm()
-        context["barcode"] = barcode
-        context["scan_form"] = AddItemToLocation(request.POST)
-        messages.info(
-            request,
-            f"Scanned new barcode {barcode}. Please enter the details for the new product.",
-        )
-        return render(request, "inventory/add_item_to_location.html", context)
-
-
-def handle_add_new_item(request, form, barcode, selected_location, context):
-    base_item = form.save(commit=False)
-
-    if barcode_is_uuid(barcode):
-        base_item.barcode = str(uuid.uuid4().hex)
-        base_item.save()
-        ProductUUID.objects.create(base_item=base_item, uuid_barcode=barcode)
-        Inventory.objects.create(
-            base_item=base_item,
-            location=selected_location,
-            quantity=1,
-            active=True,
-        )
-        messages.success(
-            request,
-            f"Created new product {base_item} and linked UUID barcode. Save this sticker in the Product Binder to easily scan it in the future. Scan another UUID barcode to add it to the same product, or click 'Finish Linking' to complete the process.",
-        )
-    else:
-        base_item.barcode = barcode
-        base_item.save()
-        context.update(
-            {
-                "base_item": base_item,
-                "quantity_form": InventoryQuantityUpdateForm(),
-                "scan_form": AddItemToLocation(),
-            }
-        )
-        messages.success(
-            request,
-            f"Created new product {base_item} with barcode {barcode}. Please enter the quantity to add to the selected location.",
-        )
-        return render(request, "inventory/add_item_to_location.html", context)
-
-    context["scan_form"] = AddItemToLocation()
-    return render(request, "inventory/add_item_to_location.html", context)
-
-
-def handle_add_quantity(request, form, selected_location, context):
-    quantity = form.cleaned_data["quantity"]
-
-    if "reactivate_item" in form.cleaned_data:
-        inventory_item = form.cleaned_data["reactivate_item"]
-        inventory_item.quantity = quantity
-        inventory_item.active = True
-        inventory_item.save()
-        messages.success(
-            request,
-            f"Reactivated inventory item with quantity {quantity}. Scan another barcode to continue adding items, or choose a different location.",
-        )
-    else:
-        product = form.cleaned_data["product"]
-        inventory_item, created = Inventory.objects.get_or_create(
-            product=product,
-            location=selected_location,
-            defaults={"quantity": quantity, "active": True},
-        )
-        if not created:
-            inventory_item.quantity += quantity
-            inventory_item.save()
-        messages.success(
-            request,
-            f"Added {quantity} {product} to {inventory_item.location}. Scan another barcode to continue adding items, or choose a different location.",
-        )
-
-    context["scan_form"] = AddItemToLocation()
-    return render(request, "inventory/add_item_to_location.html", context)
-
-
-def handle_link_uuid(request, form, uuid_barcode, selected_location, context):
-    if request.POST.get("create_new"):
-        context.update(
-            {
-                "new_item_form": ProductFromBarcodeForm(),
-                "barcode": uuid_barcode,
-                "scan_form": AddItemToLocation(),
-                "barcode_is_uuid": True,
-            }
-        )
-        return render(request, "inventory/add_item_to_location.html", context)
-
-    if form.is_valid():
-        base_item = form.cleaned_data["base_item"]
-        ProductUUID.objects.create(base_item=base_item, uuid_barcode=uuid_barcode)
-        inventory_item, created = Inventory.objects.get_or_create(
-            base_item=base_item,
-            location=selected_location,
-            defaults={"quantity": 1, "active": True},
-        )
-        if not created:
-            inventory_item.quantity += 1
-            inventory_item.save()
-
-        request.session["current_base_item"] = base_item.pk
-        messages.success(
-            request,
-            f"UUID barcode linked to {base_item} and added to inventory. Scan another UUID barcode to add it to the same product, or click 'Finish Linking' to complete the process.",
-        )
-        context.update(
-            {
-                "scan_form": AddItemToLocation(),
-                "current_base_item": base_item,
-                "show_finish_button": True,
-            }
-        )
-    else:
-        context.update(
-            {
-                "uuid_barcode": uuid_barcode,
-                "link_form": form,
-                "scan_form": AddItemToLocation(),
-            }
-        )
-    return render(request, "inventory/add_item_to_location.html", context)
-
-
-def handle_finish_uuid_linking(request, context):
-    if "current_base_item" in request.session:
-        del request.session["current_base_item"]
-    context["scan_form"] = AddItemToLocation()
-    messages.success(
-        request,
-        "Finished linking UUID barcodes. Scan another barcode to continue adding items, or choose a different location.",
-    )
-    return render(request, "inventory/add_item_to_location.html", context)
 
 
 @login_required
@@ -500,21 +262,23 @@ def add_item_to_location(request):
 
 
 def _handle_show_locations(request):
-    """Show the location selection screen"""
+    """Show the location selection screen."""
     locations = Location.objects.filter(active=True).order_by("name")
     context = {
         "locations": locations,
+        "form_type": "show_locations",
+        "form_title": "Select a Location",
     }
     return render(request, "inventory/add_item_to_location.html", context)
 
 
 def _handle_location(request, from_selection=False):
     """
-    Handle location selection or continuation with a previously selected location
+    Handle location selection or continuation with a previously selected location. Always leads to the scan form.
 
     Parameters:
         request: The HTTP request
-        from_selection: True if this is a new selection, False if continuing with existing
+        from_selection: True if this is a new selection, False if continuing with existing.
     """
     try:
         # Get location ID either from POST (new selection) or session (continuation)
@@ -532,8 +296,9 @@ def _handle_location(request, from_selection=False):
         context = {
             "locations": Location.objects.filter(active=True).order_by("name"),
             "selected_location": selected_location,
-            "form": AddItemToLocation(),
+            "form": BarcodeForm(),
             "form_type": "scan_form",
+            "form_title": "Scan a Barcode",
         }
 
         return render(request, "inventory/add_item_to_location.html", context)
@@ -544,6 +309,9 @@ def _handle_location(request, from_selection=False):
 
 
 def _handle_scan_barcode(request):
+    """
+    Handle barcode scanning. Either leads to the quantity form or the new item form.
+    """
     # Get location from session
     if "selected_location_id" not in request.session:
         messages.error(request, "No location selected. Please select a location first.")
@@ -557,7 +325,7 @@ def _handle_scan_barcode(request):
         "selected_location": selected_location,
     }
 
-    form = AddItemToLocation(request.POST)
+    form = BarcodeForm(request.POST)
     if form.is_valid():
         barcode = form.cleaned_data["barcode"]
 
@@ -576,8 +344,9 @@ def _handle_scan_barcode(request):
                     request,
                     f"Product '{product}' is inactive. Please consult with a Rowan Pantry Manager to reactivate it.",
                 )
-                context["form"] = AddItemToLocation()
+                context["form"] = BarcodeForm()
                 context["form_type"] = "scan_form"
+                context["form_title"] = "Scan a Barcode"
                 return render(request, "inventory/add_item_to_location.html", context)
 
             # Store product ID in session
@@ -587,6 +356,7 @@ def _handle_scan_barcode(request):
             context["product"] = product
             context["form"] = AddQuantityForm()
             context["form_type"] = "quantity_form"
+            context["form_title"] = "Add Quantity"
         except Product.DoesNotExist:
             # Item doesn't exist, show new item form
             messages.warning(
@@ -596,17 +366,22 @@ def _handle_scan_barcode(request):
             context["form"] = NewProductForm()
             context["barcode"] = barcode
             context["form_type"] = "new_item_form"
+            context["form_title"] = "Enroll a New Item"
     else:
         messages.error(request, "Barcode appears to be invalid. Please try again.")
 
         # Form is invalid, show it again with errors
         context["form"] = form
         context["form_type"] = "scan_form"
+        context["form_title"] = "Scan a Barcode"
 
     return render(request, "inventory/add_item_to_location.html", context)
 
 
 def _handle_add_new_item(request):
+    """
+    Handle adding a new item. Always leads to the quantity form.
+    """
     # Get location from session
     if (
         "selected_location_id" not in request.session
@@ -646,6 +421,9 @@ def _handle_add_new_item(request):
 
 
 def _handle_add_quantity(request):
+    """
+    Handle adding quantity to an existing item. Always leads to the scan form after completion, using continue_with_location.
+    """
     # Get data from session
     if (
         "selected_location_id" not in request.session
@@ -662,49 +440,49 @@ def _handle_add_quantity(request):
     product = get_object_or_404(Product, id=product_id)
 
     context = {
-        "locations": Location.objects.filter(active=True).order_by("name"),
         "selected_location": selected_location,
         "product": product,
+        "form": AddQuantityForm(),
+        "form_type": "quantity_form",
     }
 
-    form = AddQuantityForm(request.POST, product=product, location=selected_location)
+    form = AddQuantityForm(request.POST)
 
     if form.is_valid():
         quantity = form.cleaned_data["quantity"]
-
-        # Handle reactivation of inactive inventory
-        if "reactivate_item" in form.cleaned_data:
-            inventory_item = form.cleaned_data["reactivate_item"]
-            inventory_item.quantity = quantity
-            inventory_item.active = True
-            inventory_item.save()
-            messages.success(
-                request,
-                f"Reactivated inventory item with quantity {quantity}",
-            )
-        else:
-            # Normal create/update flow
+        try:
+            # Use get_or_create instead of get to handle both cases
             inventory_item, created = Inventory.objects.get_or_create(
-                product=product,
-                location=selected_location,
-                defaults={"quantity": quantity, "active": True},
+                product=product, location=selected_location, defaults={"quantity": 0}
             )
 
-            if not created:
-                inventory_item.quantity += quantity
-                inventory_item.save()
+            # Update the quantity
+            inventory_item.quantity += quantity
+            inventory_item.save()
 
+            action_text = (
+                "Added" if not created else "Created new inventory item and added"
+            )
             messages.success(
                 request,
-                f"Added {quantity} {product} to {inventory_item.location}",
+                f"{action_text} {quantity} {product} to {inventory_item.location}",
             )
 
-        # Item successfully added, return to scanning
-        context["form"] = AddItemToLocation()
-        context["form_type"] = "scan_form"
+            # Item successfully added, return to scanning
+            context["form"] = BarcodeForm()
+            context["form_type"] = "scan_form"
+            context["form_title"] = "Scan a Barcode"
 
-        # Clear product-specific session data, but keep location
-        _clear_product_session(request)
+            # Clear product-specific session data, but keep location
+            _clear_product_session(request)
+        except Exception as e:
+            # Log the specific error
+            messages.error(request, f"Error updating inventory: {str(e)}")
+            # Debug information
+            print(f"Error details: {type(e).__name__}: {str(e)}")
+            # Keep the form as is to retry
+            context["form"] = form
+            context["form_type"] = "quantity_form"
     else:
         # If the form is invalid, show it again with errors
         context["form"] = form
@@ -714,13 +492,13 @@ def _handle_add_quantity(request):
 
 
 def _handle_cancel(request):
-    """Handle cancellation of the workflow"""
+    """Handle cancellation of the workflow. Always leads to the index page."""
     _clear_workflow_session(request)
     return redirect("inventory:index")
 
 
 def _clear_workflow_session(request):
-    """Clear all session variables related to the add item workflow"""
+    """Clear all session variables related to the add item workflow. Always leads to the index page."""
     keys_to_clear = [
         "selected_location_id",
         "current_barcode",
@@ -733,7 +511,7 @@ def _clear_workflow_session(request):
 
 
 def _clear_product_session(request):
-    """Clear product-related session variables but keep location"""
+    """Clear product-related session variables but keep location. Always leads to the scan form."""
     keys_to_clear = [
         "current_barcode",
         "current_product_id",
@@ -750,7 +528,9 @@ def reactivate_product(request):
     if request.method == "POST":
         form = ReactivateProductForm(request.POST)
         if form.is_valid():
-            product = form.save()
+            product = Product.objects.get(id=form.cleaned_data["product"].id)
+            product.active = True
+            product.save()
             messages.success(request, f"Product '{product}' reactivated successfully.")
             return redirect("inventory:reactivate_product")
     else:
@@ -764,7 +544,9 @@ def reactivate_location(request):
     if request.method == "POST":
         form = ReactivateLocationForm(request.POST)
         if form.is_valid():
-            location = form.save()
+            location = Location.objects.get(id=form.cleaned_data["location"].id)
+            location.active = True
+            location.save()
             messages.success(
                 request, f"Location '{location.name}' reactivated successfully."
             )

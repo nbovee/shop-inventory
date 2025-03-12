@@ -97,7 +97,7 @@ class ProcessOrderForm(forms.ModelForm):
                 for product_id, quantity in self.cart.items():
                     try:
                         inventory_item = Inventory.objects.select_for_update().get(
-                            id=product_id, active=True
+                            id=product_id
                         )
 
                         # Check if we have enough stock
@@ -115,14 +115,6 @@ class ProcessOrderForm(forms.ModelForm):
 
                         # Update inventory
                         inventory_item.quantity -= quantity
-
-                        # Check if item should be deactivated
-                        if (
-                            inventory_item.quantity == 0
-                            and not inventory_item.product.active
-                        ):
-                            inventory_item.active = False
-                            deactivated_items.append(inventory_item.product.name)
 
                         inventory_item.save()
 

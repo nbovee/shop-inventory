@@ -1,8 +1,8 @@
 from django import forms
-from .models import Product, Location, Inventory, validate_upc
+from .models import Product, Location, Inventory, validate_barcode
 
 
-class ProductForm(forms.ModelForm):
+class AddProductForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = ["name", "manufacturer", "barcode"]
@@ -47,7 +47,7 @@ class ProductForm(forms.ModelForm):
         return cleaned_data
 
 
-class LocationForm(forms.ModelForm):
+class AddLocationForm(forms.ModelForm):
     class Meta:
         model = Location
         fields = ["name"]
@@ -129,7 +129,8 @@ class RemoveInventoryForm(forms.Form):
     location = forms.ModelChoiceField(queryset=Location.objects.filter(active=True))
     quantity = forms.IntegerField(min_value=1)
 
-class StockUpdateForm(forms.Form):
+
+class InventoryQuantityUpdateForm(forms.Form):
     item_id = forms.IntegerField()
     delta_qty = forms.IntegerField()
 
@@ -179,7 +180,7 @@ class DeactivateProductForm(forms.Form):
     )
 
 
-class AddItemToLocation(forms.Form):
+class BarcodeForm(forms.Form):
     barcode = forms.CharField(
         widget=forms.TextInput(
             attrs={
@@ -189,13 +190,34 @@ class AddItemToLocation(forms.Form):
             }
         ),
         label="Barcode",
-        validators=[validate_upc],
+        validators=[validate_barcode],
     )
-    
 
 
-class NewProductForm(ProductForm):
-    class Meta(ProductForm.Meta):
+class AddItemToLocationForm(forms.Form):
+    location = forms.ModelChoiceField(
+        queryset=Location.objects.filter(active=True).order_by("name"),
+        empty_label="Select a location to add item",
+        widget=forms.Select(attrs={"class": "form-control"}),
+    )
+
+
+class AddQuantityForm(forms.Form):
+    quantity = forms.IntegerField(
+        min_value=1,
+        widget=forms.NumberInput(
+            attrs={
+                "class": "form-control",
+                "placeholder": "Enter quantity",
+                "autofocus": True,
+            }
+        ),
+        label="Quantity",
+    )
+
+
+class NewProductForm(AddProductForm):
+    class Meta(AddProductForm.Meta):
         fields = ["name", "manufacturer"]  # barcode will be set from scan
 
 
@@ -234,7 +256,7 @@ class EditProductForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        self.instance_id = kwargs.pop('instance_id', None)
+        self.instance_id = kwargs.pop("instance_id", None)
         super().__init__(*args, **kwargs)
 
     def clean(self):
@@ -244,12 +266,14 @@ class EditProductForm(forms.ModelForm):
 
         if name and manufacturer:
             # Check if another product with same name/manufacturer exists (excluding this one)
-            duplicate_exists = Product.objects.filter(
-                name=name, 
-                manufacturer=manufacturer, 
-                active=True
-            ).exclude(id=self.instance.id).exists()
-            
+            duplicate_exists = (
+                Product.objects.filter(
+                    name=name, manufacturer=manufacturer, active=True
+                )
+                .exclude(id=self.instance.id)
+                .exists()
+            )
+
             if duplicate_exists:
                 raise forms.ValidationError(
                     "Another item with this name and manufacturer already exists.",

@@ -1,7 +1,7 @@
 import pytest
 from inventory.forms import (
-    ProductForm,
-    LocationForm,
+    AddProductForm,
+    AddLocationForm,
     AddInventoryForm,
     InventoryQuantityUpdateForm,
     DeactivateLocationForm,
@@ -39,28 +39,28 @@ def inventory_item(product, location):
 
 def test_product_form_valid():
     """Test valid product form"""
-    form = ProductForm({"name": "New Item", "manufacturer": "New Manufacturer"})
+    form = AddProductForm({"name": "New Item", "manufacturer": "New Manufacturer"})
     assert form.is_valid()
 
 
 def test_product_form_duplicate():
     """Test duplicate product form"""
     Product.objects.create(name="Test", manufacturer="Test")
-    form = ProductForm({"name": "Test", "manufacturer": "Test"})
+    form = AddProductForm({"name": "Test", "manufacturer": "Test"})
     assert not form.is_valid()
     assert "already exists" in str(form.errors)
 
 
 def test_location_form_valid():
     """Test valid location form"""
-    form = LocationForm({"name": "New Location"})
+    form = AddLocationForm({"name": "New Location"})
     assert form.is_valid()
 
 
 def test_location_form_duplicate():
     """Test duplicate location form"""
     Location.objects.create(name="Test")
-    form = LocationForm({"name": "Test"})
+    form = AddLocationForm({"name": "Test"})
     assert not form.is_valid()
     assert "already exists" in str(form.errors)
 

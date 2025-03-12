@@ -84,14 +84,6 @@ class Product(models.Model):
         self.normalized_barcode = normalize_barcode(self.barcode)
         super().save(*args, **kwargs)
 
-    def deactivate(self):
-        self.active = False
-        self.save()
-
-    def activate(self):
-        self.active = True
-        self.save()
-
 
 class Location(models.Model):
     name = models.CharField(max_length=30, unique=True)
@@ -113,31 +105,3 @@ class Inventory(models.Model):
 
     class Meta:
         unique_together = ("product", "location")
-
-
-# class ProductUUID(models.Model):
-#     base_item = models.ForeignKey(
-#         Product, on_delete=models.CASCADE, related_name="uuid_barcodes"
-#     )
-#     uuid_barcode = models.CharField(
-#         max_length=36,
-#         unique=True,
-#     )
-#     created_at = models.DateTimeField(auto_now_add=True)
-
-#     @property
-#     def active(self):
-#         return self.base_item.active
-
-#     def __str__(self):
-#         return f"{self.uuid_barcode} -> {self.base_item}"
-
-#     def deactivate(self):
-#         self.base_item.active = False
-#         self.base_item.save()
-#         self.save()
-
-#     def activate(self):
-#         self.base_item.active = True
-#         self.base_item.save()
-#         self.save()

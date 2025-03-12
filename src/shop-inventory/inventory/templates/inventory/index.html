@@ -28,6 +28,9 @@
             <div class="card mt-4">
                 <div class="card-header bg-light">
                     <h4>{{ location.grouper.name }}</h4>
+                    {% if not location.grouper.active %}
+                        <span class="badge badge-danger badge-pill">Inactive</span>
+                    {% endif %}
                 </div>
                 <div class="card-body">
                     <table class="table">
