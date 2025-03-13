@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 import os
-import zipfile
+import pyzipper
 import glob
 from datetime import datetime
 import shutil
@@ -55,13 +55,19 @@ class Command(BaseCommand):
         shutil.copy2(db_path, temp_db)
 
         try:
-            # Create encrypted zip file
+            # Create encrypted zip file with AES encryption
             for drive in backup_drives:
                 zip_path = os.path.join(drive, zip_filename)
 
-                with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
+                # Use AESZipFile instead of ZipFile for better encryption
+                with pyzipper.AESZipFile(
+                    zip_path, 
+                    'w', 
+                    compression=pyzipper.ZIP_LZMA, 
+                    encryption=pyzipper.WZ_AES
+                ) as zf:
                     zf.setpassword(backup_password.encode())
-                    zf.write(temp_db, "db.sqlite3")
+                    zf.write(temp_db, arcname="db.sqlite3")
 
                 logger.info(f"Backup created at: {zip_path}")
 

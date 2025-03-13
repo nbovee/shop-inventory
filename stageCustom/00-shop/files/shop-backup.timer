@@ -1,5 +1,5 @@
 [Unit]
-Description=Run Shop Inventory Backup Service Hourly
+Description=Run Shop Inventory Backup Service
 Requires=shop-backup.service
 
 [Timer]

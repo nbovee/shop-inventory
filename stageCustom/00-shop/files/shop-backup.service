@@ -5,8 +5,8 @@ After=network.target
 [Service]
 Type=oneshot
 ExecStart=/usr/local/bin/shop-backup.sh
-User=pantry
-Group=www-data
+User=root
+Group=root
 Environment="DJANGO_BACKUP_PASSWORD=${DJANGO_BACKUP_PASSWORD}"
 
 [Install]
