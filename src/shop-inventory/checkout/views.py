@@ -12,26 +12,28 @@ from .forms import AddToCartForm, ProcessOrderForm
 def index(request):
     if request.method == "POST":
         # Handle barcode scanning
-        barcode = request.POST.get('barcode')
+        barcode = request.POST.get("barcode")
         if barcode:
             try:
                 # Find the inventory item with matching barcode
                 inventory_item = Inventory.objects.filter(
-                    product__normalized_barcode=normalize_barcode(barcode), 
+                    product__normalized_barcode=normalize_barcode(barcode),
                     location__name__icontains="Shopfloor",
-                    quantity__gt=0
+                    quantity__gt=0,
                 ).first()
-                
+
                 if inventory_item:
                     # Prepare data for the form
                     form_data = {
-                        'product_id': str(inventory_item.id),
-                        'quantity': request.POST.get('quantity', 1)
+                        "product_id": str(inventory_item.id),
+                        "quantity": request.POST.get("quantity", 1),
                     }
                     form = AddToCartForm(form_data, cart=get_cart(request))
                     if form.is_valid():
                         request.session["cart"] = form.save()
-                        messages.success(request, f"Added {inventory_item.product.name} to cart.")
+                        messages.success(
+                            request, f"Added {inventory_item.product.name} to cart."
+                        )
                     else:
                         for error in form.non_field_errors():
                             messages.error(request, error)
@@ -41,7 +43,7 @@ def index(request):
             except Exception as e:
                 messages.error(request, f"Error processing barcode: {str(e)}")
                 return redirect("checkout:index")
-        
+
         # Handle normal add to cart (from product list)
         form = AddToCartForm(request.POST, cart=get_cart(request))
         if form.is_valid():

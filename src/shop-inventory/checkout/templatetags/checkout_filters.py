@@ -14,6 +14,7 @@ def filter_by_barcode(inventory_items, barcode):
             return item
     return None
 
+
 @register.filter
 def filter_by_id(items, item_id):
     """Get an inventory item by ID from a queryset."""

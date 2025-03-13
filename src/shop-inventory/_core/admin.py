@@ -14,7 +14,18 @@ class CustomAdmin(UserAdmin):
 
     fieldsets = (
         (None, {"fields": ("username", "password")}),
-        ("Permissions", {"fields": ("is_active", "is_staff", "is_superuser", "groups", "user_permissions")}),
+        (
+            "Permissions",
+            {
+                "fields": (
+                    "is_active",
+                    "is_staff",
+                    "is_superuser",
+                    "groups",
+                    "user_permissions",
+                )
+            },
+        ),
         ("Important dates", {"fields": ("last_login", "date_joined")}),
     )
 
@@ -26,11 +37,13 @@ class CustomAdmin(UserAdmin):
                 "fields": ("username", "password1", "password2"),
             },
         ),
-        ("Permissions", {"fields": ("is_active", "is_staff", "is_superuser", "groups")}),
+        (
+            "Permissions",
+            {"fields": ("is_active", "is_staff", "is_superuser", "groups")},
+        ),
     )
-    
+
+    @admin.display(description="Groups")
     def get_groups(self, obj):
         """Return a comma-separated list of the user's groups"""
         return ", ".join([group.name for group in obj.groups.all()])
-    
-    get_groups.short_description = 'Groups'

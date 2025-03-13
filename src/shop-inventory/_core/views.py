@@ -1,8 +1,6 @@
 from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import login, logout
 from django.http import HttpResponse
-from django.urls import reverse
 from .forms import CustomLoginForm
 
 """
@@ -18,7 +16,7 @@ def index(request):
 def user_login(request):
     # Get the next URL or default to index
     next_url = request.GET.get("next", "index")
-    
+
     if request.method == "POST":
         form = CustomLoginForm(request, data=request.POST)
         if form.is_valid():
@@ -28,8 +26,8 @@ def user_login(request):
             return redirect(next_url)
     else:
         form = CustomLoginForm(request)
-    
-    return render(request, "core/login.html", {'form': form})
+
+    return render(request, "core/login.html", {"form": form})
 
 
 def user_logout(request):

@@ -4,16 +4,16 @@ from .models import Product, Location, Inventory, validate_barcode
 
 class AddProductForm(forms.ModelForm):
     location = forms.ModelChoiceField(
-        queryset=Location.objects.filter(active=True).order_by('name'),
+        queryset=Location.objects.filter(active=True).order_by("name"),
         empty_label="Select a location",
         widget=forms.Select(attrs={"class": "form-control"}),
-        required=True
+        required=True,
     )
     quantity = forms.IntegerField(
         min_value=1,
         widget=forms.NumberInput(attrs={"class": "form-control", "value": "1"}),
         initial=1,
-        required=True
+        required=True,
     )
     barcode = forms.CharField(widget=forms.HiddenInput(), required=False)
 
