@@ -3,23 +3,15 @@ from .models import Product, Location, Inventory, validate_barcode
 
 
 class AddProductForm(forms.ModelForm):
-    location = forms.ModelChoiceField(
-        queryset=Location.objects.filter(active=True).order_by("name"),
-        empty_label="Select a location",
-        widget=forms.Select(attrs={"class": "form-control"}),
-        required=True,
+    barcode = forms.CharField(
+        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter barcode"}),
+        validators=[validate_barcode],
+        required=True
     )
-    quantity = forms.IntegerField(
-        min_value=1,
-        widget=forms.NumberInput(attrs={"class": "form-control", "value": "1"}),
-        initial=1,
-        required=True,
-    )
-    barcode = forms.CharField(widget=forms.HiddenInput(), required=False)
 
     class Meta:
         model = Product
-        fields = ["name", "manufacturer", "barcode", "location", "quantity"]
+        fields = ["name", "manufacturer", "barcode"]
         widgets = {
             "name": forms.TextInput(
                 attrs={"class": "form-control", "placeholder": "Enter item name"}
@@ -35,15 +27,17 @@ class AddProductForm(forms.ModelForm):
         manufacturer = cleaned_data.get("manufacturer")
 
         if name and manufacturer:
-                 # find if there is an existing product
-                 existing_product = Product.objects.get(
+            try:
+                # Find if there is an existing product
+                existing_product = Product.objects.get(
                     name=name, manufacturer=manufacturer
                 )
-                 if existing_product and not existing_product.active:
-
-                        raise forms.ValidationError(
-                            "This item is marked as deactivated."
-                        )
+                if existing_product and not existing_product.active:
+                    raise forms.ValidationError(
+                        "This item is marked as deactivated."
+                    )
+            except Product.DoesNotExist:
+                pass
                 
         return cleaned_data
 
@@ -288,4 +282,25 @@ class SelectProductForm(forms.Form):
         queryset=Product.objects.filter(active=True).order_by("name", "manufacturer"),
         empty_label="Select a product to edit",
         widget=forms.Select(attrs={"class": "form-control"}),
+    )
+
+
+class NonBarcodeProductForm(forms.Form):
+    name = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Product Name'})
+    )
+    manufacturer = forms.CharField(
+        max_length=100, 
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Manufacturer'})
+    )
+    location = forms.ModelChoiceField(
+        queryset=Location.objects.filter(active=True),
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    quantity = forms.IntegerField(
+        min_value=1,
+        initial=1,
+        widget=forms.NumberInput(attrs={'class': 'form-control'})
     )

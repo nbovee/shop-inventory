@@ -21,6 +21,7 @@ from .forms import (
     ReactivateLocationForm,
     EditProductForm,
     SelectProductForm,
+    NonBarcodeProductForm,
 )
 
 from .barcode_gen import barcode_page_generation
@@ -100,9 +101,9 @@ def stock_update(request):
 
 @login_required
 @group_required("Shop Employee", "Shop Manager", "Admins")
-def add_product(request):
+def add_nonbarcode_product(request):
     if request.method == "POST":
-        form = AddProductForm(request.POST)
+        form = NonBarcodeProductForm(request.POST)
         if form.is_valid():
             # Extract location and quantity from form data
             location = form.cleaned_data["location"]
@@ -111,16 +112,14 @@ def add_product(request):
             manufacturer = form.cleaned_data["manufacturer"]
 
             # Try to find an existing product with the same name and manufacturer
-                # First, try to get the existing product
             product, product_created = Product.objects.get_or_create(
-                    name=name, 
-                    manufacturer=manufacturer,
-                    defaults={"barcode": str(uuid.uuid4().hex)}
-
-                )
-                
-                # Product exists, find or create inventory entry
-            inventory, created = Inventory.objects.get_or_create(
+                name=name, 
+                manufacturer=manufacturer,
+                defaults={"barcode": str(uuid.uuid4().hex)}
+            )
+            
+            # Product exists, find or create inventory entry
+            inventory, inventory_created = Inventory.objects.get_or_create(
                 product=product, 
                 location=location,
                 defaults={"quantity": 0}
@@ -138,23 +137,10 @@ def add_product(request):
                 request,
                 f"{action_text}: {quantity} {product} added to {location}."
             )
-
-            # Create inventory entry
-            inventory = Inventory(
-                product=product, location=location, quantity=quantity
-            )
-            inventory.save()
-
-            messages.success(
-                request,
-                f"Product added successfully and {quantity} added to {location}.",
-            )
             
             return redirect("inventory:add_product")
     else:
-        # Pre-generate barcode for new form
-        initial_data = {"barcode": str(uuid.uuid4().hex)}
-        form = AddProductForm(initial=initial_data)
+        form = NonBarcodeProductForm()
 
     # Get list of inactive items for reference
     inactive_items = Product.objects.filter(active=False).order_by(
