@@ -5,24 +5,9 @@
 {% block content %}
     <div class="container">
         <h1 class="mt-4">Login</h1>
-        
-        {% if form.errors %}
-        <div class="alert alert-danger" role="alert">
-            Your username and password didn't match. Please try again.
-        </div>
-        {% endif %}
-        
-        {% if messages %}
-        <div class="alert alert-danger" role="alert">
-            {% for message in messages %}
-                {{ message }}
-            {% endfor %}
-        </div>
-        {% endif %}
-        
         <form method="post" class="mt-4">
             {% csrf_token %}
-            
+
             <div class="form-group">
                 {{ form.username.label_tag }}
                 {{ form.username }}
@@ -32,7 +17,7 @@
                 </div>
                 {% endif %}
             </div>
-            
+
             <div class="form-group">
                 {{ form.password.label_tag }}
                 {{ form.password }}
@@ -42,11 +27,11 @@
                 </div>
                 {% endif %}
             </div>
-            
+
             {% if next %}
                 <input type="hidden" name="next" value="{{ next }}">
             {% endif %}
-            
+
             <div class="btn-group mt-3">
                 <button type="submit" class="btn btn-primary">Login</button>
                 <a href="{% url 'index' %}" class="btn btn-secondary">Return</a>
