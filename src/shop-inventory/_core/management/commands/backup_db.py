@@ -61,10 +61,10 @@ class Command(BaseCommand):
 
                 # Use AESZipFile instead of ZipFile for better encryption
                 with pyzipper.AESZipFile(
-                    zip_path, 
-                    'w', 
-                    compression=pyzipper.ZIP_LZMA, 
-                    encryption=pyzipper.WZ_AES
+                    zip_path,
+                    "w",
+                    compression=pyzipper.ZIP_LZMA,
+                    encryption=pyzipper.WZ_AES,
                 ) as zf:
                     zf.setpassword(backup_password.encode())
                     zf.write(temp_db, arcname="db.sqlite3")

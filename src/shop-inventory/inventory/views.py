@@ -9,7 +9,6 @@ from _core.views import group_required
 import uuid
 
 from .forms import (
-    AddProductForm,
     AddLocationForm,
     InventoryQuantityUpdateForm,
     DeactivateLocationForm,
@@ -113,31 +112,28 @@ def add_nonbarcode_product(request):
 
             # Try to find an existing product with the same name and manufacturer
             product, product_created = Product.objects.get_or_create(
-                name=name, 
+                name=name,
                 manufacturer=manufacturer,
-                defaults={"barcode": str(uuid.uuid4().hex)}
+                defaults={"barcode": str(uuid.uuid4().hex)},
             )
-            
+
             # Product exists, find or create inventory entry
             inventory, inventory_created = Inventory.objects.get_or_create(
-                product=product, 
-                location=location,
-                defaults={"quantity": 0}
+                product=product, location=location, defaults={"quantity": 0}
             )
-            
+
             # Update the quantity
             inventory.quantity += quantity
             inventory.save()
-            
+
             action_text = "Added to existing product"
             if product_created:
                 action_text = "Created new product entry and added to inventory"
-            
+
             messages.success(
-                request,
-                f"{action_text}: {quantity} {product} added to {location}."
+                request, f"{action_text}: {quantity} {product} added to {location}."
             )
-            
+
             return redirect("inventory:add_product")
     else:
         form = NonBarcodeProductForm()

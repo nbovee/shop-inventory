@@ -4,9 +4,11 @@ from .models import Product, Location, Inventory, validate_barcode
 
 class AddProductForm(forms.ModelForm):
     barcode = forms.CharField(
-        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter barcode"}),
+        widget=forms.TextInput(
+            attrs={"class": "form-control", "placeholder": "Enter barcode"}
+        ),
         validators=[validate_barcode],
-        required=True
+        required=True,
     )
 
     class Meta:
@@ -33,12 +35,10 @@ class AddProductForm(forms.ModelForm):
                     name=name, manufacturer=manufacturer
                 )
                 if existing_product and not existing_product.active:
-                    raise forms.ValidationError(
-                        "This item is marked as deactivated."
-                    )
+                    raise forms.ValidationError("This item is marked as deactivated.")
             except Product.DoesNotExist:
                 pass
-                
+
         return cleaned_data
 
 
@@ -288,19 +288,23 @@ class SelectProductForm(forms.Form):
 class NonBarcodeProductForm(forms.Form):
     name = forms.CharField(
         max_length=100,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Product Name'})
+        widget=forms.TextInput(
+            attrs={"class": "form-control", "placeholder": "Product Name"}
+        ),
     )
     manufacturer = forms.CharField(
-        max_length=100, 
+        max_length=100,
         required=False,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Manufacturer'})
+        widget=forms.TextInput(
+            attrs={"class": "form-control", "placeholder": "Manufacturer"}
+        ),
     )
     location = forms.ModelChoiceField(
         queryset=Location.objects.filter(active=True),
-        widget=forms.Select(attrs={'class': 'form-control'})
+        widget=forms.Select(attrs={"class": "form-control"}),
     )
     quantity = forms.IntegerField(
         min_value=1,
         initial=1,
-        widget=forms.NumberInput(attrs={'class': 'form-control'})
+        widget=forms.NumberInput(attrs={"class": "form-control"}),
     )
