@@ -2,7 +2,26 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
 from django.http import HttpResponse
 from django.contrib import messages
+from django.contrib.auth.decorators import user_passes_test
 from .forms import CustomLoginForm
+
+
+# Custom group_required decorator for project-wide use
+def group_required(*group_names):
+    """
+    Decorator that checks if a user is in at least one of the specified groups.
+    Usage: @group_required('admin', 'staff')
+    """
+
+    def check_group(user):
+        if user.is_authenticated:
+            if user.is_superuser:
+                return True
+            return user.groups.filter(name__in=group_names).exists()
+        return False
+
+    return user_passes_test(check_group, login_url="login")
+
 
 """
 def index(request):

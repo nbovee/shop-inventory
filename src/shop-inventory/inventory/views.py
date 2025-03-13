@@ -2,13 +2,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from django.utils import timezone
-from datetime import timedelta
 from .models import Product, Location, Inventory, normalize_barcode
-from checkout.models import Order
 from django.http import HttpResponse
 from django.core import exceptions as forms
-from django.contrib.auth.decorators import permission_required
+from _core.views import group_required
 import uuid
 
 from .forms import (
@@ -30,7 +27,7 @@ from .barcode_gen import barcode_page_generation
 
 
 @login_required
-@permission_required("inventory.view_inventory", raise_exception=True)
+@group_required("Shop Employee", "Shop Manager", "Admins")
 def index(request):
     search_query = request.GET.get("search", None)
 
@@ -53,21 +50,13 @@ def index(request):
         location.list = inventory_items
         items_in_location[location] = location
 
-    # Get recent orders if user has permission
-    recent_orders = None
-    if request.user.has_perm("inventory.add_product"):
-        thirty_days_ago = timezone.now() - timedelta(days=30)
-        recent_orders = Order.objects.filter(date__gte=thirty_days_ago).order_by(
-            "-date"
-        )
-
-    context = {"items_in_location": items_in_location, "recent_orders": recent_orders}
+    context = {"items_in_location": items_in_location}
 
     return render(request, "inventory/index.html", context)
 
 
 @login_required
-@permission_required("inventory.change_inventory", raise_exception=True)
+@group_required("Shop Employee", "Shop Manager", "Admins")
 def stock_check(request):
     locations = Location.objects.all()
     items_in_location = {}
@@ -79,7 +68,7 @@ def stock_check(request):
 
 
 @login_required
-@permission_required("inventory.change_inventory", raise_exception=True)
+@group_required("Shop Employee", "Shop Manager", "Admins")
 def stock_update(request):
     if request.method == "POST":
         form = InventoryQuantityUpdateForm(request.POST)
@@ -110,7 +99,7 @@ def stock_update(request):
 
 
 @login_required
-@permission_required("inventory.add_product", raise_exception=True)
+@group_required("Shop Employee", "Shop Manager", "Admins")
 def add_product(request):
     if request.method == "POST":
         form = AddProductForm(request.POST)
@@ -161,7 +150,7 @@ def add_product(request):
 
 
 @login_required
-@permission_required("inventory.delete_product", raise_exception=True)
+@group_required("Shop Manager", "Admins")
 def remove_product(request):
     if request.method == "POST":
         form = DeactivateProductForm(request.POST)
@@ -196,7 +185,7 @@ def remove_product(request):
 
 
 @login_required
-@permission_required("inventory.add_location", raise_exception=True)
+@group_required("Shop Manager", "Admins")
 def add_location(request):
     if request.method == "POST":
         form = AddLocationForm(request.POST)
@@ -224,7 +213,7 @@ def add_location(request):
 
 
 @login_required
-@permission_required("inventory.delete_location", raise_exception=True)
+@group_required("Shop Manager", "Admins")
 def remove_location(request):
     if request.method == "POST":
         form = DeactivateLocationForm(request.POST)
@@ -243,13 +232,13 @@ def remove_location(request):
 
 
 @login_required
-@permission_required("inventory.change_inventory", raise_exception=True)
+@group_required("Shop Manager", "Admins")
 def manage_inventory(request):
     return render(request, "inventory/manage_inventory.html")
 
 
 @login_required
-@permission_required("inventory.add_inventory", raise_exception=True)
+@group_required("Shop Employee", "Shop Manager", "Admins")
 def qrcode_sheet(request):
     result = barcode_page_generation(pages=10)
     response = HttpResponse(result, content_type="application/pdf")
@@ -257,7 +246,7 @@ def qrcode_sheet(request):
 
 
 @login_required
-@permission_required("inventory.add_inventory", raise_exception=True)
+@group_required("Shop Employee", "Shop Manager", "Admins")
 def add_item_to_location(request):
     # Simple dispatch pattern - both for GET and POST
     # For POST requests, get the action the user performed from form data
@@ -557,7 +546,7 @@ def _clear_product_session(request):
 
 
 @login_required
-@permission_required("inventory.change_product", raise_exception=True)
+@group_required("Shop Manager", "Admins")
 def reactivate_product(request):
     if request.method == "POST":
         form = ReactivateProductForm(request.POST)
@@ -573,7 +562,7 @@ def reactivate_product(request):
 
 
 @login_required
-@permission_required("inventory.change_location", raise_exception=True)
+@group_required("Shop Manager", "Admins")
 def reactivate_location(request):
     if request.method == "POST":
         form = ReactivateLocationForm(request.POST)
@@ -591,7 +580,7 @@ def reactivate_location(request):
 
 
 @login_required
-@permission_required("inventory.change_product", raise_exception=True)
+@group_required("Shop Employee", "Shop Manager", "Admins")
 def edit_product(request):
     if request.method == "POST":
         action = request.POST.get("action")
