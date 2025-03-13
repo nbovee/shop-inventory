@@ -4,7 +4,7 @@
 set -e
 
 # Path to Django project
-PROJECT_PATH="/path/to/shop-inventory"  # Adjust this to the correct path
+PROJECT_PATH="/var/www/shop-inventory"  # Adjust this to the correct path
 
 # Function to check and mount USB drives
 mount_usb_drives() {
