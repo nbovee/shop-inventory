@@ -40,7 +40,7 @@ class Command(BaseCommand):
             return
 
         # Create timestamp for backup file
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        timestamp = datetime.now().strftime("%Y-%m-%d")
         zip_filename = f"shop_backup_{timestamp}.zip"
 
         # Find drives to backup to
@@ -69,8 +69,8 @@ class Command(BaseCommand):
                 existing_backups = sorted(
                     glob.glob(os.path.join(drive, "shop_backup_*.zip"))
                 )
-                if len(existing_backups) > 5:
-                    for old_backup in existing_backups[:-5]:
+                if len(existing_backups) > 100:
+                    for old_backup in existing_backups[:-100]:
                         os.remove(old_backup)
                         logger.info(f"Removed old backup: {old_backup}")
 
