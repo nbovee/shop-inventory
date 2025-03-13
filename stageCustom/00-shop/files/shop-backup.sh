@@ -7,7 +7,6 @@ set -e
 PROJECT_PATH="/path/to/shop-inventory"  # Adjust this to the correct path
 
 # Function to check and mount USB drives
-# TODO: confirm functionality
 mount_usb_drives() {
     # Create base mount directory with proper permissions
     MOUNT_BASE="/tmp/shop-backup-mounts"
