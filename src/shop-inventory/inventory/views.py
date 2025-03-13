@@ -103,35 +103,54 @@ def stock_update(request):
 def add_product(request):
     if request.method == "POST":
         form = AddProductForm(request.POST)
-        try:
-            if form.is_valid():
-                # Extract location and quantity from form data
-                location = form.cleaned_data["location"]
-                quantity = form.cleaned_data["quantity"]
+        if form.is_valid():
+            # Extract location and quantity from form data
+            location = form.cleaned_data["location"]
+            quantity = form.cleaned_data["quantity"]
+            name = form.cleaned_data["name"]
+            manufacturer = form.cleaned_data["manufacturer"]
 
-                # Create and save the product
-                product = form.save(commit=False)
-                # Use the barcode from the form (which was pre-generated)
-                if not product.barcode:
-                    product.barcode = str(uuid.uuid4().hex)
-                product.save()
+            # Try to find an existing product with the same name and manufacturer
+                # First, try to get the existing product
+            product, product_created = Product.objects.get_or_create(
+                    name=name, 
+                    manufacturer=manufacturer,
+                    defaults={"barcode": str(uuid.uuid4().hex)}
 
-                # Create inventory entry
-                inventory = Inventory(
-                    product=product, location=location, quantity=quantity
                 )
-                inventory.save()
+                
+                # Product exists, find or create inventory entry
+            inventory, created = Inventory.objects.get_or_create(
+                product=product, 
+                location=location,
+                defaults={"quantity": 0}
+            )
+            
+            # Update the quantity
+            inventory.quantity += quantity
+            inventory.save()
+            
+            action_text = "Added to existing product"
+            if product_created:
+                action_text = "Created new product entry and added to inventory"
+            
+            messages.success(
+                request,
+                f"{action_text}: {quantity} {product} added to {location}."
+            )
 
-                messages.success(
-                    request,
-                    f"Product added successfully and {quantity} added to {location}.",
-                )
-                return redirect("inventory:add_product")
-        except forms.ValidationError as e:
-            if e.code == "reactivated":
-                messages.success(request, str(e))
-                return redirect("inventory:add_product")
-            form.add_error(None, e)
+            # Create inventory entry
+            inventory = Inventory(
+                product=product, location=location, quantity=quantity
+            )
+            inventory.save()
+
+            messages.success(
+                request,
+                f"Product added successfully and {quantity} added to {location}.",
+            )
+            
+            return redirect("inventory:add_product")
     else:
         # Pre-generate barcode for new form
         initial_data = {"barcode": str(uuid.uuid4().hex)}

@@ -35,26 +35,16 @@ class AddProductForm(forms.ModelForm):
         manufacturer = cleaned_data.get("manufacturer")
 
         if name and manufacturer:
-            try:
-                # Check for inactive item with same name/manufacturer
-                inactive_item = Product.objects.get(
-                    name=name, manufacturer=manufacturer, active=False
+                 # find if there is an existing product
+                 existing_product = Product.objects.get(
+                    name=name, manufacturer=manufacturer
                 )
-                # If found, reactivate it
-                inactive_item.activate()
-                raise forms.ValidationError(
-                    "This item was previously deactivated and has been restored.",
-                    code="reactivated",
-                )
-            except Product.DoesNotExist:
-                # Check if active item with same name/manufacturer exists
-                if Product.objects.filter(
-                    name=name, manufacturer=manufacturer, active=True
-                ).exists():
-                    raise forms.ValidationError(
-                        "An item with this name and manufacturer already exists.",
-                        code="exists",
-                    )
+                 if existing_product and not existing_product.active:
+
+                        raise forms.ValidationError(
+                            "This item is marked as deactivated."
+                        )
+                
         return cleaned_data
 
 
