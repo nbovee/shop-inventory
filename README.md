@@ -82,6 +82,8 @@ The completed image will be available in `/deploy`.
 ### Raspberry Pi Setup
 The completed image can be flashed to a Raspberry Pi using the tool Raspberry Pi Imager.
 
+### Backup Drives
+As a WLAN network, there is no possibility for an offsite backup. Instead, the RPi scans for connected USB drives containing a file name `.shopbackup`, and exports the database to that drive.
 ## Acknowledgements
 
 We extend our sincere gratitude to:

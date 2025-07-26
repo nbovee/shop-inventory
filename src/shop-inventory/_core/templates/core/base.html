@@ -1,10 +1,16 @@
 {% load env_tags %}
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            touch-action: manipulation;
+        }
+    </style>
     <title>{% block title %}Rowan Shop & Pantry{% endblock title %}</title>
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
 </head>
