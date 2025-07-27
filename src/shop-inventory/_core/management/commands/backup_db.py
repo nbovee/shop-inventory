@@ -16,7 +16,7 @@ class Command(BaseCommand):
     def find_backup_drives(self):
         """Find all mounted drives with a .shopbackup file"""
         # Common mount points for USB drives on Linux
-        mount_points = ["/media", "/mnt", "/tmp/shop-backup-mounts"]
+        mount_points = ["/tmp/shop-backup-mounts"]
         backup_drives = []
 
         for mount_point in mount_points:

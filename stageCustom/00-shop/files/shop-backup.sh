@@ -15,7 +15,7 @@ if [ ! -d "$MOUNT_BASE" ]; then
 fi
 
 # Get list of all available USB partitions (not whole disks)
-for device in $(lsblk -rno NAME,TRAN | grep "sda[0-9]$" | cut -d' ' -f1); do
+for device in $(lsblk -rno NAME,TRAN | grep "sda[0-9]" | cut -d' ' -f1); do
     # Get device path
     dev_path="/dev/$device"
 
