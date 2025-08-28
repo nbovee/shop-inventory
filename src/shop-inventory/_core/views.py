@@ -68,16 +68,15 @@ def captive_portal_detect(request):
     """
     Handle iOS/iPadOS captive portal detection requests.
     Returns a success page that indicates the device is connected to the internet.
+    Also handles manual navigation to hotspot-detect.html by redirecting to main app.
     """
-    html = """
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Success</title>
-    </head>
-    <body>
-        Success
-    </body>
-    </html>
-    """
-    return HttpResponse(html, content_type="text/html")
+    # Check if this is an automated captive portal check vs manual navigation
+    user_agent = request.META.get('HTTP_USER_AGENT', '')
+    
+    if 'CaptiveNetworkSupport' in user_agent:
+        # Automated iOS/macOS check - return minimal success page
+        html = """<!DOCTYPE html><html><head><title>Success</title><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>Success</body></html>"""
+        return HttpResponse(html, content_type="text/html")
+    else:
+        # Manual navigation - redirect to main application
+        return redirect("index")
