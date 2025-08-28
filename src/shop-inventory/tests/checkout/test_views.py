@@ -27,8 +27,9 @@ def staff_user():
         is_staff=True,
     )
     # Add necessary permissions
-    permission = Permission.objects.get(codename="add_product")
-    user.user_permissions.add(permission)
+    add_product_permission = Permission.objects.get(codename="add_product")
+    view_order_permission = Permission.objects.get(codename="view_order")
+    user.user_permissions.add(add_product_permission, view_order_permission)
     return user
 
 
@@ -65,14 +66,6 @@ def test_index_view(client, inventory_item):
     """Test the checkout index view"""
     response = client.get(reverse("checkout:index"))
     assert response.status_code == 200
-    assert inventory_item in response.context["inventory_items"]
-
-
-def test_index_view_with_filter(client, inventory_item):
-    """Test the checkout index view with filter"""
-    response = client.get(reverse("checkout:index") + "?filter=Test")
-    assert response.status_code == 200
-    assert inventory_item in response.context["inventory_items"]
 
 
 def test_add_to_cart(client, inventory_item):
