@@ -5,7 +5,7 @@ from inventory.forms import (
     AddInventoryForm,
     InventoryQuantityUpdateForm,
     DeactivateLocationForm,
-    RemoveProductForm,
+    DeactivateProductForm,
 )
 from inventory.models import Product, Location, Inventory
 from inventory.barcode_gen import barcode_page_generation
@@ -39,9 +39,17 @@ def inventory_item(product, location):
 
 def test_product_form_valid():
     """Test valid product form"""
-    form = AddProductForm({"name": "New Item", "manufacturer": "New Manufacturer"})
+    form = AddProductForm({
+        "name": "New Item", 
+        "manufacturer": "New Manufacturer",
+        "barcode": "123456789012"  # Valid UPC-A barcode
+    })
     assert form.is_valid()
 
+def test_product_form_invalid_barcode():
+    """Test invalid product form"""
+    form = AddProductForm({"name": "New Item", "manufacturer": "New Manufacturer", "barcode": "nope"})
+    assert not form.is_valid()
 
 def test_product_form_duplicate():
     """Test duplicate product form"""
@@ -78,20 +86,6 @@ def test_add_inventory_form_valid(product, location):
     assert form.is_valid()
 
 
-def test_add_inventory_form_invalid_barcode():
-    """Test invalid barcode in add inventory form"""
-    form = AddInventoryForm(
-        {
-            "product": 1,
-            "location": 1,
-            "quantity": 5,
-            "barcode": "invalid",  # Invalid barcode format
-        }
-    )
-    assert not form.is_valid()
-    assert "barcode" in form.errors
-
-
 def test_stock_update_form_valid(inventory_item):
     """Test valid stock update form"""
     form = InventoryQuantityUpdateForm({"item_id": inventory_item.id, "delta_qty": 5})
@@ -115,23 +109,23 @@ def test_remove_location_form_valid(location):
     assert form.is_valid()
 
 
-def test_remove_product_form_valid(product):
-    """Test valid remove product form"""
-    form = RemoveProductForm({"product": product.id})
+def test_deactivate_product_form_valid(product):
+    """Test valid deactivate product form"""
+    form = DeactivateProductForm({"product": product.id})
     assert form.is_valid()
 
 
 def test_barcode_generation():
     """Test barcode page generation"""
     # Create some inventory items
-    product = Product.objects.create(name="Test", manufacturer="Test")
+    product = Product.objects.create(name="Test", manufacturer="Test", barcode="123456789012")
     location = Location.objects.create(name="Test")
     Inventory.objects.create(
-        product=product, location=location, quantity=10, barcode="123456789012"
+        product=product, location=location, quantity=10
     )
 
-    # Generate barcode page with minimal dimensions and dry run
-    result = barcode_page_generation(rows=1, cols=1, dry_run=True)
+    # Generate barcode page with minimal dimensions
+    result = barcode_page_generation(rows=1, cols=1, pages=1)
     assert result is not None
     assert isinstance(result, bytes)  # Should return PDF bytes
     assert result.startswith(b"%PDF")  # Should be a PDF file
