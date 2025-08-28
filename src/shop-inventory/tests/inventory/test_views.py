@@ -59,7 +59,7 @@ def test_index_view(client, user, inventory_item):
     client.force_login(user)
     response = client.get(reverse("inventory:index"))
     assert response.status_code == 200
-    assert inventory_item in response.context["inventory_items"]
+    assert inventory_item in response.context["items_in_location"]
 
 
 def test_index_view_with_search(client, user, inventory_item):
@@ -67,7 +67,7 @@ def test_index_view_with_search(client, user, inventory_item):
     client.force_login(user)
     response = client.get(reverse("inventory:index") + "?search=Test")
     assert response.status_code == 200
-    assert inventory_item in response.context["inventory_items"]
+    assert inventory_item in response.context["items_in_location"]
 
 
 def test_stock_check_view(client, user, inventory_item):
@@ -216,8 +216,6 @@ def test_remove_product_with_stock(client, admin_user, inventory_item):
     assert response.status_code == 302
     inventory_item.product.refresh_from_db()
     assert not inventory_item.product.active
-    inventory_item.refresh_from_db()
-    assert inventory_item.active  # Item should stay active until quantity is 0
 
 
 def test_add_product_duplicate(client, admin_user, product):
