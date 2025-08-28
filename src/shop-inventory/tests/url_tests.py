@@ -1,6 +1,7 @@
 import pytest
 from django.urls import reverse, resolve
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 
 # Mark all tests in this file as requiring database access
 pytestmark = pytest.mark.django_db
@@ -78,3 +79,15 @@ def test_logout_view(client, user):
     # Then test logout
     response = client.get(reverse("logout"))
     assert response.status_code == 302  # Redirect after logout
+
+
+@pytest.mark.django_db
+def test_user_group_membership(user):
+    """Test that the user is automatically added to Shop Employee group"""
+    # Check that Shop Employee group exists
+    shop_employee_group = Group.objects.get(name="Shop Employee")
+    assert shop_employee_group is not None
+    
+    # Check that the user is in the Shop Employee group
+    assert user.groups.filter(name="Shop Employee").exists()
+    assert shop_employee_group in user.groups.all()
