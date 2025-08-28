@@ -90,7 +90,7 @@ class AddInventoryForm(forms.ModelForm):
         try:
             # First check for inactive item
             inactive_item = Inventory.objects.get(
-                product=product, location=location, active=False
+                product=product, location=location, product__active=False
             )
             # Reactivate the item and update its quantity
             inactive_item.quantity = quantity
@@ -103,7 +103,7 @@ class AddInventoryForm(forms.ModelForm):
             # Then check for active item
             try:
                 existing_item = Inventory.objects.get(
-                    product=product, location=location, active=True
+                    product=product, location=location, product__active=True
                 )
                 # Update existing item's quantity and barcode
                 existing_item.quantity += quantity
