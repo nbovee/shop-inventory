@@ -1,15 +1,15 @@
-# TODO: should use environment variables from config instead of literals
+# Uses APP_USER, APP_GROUP, APP_INSTALL_DIR from config
 [Unit]
 Description=Rowan Shop & Pantry Inventory System
 After=network.target
 
 [Service]
 Type=simple
-User=pantry
-Group=www-data
-RuntimeDirectory=shop-inventory
-WorkingDirectory=/var/www/shop-inventory
-EnvironmentFile=/etc/shop-inventory/config
+User=${APP_USER}
+Group=${APP_GROUP}
+RuntimeDirectory=${APP_NAME}
+WorkingDirectory=${APP_INSTALL_DIR}
+EnvironmentFile=${APP_ENV_DIR}/config
 ExecStart=/bin/bash start.sh
 ExecReload=/bin/kill -s HUP $MAINPID
 KillMode=mixed

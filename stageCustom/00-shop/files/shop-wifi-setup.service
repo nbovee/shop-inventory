@@ -1,6 +1,7 @@
 [Unit]
 Description=Shop WiFi Hotspot Setup
-After=network.target NetworkManager.service
+After=network.target NetworkManager.service dnsmasq.service
+Wants=dnsmasq.service
 Before=shop-inventory.service
 
 [Service]
@@ -8,14 +9,21 @@ Type=oneshot
 EnvironmentFile=/etc/shop-inventory/config
 # a nmcli hotspot command could be used but I am not 100% sure it is supported on rPi
 ExecStart=/bin/bash -c '\
+    if [ -z "$WIFI_SSID" ] || [ -z "$WIFI_PASS" ]; then \
+        echo "ERROR: WIFI_SSID and WIFI_PASS must be set in config"; \
+        exit 1; \
+    fi && \
     if ! nmcli -q c show "$WIFI_SSID"; then \
         nmcli c add type wifi ifname wlan0 con-name "$WIFI_SSID" \
-        autoconnect yes connection.autoconnect-priority 100 \
-        ssid "$WIFI_SSID" \
+        autoconnect yes ssid "$WIFI_SSID" \
         wifi-sec.key-mgmt wpa-psk wifi-sec.psk "$WIFI_PASS" \
         802-11-wireless.mode ap 802-11-wireless.band bg \
         ipv4.method shared; \
-    fi'
+    else \
+        nmcli c up "$WIFI_SSID"; \
+    fi && \
+    sleep 2 && \
+    systemctl restart dnsmasq'
 RemainAfterExit=yes
 
 [Install]
