@@ -1,0 +1,55 @@
+{% load checkout_filters %}
+        <div class="flex-shrink-0 mr-2" style="width: 300px;">
+            <div class="card sticky-top" style="top: 1rem;">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Shopping Cart</h5>
+                    <span class="badge badge-light" id="cart-count">
+                        {% with cart=request.session.cart %}
+                            {{ cart|length|default:"0" }}
+                        {% endwith %}
+                    </span>
+                </div>
+                <div class="card-body">
+                    {% with cart=request.session.cart %}
+                        {% if cart %}
+                            <ul class="list-group list-group-flush mb-3">
+                            {% for product_id, quantity in cart.items %}
+                                {% with item=inventory_items|filter_by_id:product_id %}
+                                    <li class="list-group-item px-0">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <div>{{ item.product.name }}</div>
+                                                <small class="text-muted">{{ item.product.manufacturer }}</small>
+                                            </div>
+                                            <div class="d-flex align-items-center">
+                                                <span class="badge badge-primary badge-pill">x{{ quantity }}</span>
+                                                <form method="post" action="{% url 'checkout:remove_from_cart' %}" class="ml-2">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="product_id" value="{{ item.id }}">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger">&times;</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </li>
+                                {% endwith %}
+                            {% endfor %}
+                            </ul>
+                            <form method="post" action="{% url 'checkout:process_order' %}" class="mb-0">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <input type="text" name="implicit_id" id="implicit_id"
+                                           class="form-control" placeholder="Student ID" required
+                                           autocomplete="off">
+                                    <small class="form-text text-muted">Please enter email or scan RowanCard</small>
+                                </div>
+                                <button type="submit" class="btn btn-success btn-block">
+                                    Process Order
+                                </button>
+                            </form>
+                        {% else %}
+                            <p class="text-muted text-center mb-0">Your cart is empty</p>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+        </div>

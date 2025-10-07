@@ -1,0 +1,11 @@
+<form method="post" action="{% url 'inventory:stock_update' %}" class="d-inline-block">
+    {% csrf_token %}
+    <input type="hidden" name="item_id" value="{{ item.id }}">
+    <div class="btn-group" role="group" aria-label="Stock adjustment buttons">
+        <button type="submit" name="delta_qty" value="-10" class="btn btn-primary">-10</button>
+        <button type="submit" name="delta_qty" value="-1" class="btn btn-primary">-1</button>
+        <button type="submit" name="delta_qty" value="1" class="btn btn-primary">+1</button>
+        <button type="submit" name="delta_qty" value="10" class="btn btn-primary">+10</button>
+        </div>
+        <button type="button" class="btn btn-secondary" disabled>± QTY</button>
+</form>

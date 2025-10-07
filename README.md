@@ -1,7 +1,6 @@
-# Shop Prototype Repository
+# Shop Inventory System
 
-This repository is the development repository for the Rowan Shop & Pantry Inventory System
-To contribute, please read the guidelines here : [Contributing.md](CONTRIBUTING.md)
+This repository contains the Django-based inventory management system for the Rowan Shop & Pantry. The application is designed for offline-only operation using [Django](https://www.djangoproject.com/) with SQLite. [UV](https://docs.astral.sh/uv/) is used for dependency management and development.
 
 <div markdown="1">
 
@@ -11,164 +10,134 @@ To contribute, please read the guidelines here : [Contributing.md](CONTRIBUTING.
 </div>
 <hr>
 
-## How to use
+## Development
 
-### For Deployment as intended
-> TODO Here we will describe the process to setup up a local raspberry pi to run the inventory system.
+### Initial Setup
 
-### For development on your computer
+1. Install [uv](https://docs.astral.sh/uv/getting-started/installation/)
 
-1. Clone the repository to your computer and go to the `shop-inventory` directory:
+2. Clone the repository:
 ```console
 git clone https://github.com/nbovee/shop-inventory.git
 cd shop-inventory
 ```
-Using VSCode, you may launch the debugpy tool into your development server by running "Simple Debug" from the Run and Debug tab of the IDE.
 
-Now you can go to [http://127.0.0.1:8000](http://127.0.0.1:8000) in your browser.
+3. Set up the development environment:
+```console
+# Install dependencies
+uv sync
 
-> Note that we mount the directory with your source code inside the container, so you can work with the project in your IDE, and changes will be visible inside the container, and the Django development server will restart itself.
+# Install pre-commit hooks (optional)
+uvx pre-commit install
+```
 
-2. Run tests with pytest and coverage ✅:
+4. Create a `.env` file in the Django project directory:
+```console
+cd src/shop-inventory
+cp .env.example .env  # If example exists, otherwise create manually
+```
+
+Configure the following environment variables in `.env`:
+- `DJANGO_SECRET_KEY`: Django's secret key (generate with `python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'`)
+- `DJANGO_DEBUG`: Set to "true" for development
+- `DJANGO_SUPERUSER_USERNAME`: Admin username (optional, for automated setup)
+- `DJANGO_SUPERUSER_PASSWORD`: Admin password (optional)
+- `DJANGO_SUPERUSER_EMAIL`: Admin email (optional)
+
+> **Security Note**: Never commit the `.env` file to version control.
+
+### Running the Application
+
+1. Navigate to the Django project directory:
+```console
+cd src/shop-inventory
+```
+
+2. Run database migrations:
+```console
+python manage.py migrate
+```
+
+3. Create a superuser (if not using environment variables):
+```console
+python manage.py createsuperuser
+```
+
+4. Launch the development server:
+```console
+python manage.py runserver
+```
+
+5. Access the application at [http://127.0.0.1:8000](http://127.0.0.1:8000)
+
+### Testing and Code Quality
+
+Run tests:
 ```console
 uv run pytest
 ```
-The pytest tool runs tests using pytest-django and pytest-cov (wrapping coverage). As a result, you will see an output like this in the terminal:
+
+Generate coverage report:
 ```console
-uv run pytest
-============================================================= test session starts ==============================================================
-platform win32 -- Python 3.12.5, pytest-8.3.4, pluggy-1.5.0
-django: version: 4.2.16, settings: _core.settings (from ini)
-rootdir: C:\CODE\shop-inventory
-configfile: pyproject.toml
-plugins: cov-6.0.0, django-4.9.0
-collected 58 items
-
-shop-inventory\tests\checkout\test_views.py ........                                                                                      [ 13%]
-shop-inventory\tests\checkout\url_tests.py ..                                                                                             [ 17%]
-shop-inventory\tests\checkout\views_tests.py .......                                                                                      [ 29%]
-shop-inventory\tests\inventory\test_forms.py ............                                                                                 [ 50%]
-shop-inventory\tests\inventory\test_views.py ....................                                                                         [ 84%]
-shop-inventory\tests\url_tests.py ........                                                                                                [ 98%]
-shop-inventory\tests\inventory\tests.py .                                                                                                 [100%]
-
----------- coverage: platform win32, python 3.12.5-final-0 -----------
-Name                                                       Stmts   Miss  Cover   Missing
-----------------------------------------------------------------------------------------
-shop-inventory\_core\models.py                                 7      1    86%   13
-shop-inventory\_core\signals.py                               28      5    82%   18, 39-40, 48-49
-shop-inventory\_core\views.py                                 17      1    94%   12
-shop-inventory\checkout\forms.py                              79     12    85%   26, 30-32, 45, 83, 105, 124-125, 129-130, 136
-shop-inventory\checkout\models.py                             32      3    91%   35, 50, 59
-shop-inventory\checkout\templatetags\checkout_filters.py       9      4    56%   10-13
-shop-inventory\checkout\views.py                              49      5    90%   20-21, 61-62, 67
-shop-inventory\inventory\barcode_gen.py                       27      3    89%   30-38
-shop-inventory\inventory\forms.py                             95     12    87%   30-31, 63-65, 98-100, 111-113, 159
-shop-inventory\inventory\models.py                            51      6    88%   44-45, 79-80, 83-84
-shop-inventory\inventory\signals.py                           35      2    94%   21, 36
-shop-inventory\inventory\views.py                            175     51    71%   71, 78-79, 87-88, 101-110, 116-137, 149-155, 196-201, 207-208, 220-226, 256-257, 262
-----------------------------------------------------------------------------------------
-TOTAL                                                        689    105    85%
-
-8 files skipped due to complete coverage.
-
-
-============================================================== 58 passed in 7.77s ==============================================================
+uv run coverage xml
 ```
 
-#### Django settings
+Run linting:
+```console
+uv run ruff check
+uv run ruff format --check
+```
 
-Some Django settings from the [`settings.py`](shop-inventory/_core/settings.py) file are stored in environment variables. You can easily change these settings in the [`.env`](.env) file. This file does not contain all the necessary settings, but many of them. Add additional settings to environment variables if needed.
+Fix formatting:
+```console
+uv run ruff format
+```
 
-> It is important to note the following: **never store sensitive settings such as DJANGO_SECRET_KEY or DJANGO_EMAIL_HOST_PASSWORD in your repository!**
-> Docker allows you to override environment variable values from additional files, the command line, or the current session. Store passwords and other sensitive information separately from the code and only connect this information at system startup.
+## Application Structure
 
-Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting any changes.
+- **_core/**: Main Django application containing settings, base views, authentication, and user management
+- **inventory/**: Handles product catalog, stock management, locations, and barcode generation
+- **checkout/**: Manages shopping cart functionality and order processing
+
+### Key Features
+
+- Custom user authentication with session timeout (20 minutes)
+- Product inventory management with location tracking
+- Barcode/QR code generation for inventory items
+- Shopping cart and order processing
+- Bootstrap-based responsive UI
+- SQLite database for simplicity and portability
+- USB backup functionality (scans for drives with `.shopbackup` file)
+
 ## Acknowledgements
-We would like to extend our sincere gratitude to:
 
-- Our grant sponsor
-- Our dedicated student workers who have contributed their time and skills to develop and improve this system
-- The Rowan University Shop & Pantry for their support and partnership in creating this inventory management solution
+We extend our sincere gratitude to:
+- [Rowan University's  The Shop Pantry & Resource Center](https://sites.rowan.edu/theshop/)
+- Our grant sponsor, [the New Jersey Office of the Secretary of Higher Education](https://www.nj.gov/highereducation/)
+- Our dedicated student team:
+  - Erick Ayala-Ortiz
+  - Cole Cheman
+  - Brian Dalmar
+  - Allison Garfield
+  - Nik Leckie
+  - Layane Neves
+  - Juan Palacios
+  - Emmy Sagapolutele
+  - Solimar Soto
+  - James Sunbury
+  - Anne-Marie Zamor
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+## Contributing
 
-## TODO
-barcode should allow uuid or 6-12 digit string for upc-a/upc-e
-add volunteer and admin users
-- how does qty mismatch need to work?
-- allow to go negative
-acknowledgesments page for sponsor and students
-shop logo/favicon?
+This repository contains the Rowan Shop & Pantry Inventory System. To contribute, please read our [Contributing Guidelines](CONTRIBUTING.md).
 
-## GitHub Actions Configuration
-
-### Secure Environment Variables
-
-Some configuration values should not be hardcoded in the workflow file for security reasons. Instead, use GitHub Secrets to store sensitive information. Here's how to set them up:
-
-1. Go to your repository's Settings > Secrets and Variables > Actions
-2. Click "New repository secret"
-3. Add the following secrets:
-
-```yaml
-# Authentication
-SHOP_DJANGO_SECRET_KEY: "your-secure-secret-key"
-SHOP_DJANGO_SUPERUSER_PASSWORD: "secure-admin-password"
-
-# WiFi Hotspot
-SHOP_WIFI_PASSWORD: "secure-wifi-password"
-
-# Backup Configuration
-SHOP_BACKUP_PASSWORD: "secure-backup-password"
-```
-
-Then update the GitHub Actions workflow to use these secrets:
-
-```yaml
-env:
-  SHOP_WIFI_SSID: "ShopInventory"
-  SHOP_WIFI_PASSWORD: ${{ secrets.SHOP_WIFI_PASSWORD }}
-  SHOP_DJANGO_SECRET_KEY: ${{ secrets.SHOP_DJANGO_SECRET_KEY }}
-  SHOP_DJANGO_SUPERUSER_PASSWORD: ${{ secrets.SHOP_DJANGO_SUPERUSER_PASSWORD }}
-  # ... other non-sensitive variables ...
-```
-
-### Development vs Production Settings
-
-Some settings should be different between development and production:
-
-```yaml
-# Production (in GitHub Secrets)
-SHOP_DJANGO_DEBUG: "false"
-SHOP_DJANGO_ALLOWED_HOSTS: "rowan-pantry,localhost,127.0.0.1"
-
-# Development (can be in workflow file)
-SHOP_DJANGO_LANGUAGE_CODE: "en-us"
-SHOP_DJANGO_TIME_ZONE: "America/New_York"
-SHOP_GUNICORN_WORKERS: "3"
-```
-
-### First-time Setup
-
-1. Generate a secure Django secret key:
-   ```python
-   python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
-   ```
-
-2. Create strong passwords for:
-   - WiFi hotspot
-   - Django superuser
-   - Backup encryption
-
-3. Add these values as GitHub Secrets before running your first build
-
-### Security Notes
-
-- Never commit sensitive credentials to version control
-- Regularly rotate passwords and secret keys
-- Use environment-specific settings for development vs production
-- Consider using GitHub's environment feature to separate production and staging secrets
+<!-- ## Notes
+We found the following resources helpful during development:
+https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-16-04#configure-nginx-to-proxy-pass-to-gunicorn
+https://github.com/deltazero-cz/kiosk.pi
+https://raspberrytips.com/access-point-setup-raspberry-pi/#setting-up-an-access-point-on-raspberry-pi-os-bookworm
+https://www.raspberrypi.org/documentation/configuration/wireless/access-point.md -->

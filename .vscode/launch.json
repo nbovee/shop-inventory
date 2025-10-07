@@ -1,19 +1,18 @@
 {
+  "version": "2.0.0",
   "configurations": [
     {
-      "name": "Simple Debug",
-      "type": "docker",
+      "name": "Python: Django",
+      "type": "debugpy",
       "request": "launch",
-      "preLaunchTask": "docker-run: debug",
-      "python": {
-        "pathMappings": [
-          {
-            "localRoot": "${workspaceFolder}/shop-inventory",
-            "remoteRoot": "/usr/src/shop-inventory"
-          }
-        ],
-        "projectType": "django",
-      }
+      "program": "${workspaceFolder}/src/shop-inventory/manage.py",
+      "args": [
+        "runserver",
+        "0.0.0.0:8000",
+        "--nothreading"
+      ],
+      "django": true,
+      "justMyCode": true
     }
   ]
 }

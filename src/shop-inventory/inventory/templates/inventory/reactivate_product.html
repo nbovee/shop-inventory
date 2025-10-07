@@ -1,0 +1,34 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Reactivate Product{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">Reactivate Product</h5>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {% if form.errors %}
+                    <div class="alert alert-danger">
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                                <p class="mb-0">{{ error }}</p>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <div class="form-group">
+                    {{ form.product.label_tag }}
+                    {{ form.product }}
+                    <small class="form-text text-muted">Select the item you want to reactivate</small>
+                </div>
+                <button type="submit" class="btn btn-success">Reactivate Item</button>
+                <a href="{% url 'inventory:manage_inventory' %}" class="btn btn-secondary">Return</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

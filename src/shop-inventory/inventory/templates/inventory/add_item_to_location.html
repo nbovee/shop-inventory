@@ -1,0 +1,114 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Add Item to Location{% endblock %}
+
+{% block content %}
+<div class="container">
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">{{ form_title }}</h5>
+    </div>
+    <div class="card-body">
+        {% if form_type == 'show_locations' %}
+            <div class="row">
+                {% for location in locations %}
+                    <div class="col-md-3 mb-3">
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="select_location">
+                            <input type="hidden" name="location_id" value="{{ location.id }}">
+                            <button type="submit" class="btn btn-outline-primary btn-block">
+                                {{ location.name }}
+                            </button>
+                        </form>
+                        </div>
+                {% empty %}
+                    <div class="col">
+                        <p class="text-muted">No active locations available. Please add a location first.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% elif form_type == 'scan_form' %}
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="scan_barcode">
+                <div class="form-group mb-3">
+                    {{ form.barcode.label_tag }}
+                    {{ form.barcode }}
+                    <small class="form-text text-muted">Scan or type a barcode</small>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        {% elif form_type == 'new_item_form' %}
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add_new_item">
+                <h5>New Item {% if barcode_is_uuid %}(UUID: {{ barcode }}){% else %}(Barcode: {{ barcode }}){% endif %}</h5>
+                <div class="form-group mb-3">
+                    {{ form.name.label_tag }}
+                    {{ form.name }}
+                    <small class="form-text text-muted">Double-check the item name is correct</small>
+                </div>
+                <div class="form-group mb-3">
+                    {{ form.manufacturer.label_tag }}
+                    {{ form.manufacturer }}
+                    <small class="form-text text-muted">Verify the manufacturer information</small>
+                </div>
+                <button type="submit" class="btn btn-primary">Create Item</button>
+            </form>
+        {% elif form_type == 'quantity_form' %}
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add_quantity">
+                <h5>{{ product.name }} ({{ product.manufacturer }})</h5>
+                <div class="form-group mb-3">
+                    {{ form.quantity.label_tag }}
+                    {{ form.quantity }}
+                    <small class="form-text text-muted">Enter the quantity to add</small>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Quantity</button>
+            </form>
+        {% elif form_type == 'select_location_form' %}
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="select_location">
+                <div class="form-group mb-3">
+                    {{ form.location.label_tag }}
+                    {{ form.location }}
+                    <small class="form-text text-muted">Select a different location</small>
+                </div>
+                <button type="submit" class="btn btn-primary">Change Location</button>
+            </form>
+        {% elif form_type == 'continue_form' %}
+            <div class="alert alert-info">
+                <p>You are continuing work at {{ selected_location.name }}.</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="scan_barcode">
+                    <button type="submit" class="btn btn-primary">Start Scanning</button>
+                </form>
+            </div>
+        {% else %}
+            <div class="alert alert-warning">
+                <p>Ready to scan items at {{ selected_location.name }}.</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="scan_barcode">
+                    <button type="submit" class="btn btn-primary">Begin Scanning</button>
+                </form>
+            </div>
+        {% endif %}
+
+        {% if form_type != 'show_locations' %}
+            <div class="mt-3">
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="cancel">
+                    <button type="submit" class="btn btn-secondary">Return to Index</button>
+                </form>
+            </div>
+        {% endif %}
+    </div>
+</div>
+</div>
+{% endblock %}

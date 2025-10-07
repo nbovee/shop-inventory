@@ -1,0 +1,42 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Reactivate Location{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">Reactivate Location</h5>
+        </div>
+        <div class="card-body">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+                {% if form.errors %}
+                    <div class="alert alert-danger">
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                                <p class="mb-0">{{ error }}</p>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <div class="form-group">
+                    {{ form.location.label_tag }}
+                    {{ form.location }}
+                    <small class="form-text text-muted">Select the location you want to reactivate</small>
+                </div>
+                <button type="submit" class="btn btn-success">Reactivate Location</button>
+                <a href="{% url 'inventory:manage_inventory' %}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
