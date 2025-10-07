@@ -15,9 +15,7 @@ class MockRequest:
 
 def test_add_to_cart_form_invalid_product_id():
     """Test AddToCartForm with invalid product_id"""
-    form = AddToCartForm(
-        data={"product_id": "99999", "quantity": 1}, cart={}
-    )
+    form = AddToCartForm(data={"product_id": "99999", "quantity": 1}, cart={})
     assert not form.is_valid()
 
 

@@ -28,6 +28,7 @@ class AddToCartForm(forms.Form):
             if barcode:
                 # Inventory doesn't have a barcode field - need to look up via Product
                 from inventory.models import normalize_barcode
+
                 self.inventory_item = Inventory.objects.filter(
                     product__normalized_barcode=normalize_barcode(barcode)
                 ).first()

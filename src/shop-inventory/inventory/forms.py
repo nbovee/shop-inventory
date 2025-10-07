@@ -149,9 +149,7 @@ class InventoryQuantityUpdateForm(forms.Form):
                     raise forms.ValidationError("Cannot reduce quantity below 0")
 
             except Inventory.DoesNotExist:
-                raise forms.ValidationError(
-                    "Inventory item not found."
-                )
+                raise forms.ValidationError("Inventory item not found.")
 
         return cleaned_data
 

@@ -1,8 +1,15 @@
 """Final edge case tests to reach 98%+ coverage"""
+
 import pytest
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from inventory.models import Product, Location, Inventory, barcode_is_upc_e, barcode_is_uuid
+from inventory.models import (
+    Product,
+    Location,
+    Inventory,
+    barcode_is_upc_e,
+    barcode_is_uuid,
+)
 from django.core.exceptions import ValidationError
 
 pytestmark = pytest.mark.django_db
@@ -51,7 +58,9 @@ def test_create_product_with_uuid_barcode():
 def test_checkout_barcode_with_form_invalid(client, shopfloor, product):
     """Test barcode scan triggering form validation errors"""
     # Create inventory but make it insufficient
-    inventory = Inventory.objects.create(product=product, location=shopfloor, quantity=1)
+    inventory = Inventory.objects.create(
+        product=product, location=shopfloor, quantity=1
+    )
 
     session = client.session
     session["cart"] = {str(inventory.id): 1}  # Already have 1 in cart
@@ -65,7 +74,9 @@ def test_checkout_barcode_with_form_invalid(client, shopfloor, product):
 
 def test_checkout_add_triggering_save_exception(client, shopfloor, product):
     """Test normal cart add with edge case that triggers exception in save"""
-    inventory = Inventory.objects.create(product=product, location=shopfloor, quantity=1)
+    inventory = Inventory.objects.create(
+        product=product, location=shopfloor, quantity=1
+    )
 
     session = client.session
     session["cart"] = {}
@@ -79,7 +90,9 @@ def test_checkout_add_triggering_save_exception(client, shopfloor, product):
 
 def test_process_order_with_field_and_non_field_errors(client, shopfloor, product):
     """Test process_order to hit line 120 (double error loop)"""
-    inventory = Inventory.objects.create(product=product, location=shopfloor, quantity=5)
+    inventory = Inventory.objects.create(
+        product=product, location=shopfloor, quantity=5
+    )
 
     session = client.session
     session["cart"] = {str(inventory.id): 2}
@@ -94,7 +107,9 @@ def test_process_order_with_field_and_non_field_errors(client, shopfloor, produc
 # ============ Test inventory/views.py remaining lines ============
 
 
-def test_stock_update_inactive_product_to_zero(client, admin_user, location, inactive_product):
+def test_stock_update_inactive_product_to_zero(
+    client, admin_user, location, inactive_product
+):
     """Test line 80 - inactive product reaching zero quantity"""
     inventory = Inventory.objects.create(
         product=inactive_product,
@@ -114,7 +129,9 @@ def test_stock_update_inactive_product_to_zero(client, admin_user, location, ina
 
 def test_stock_update_edge_case(client, admin_user, shopfloor, product):
     """Test stock_update edge cases"""
-    inventory = Inventory.objects.create(product=product, location=shopfloor, quantity=10)
+    inventory = Inventory.objects.create(
+        product=product, location=shopfloor, quantity=10
+    )
 
     client.force_login(admin_user)
 

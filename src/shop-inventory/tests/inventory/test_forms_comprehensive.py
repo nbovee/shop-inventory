@@ -42,11 +42,13 @@ def test_add_product_form_reactivates_inactive():
     product.active = False
     product.save()
 
-    form = AddProductForm({
-        "name": "Test",
-        "manufacturer": "Test",
-        "barcode": "123456789012",
-    })
+    form = AddProductForm(
+        {
+            "name": "Test",
+            "manufacturer": "Test",
+            "barcode": "123456789012",
+        }
+    )
     # Form should handle reactivation
     try:
         if form.is_valid():
@@ -106,17 +108,21 @@ def test_add_location_form_blank():
 def test_add_product_form_invalid_barcode():
     """Test AddProductForm with various invalid barcodes"""
     # Too short
-    form = AddProductForm({
-        "name": "Test",
-        "manufacturer": "Test",
-        "barcode": "123",
-    })
+    form = AddProductForm(
+        {
+            "name": "Test",
+            "manufacturer": "Test",
+            "barcode": "123",
+        }
+    )
     assert not form.is_valid()
 
     # Invalid characters
-    form = AddProductForm({
-        "name": "Test",
-        "manufacturer": "Test",
-        "barcode": "abcdefghijkl",
-    })
+    form = AddProductForm(
+        {
+            "name": "Test",
+            "manufacturer": "Test",
+            "barcode": "abcdefghijkl",
+        }
+    )
     assert not form.is_valid()

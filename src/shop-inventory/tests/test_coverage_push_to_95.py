@@ -1,4 +1,5 @@
 """Comprehensive tests to reach 95%+ coverage by testing all missing code paths"""
+
 import pytest
 from django.urls import reverse
 from django.contrib.auth import get_user_model
@@ -147,12 +148,14 @@ def test_add_inventory_form_reactivate_inactive(inactive_product, location):
     )
 
     # Now try to add to same location with the same product
-    form = AddInventoryForm({
-        "product": inactive_product.id,
-        "location": location.id,
-        "quantity": 10,
-        "barcode": inactive_product.barcode,
-    })
+    form = AddInventoryForm(
+        {
+            "product": inactive_product.id,
+            "location": location.id,
+            "quantity": 10,
+            "barcode": inactive_product.barcode,
+        }
+    )
 
     # This should trigger the reactivate path
     # The form validation will raise ValidationError with code='reactivated'
@@ -165,12 +168,14 @@ def test_add_inventory_form_update_existing(product, location):
     Inventory.objects.create(product=product, location=location, quantity=5)
 
     # Try to add more to the same location
-    form = AddInventoryForm({
-        "product": product.id,
-        "location": location.id,
-        "quantity": 10,
-        "barcode": product.barcode,
-    })
+    form = AddInventoryForm(
+        {
+            "product": product.id,
+            "location": location.id,
+            "quantity": 10,
+            "barcode": product.barcode,
+        }
+    )
 
     # Should trigger the update existing item path
     assert not form.is_valid() or form.errors
@@ -182,10 +187,12 @@ def test_inventory_quantity_update_form_inactive_product(inventory_item):
     inventory_item.product.active = False
     inventory_item.product.save()
 
-    form = InventoryQuantityUpdateForm({
-        "item_id": inventory_item.id,
-        "delta_qty": 5,  # Try to add quantity
-    })
+    form = InventoryQuantityUpdateForm(
+        {
+            "item_id": inventory_item.id,
+            "delta_qty": 5,  # Try to add quantity
+        }
+    )
 
     assert not form.is_valid()
     assert "inactive" in str(form.errors).lower()
@@ -212,6 +219,7 @@ def test_edit_product_form_duplicate_check(product):
 
     # Try to edit first product to have same name/manufacturer as second
     from inventory.forms import EditProductForm
+
     form = EditProductForm(
         {"name": "Duplicate", "manufacturer": "Test"},
         instance=product,
@@ -306,7 +314,9 @@ def test_add_item_location_does_not_exist(client, admin_user):
     assert response.status_code in [302, 404]
 
 
-def test_add_item_inactive_product_warning(client, admin_user, location, inactive_product):
+def test_add_item_inactive_product_warning(
+    client, admin_user, location, inactive_product
+):
     """Test scanning inactive product (lines 367-374)"""
     client.force_login(admin_user)
 

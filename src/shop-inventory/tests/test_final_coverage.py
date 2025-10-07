@@ -1,4 +1,5 @@
 """Final comprehensive tests to reach 95%+ coverage"""
+
 import pytest
 from django.urls import reverse
 from django.contrib.auth import get_user_model
@@ -33,12 +34,14 @@ def test_add_to_cart_form_no_barcode_no_product():
 # Test inventory form validation paths
 def test_add_inventory_form_invalid_product(location):
     """Test AddInventoryForm with invalid product"""
-    form = AddInventoryForm({
-        "product": 99999,
-        "location": location.id,
-        "quantity": 5,
-        "barcode": "123456789012",
-    })
+    form = AddInventoryForm(
+        {
+            "product": 99999,
+            "location": location.id,
+            "quantity": 5,
+            "barcode": "123456789012",
+        }
+    )
     assert not form.is_valid()
 
 
@@ -105,7 +108,9 @@ def test_add_location_with_validation_exception(client, admin_user):
     assert response.status_code == 200
 
 
-def test_add_item_to_location_exception_during_save(client, admin_user, location, product):
+def test_add_item_to_location_exception_during_save(
+    client, admin_user, location, product
+):
     """Test add item exception during inventory save"""
     client.force_login(admin_user)
 

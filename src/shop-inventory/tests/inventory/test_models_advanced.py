@@ -1,6 +1,12 @@
 import pytest
 from django.core.exceptions import ValidationError
-from inventory.models import Product, Location, Inventory, normalize_barcode, barcode_is_uuid
+from inventory.models import (
+    Product,
+    Location,
+    Inventory,
+    normalize_barcode,
+    barcode_is_uuid,
+)
 
 pytestmark = pytest.mark.django_db
 

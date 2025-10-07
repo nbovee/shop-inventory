@@ -28,7 +28,9 @@ def test_existing_user_not_affected(shop_employee_group):
     assert not user.groups.filter(name="Shop Employee").exists()
 
 
-@override_settings(DEBUG=False, DJANGO_ADMIN_USERNAME="admin", DJANGO_ADMIN_PASSWORD="adminpass")
+@override_settings(
+    DEBUG=False, DJANGO_ADMIN_USERNAME="admin", DJANGO_ADMIN_PASSWORD="adminpass"
+)
 def test_default_admin_creation_production(shop_employee_group, shop_manager_group):
     """Test that default admin is created in production mode"""
     # This test verifies the signal would create an admin in production
