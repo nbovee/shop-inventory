@@ -22,9 +22,9 @@
                                 {% endfor %}
                             </div>
                         {% endif %}
-                        
+
                         {{ form.barcode }}  <!-- Hidden barcode field -->
-                        
+
                         <div class="form-group">
                             {{ form.name.label_tag }}
                             {{ form.name }}
@@ -35,19 +35,19 @@
                             {{ form.manufacturer }}
                             <small class="form-text text-muted">Enter the manufacturer for this item</small>
                         </div>
-                        
+
                         <div class="form-group">
                             {{ form.location.label_tag }}
                             {{ form.location }}
                             <small class="form-text text-muted">Select the location for this product</small>
                         </div>
-                        
+
                         <div class="form-group">
                             {{ form.quantity.label_tag }}
                             {{ form.quantity }}
                             <small class="form-text text-muted">Enter the initial quantity</small>
                         </div>
-                        
+
                         <button type="submit" class="btn btn-primary">Add Item</button>
                         <a href="{% url 'inventory:manage_inventory' %}" class="btn btn-secondary">Cancel</a>
                     </form>
