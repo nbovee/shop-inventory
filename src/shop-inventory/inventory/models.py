@@ -84,6 +84,11 @@ class Product(models.Model):
         self.normalized_barcode = normalize_barcode(self.barcode)
         super().save(*args, **kwargs)
 
+    def activate(self):
+        """Reactivate this product."""
+        self.active = True
+        self.save()
+
 
 class Location(models.Model):
     name = models.CharField(max_length=30, unique=True)
@@ -91,6 +96,11 @@ class Location(models.Model):
 
     def __str__(self):
         return "{}".format(self.name)
+
+    def activate(self):
+        """Reactivate this location."""
+        self.active = True
+        self.save()
 
 
 class Inventory(models.Model):
@@ -105,3 +115,9 @@ class Inventory(models.Model):
 
     class Meta:
         unique_together = ("product", "location")
+
+    def activate(self):
+        """Reactivate this inventory item (currently not used, as Inventory doesn't have active field)."""
+        # Note: Inventory model doesn't have an 'active' field
+        # This method exists for API consistency but doesn't do anything
+        pass

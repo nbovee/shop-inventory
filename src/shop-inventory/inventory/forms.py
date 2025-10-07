@@ -131,15 +131,12 @@ class InventoryQuantityUpdateForm(forms.Form):
 
     def clean(self):
         cleaned_data = super().clean()
-        product = cleaned_data.get("product")
-        location = cleaned_data.get("location")
+        item_id = cleaned_data.get("item_id")
         delta_qty = cleaned_data.get("delta_qty")
 
-        if all([product, location, delta_qty is not None]):
+        if item_id is not None and delta_qty is not None:
             try:
-                inventory_item = Inventory.objects.get(
-                    product=product, location=location, active=True
-                )
+                inventory_item = Inventory.objects.get(id=item_id)
 
                 # Prevent adding quantity if product is inactive
                 if delta_qty > 0 and not inventory_item.product.active:
@@ -153,7 +150,7 @@ class InventoryQuantityUpdateForm(forms.Form):
 
             except Inventory.DoesNotExist:
                 raise forms.ValidationError(
-                    "No active inventory found for this product and location combination."
+                    "Inventory item not found."
                 )
 
         return cleaned_data

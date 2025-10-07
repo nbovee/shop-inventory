@@ -4,7 +4,6 @@ from inventory.models import Inventory
 from .models import Order, OrderItem
 from django.utils import timezone
 import uuid
-from django.contrib import messages
 
 
 class AddToCartForm(forms.Form):
@@ -27,7 +26,13 @@ class AddToCartForm(forms.Form):
 
         try:
             if barcode:
-                self.inventory_item = Inventory.objects.get(barcode=barcode)
+                # Inventory doesn't have a barcode field - need to look up via Product
+                from inventory.models import normalize_barcode
+                self.inventory_item = Inventory.objects.filter(
+                    product__normalized_barcode=normalize_barcode(barcode)
+                ).first()
+                if not self.inventory_item:
+                    raise Inventory.DoesNotExist("No inventory found for barcode")
                 cleaned_data["product_id"] = self.inventory_item.id
                 cleaned_data["quantity"] = 1
             else:
@@ -91,7 +96,6 @@ class ProcessOrderForm(forms.ModelForm):
         if commit:
             with transaction.atomic():
                 instance.save()
-                deactivated_items = []
 
                 # Process each item in the cart
                 for product_id, quantity in self.cart.items():
@@ -115,19 +119,11 @@ class ProcessOrderForm(forms.ModelForm):
 
                         # Update inventory
                         inventory_item.quantity -= quantity
-
                         inventory_item.save()
 
                     except Inventory.DoesNotExist:
                         raise forms.ValidationError(
                             f"Product {product_id} no longer exists"
                         )
-
-                # Add message about deactivated items if any
-                if deactivated_items and self.request:
-                    messages.info(
-                        self.request,
-                        f"The following items have been deactivated as they reached zero quantity: {', '.join(deactivated_items)}",
-                    )
 
         return instance
