@@ -7,26 +7,6 @@ from inventory.models import Product, Location, Inventory
 pytestmark = pytest.mark.django_db
 
 
-@pytest.fixture
-def admin_user():
-    User = get_user_model()
-    user = User.objects.create_user(
-        username="admin",
-        password="adminpass123",
-        is_staff=True,
-        is_superuser=True,
-    )
-    user.save()
-    return user
-
-
-@pytest.fixture
-def location():
-    return Location.objects.create(
-        name="Test Location",
-    )
-
-
 def test_enrollment_step_1_select_location(client, admin_user, location):
     """Test step 1: Location selection shows barcode scan form"""
     client.force_login(admin_user)

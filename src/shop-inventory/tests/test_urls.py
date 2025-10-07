@@ -7,12 +7,6 @@ from django.contrib.auth.models import Group
 pytestmark = pytest.mark.django_db
 
 
-@pytest.fixture
-def user():
-    User = get_user_model()
-    return User.objects.create_user(username="testuser", password="testpass123")
-
-
 def test_core_index():
     """Test the index URL pattern"""
     url = reverse("index")
@@ -66,7 +60,7 @@ def test_login_view_get(client):
 def test_login_view_post_success(client, user):
     """Test successful login"""
     response = client.post(
-        reverse("login"), {"username": "testuser", "password": "testpass123"}
+        reverse("login"), {"username": "testuser", "password": "testpass"}
     )
     assert response.status_code == 302  # Redirect after successful login
 
@@ -75,7 +69,7 @@ def test_login_view_post_success(client, user):
 def test_logout_view(client, user):
     """Test logout functionality"""
     # First login
-    client.login(username="testuser", password="testpass123")
+    client.login(username="testuser", password="testpass")
     # Then test logout
     response = client.get(reverse("logout"))
     assert response.status_code == 302  # Redirect after logout

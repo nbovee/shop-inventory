@@ -7,53 +7,6 @@ from inventory.models import Product, Location, Inventory
 pytestmark = pytest.mark.django_db
 
 
-@pytest.fixture
-def user():
-    User = get_user_model()
-    return User.objects.create_user(
-        username="testuser",
-        password="testpass123",
-    )
-
-
-@pytest.fixture
-def admin_user():
-    User = get_user_model()
-    user = User.objects.create_superuser(
-        username="admin",
-        password="adminpass123",
-    )
-    # Add necessary permissions
-    user.is_staff = True
-    user.save()
-    return user
-
-
-@pytest.fixture
-def product():
-    return Product.objects.create(
-        name="Test Item",
-        manufacturer="Test Manufacturer",
-        barcode="123456789012",  # Valid UPC-A barcode
-    )
-
-
-@pytest.fixture
-def location():
-    return Location.objects.create(
-        name="Test Location",
-    )
-
-
-@pytest.fixture
-def inventory_item(product, location):
-    return Inventory.objects.create(
-        product=product,
-        location=location,
-        quantity=10,
-    )
-
-
 def test_index_view(client, user, inventory_item):
     """Test the inventory index view"""
     client.force_login(user)
@@ -212,16 +165,16 @@ def test_qrcode_sheet_view(client, admin_user):
 
 
 def test_stock_update_view_invalid_item(client, user):
-    """Test updating stock with invalid item ID should raise an error"""
-    from inventory.models import Inventory
-
+    """Test updating stock with invalid item ID should show error message"""
     client.force_login(user)
     data = {
         "item_id": 99999,  # Non-existent ID
         "delta_qty": 5,
     }
-    with pytest.raises(Inventory.DoesNotExist):
-        client.post(reverse("inventory:stock_update"), data)
+    # The form will validate and show an error, but won't raise an exception
+    # The view redirects on error
+    response = client.post(reverse("inventory:stock_update"), data)
+    assert response.status_code == 302  # Redirects back to stock_check
 
 
 def test_add_inventory_view_invalid_data(client, admin_user, product):

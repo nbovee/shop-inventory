@@ -13,30 +13,6 @@ from inventory.barcode_gen import barcode_page_generation
 pytestmark = pytest.mark.django_db
 
 
-@pytest.fixture
-def product():
-    return Product.objects.create(
-        name="Test Item",
-        manufacturer="Test Manufacturer",
-    )
-
-
-@pytest.fixture
-def location():
-    return Location.objects.create(
-        name="Test Location",
-    )
-
-
-@pytest.fixture
-def inventory_item(product, location):
-    return Inventory.objects.create(
-        product=product,
-        location=location,
-        quantity=10,
-    )
-
-
 def test_product_form_valid():
     """Test valid product form"""
     form = AddProductForm(
