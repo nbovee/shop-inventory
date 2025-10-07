@@ -71,9 +71,9 @@ def captive_portal_detect(request):
     Also handles manual navigation to hotspot-detect.html by redirecting to main app.
     """
     # Check if this is an automated captive portal check vs manual navigation
-    user_agent = request.META.get('HTTP_USER_AGENT', '')
-    
-    if 'CaptiveNetworkSupport' in user_agent:
+    user_agent = request.META.get("HTTP_USER_AGENT", "")
+
+    if "CaptiveNetworkSupport" in user_agent:
         # Automated iOS/macOS check - return minimal success page
         html = """<!DOCTYPE html><html><head><title>Success</title><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>Success</body></html>"""
         return HttpResponse(html, content_type="text/html")

@@ -39,17 +39,23 @@ def inventory_item(product, location):
 
 def test_product_form_valid():
     """Test valid product form"""
-    form = AddProductForm({
-        "name": "New Item", 
-        "manufacturer": "New Manufacturer",
-        "barcode": "123456789012"  # Valid UPC-A barcode
-    })
+    form = AddProductForm(
+        {
+            "name": "New Item",
+            "manufacturer": "New Manufacturer",
+            "barcode": "123456789012",  # Valid UPC-A barcode
+        }
+    )
     assert form.is_valid()
+
 
 def test_product_form_invalid_barcode():
     """Test invalid product form"""
-    form = AddProductForm({"name": "New Item", "manufacturer": "New Manufacturer", "barcode": "nope"})
+    form = AddProductForm(
+        {"name": "New Item", "manufacturer": "New Manufacturer", "barcode": "nope"}
+    )
     assert not form.is_valid()
+
 
 def test_product_form_duplicate():
     """Test duplicate product form"""
@@ -118,11 +124,11 @@ def test_deactivate_product_form_valid(product):
 def test_barcode_generation():
     """Test barcode page generation"""
     # Create some inventory items
-    product = Product.objects.create(name="Test", manufacturer="Test", barcode="123456789012")
-    location = Location.objects.create(name="Test")
-    Inventory.objects.create(
-        product=product, location=location, quantity=10
+    product = Product.objects.create(
+        name="Test", manufacturer="Test", barcode="123456789012"
     )
+    location = Location.objects.create(name="Test")
+    Inventory.objects.create(product=product, location=location, quantity=10)
 
     # Generate barcode page with minimal dimensions
     result = barcode_page_generation(rows=1, cols=1, pages=1)

@@ -137,20 +137,22 @@ def test_add_inventory_view(client, admin_user, product, location):
 def test_add_product_view(client, admin_user, location):
     """Test that add_product view (NonBarcodeProductForm) works correctly"""
     client.force_login(admin_user)
-    
+
     data = {
-        "name": "New Item", 
+        "name": "New Item",
         "manufacturer": "New Manufacturer",
         "location": location.id,
-        "quantity": 5
+        "quantity": 5,
     }
     response = client.post(reverse("inventory:add_product"), data)
     assert response.status_code == 302  # Should redirect after successful submission
-    
+
     # Verify the product and inventory were created
     assert Product.objects.filter(name="New Item").exists()
     new_product = Product.objects.get(name="New Item")
-    assert Inventory.objects.filter(product=new_product, location=location, quantity=5).exists()
+    assert Inventory.objects.filter(
+        product=new_product, location=location, quantity=5
+    ).exists()
 
 
 def test_remove_product_view(client, admin_user, product, inventory_item):
@@ -212,6 +214,7 @@ def test_qrcode_sheet_view(client, admin_user):
 def test_stock_update_view_invalid_item(client, user):
     """Test updating stock with invalid item ID should raise an error"""
     from inventory.models import Inventory
+
     client.force_login(user)
     data = {
         "item_id": 99999,  # Non-existent ID
@@ -224,6 +227,7 @@ def test_stock_update_view_invalid_item(client, user):
 def test_add_inventory_view_invalid_data(client, admin_user, product):
     """Test adding inventory with invalid data should show error message"""
     from django.contrib.messages import get_messages
+
     client.force_login(admin_user)
     data = {
         "product": product.id,
@@ -233,11 +237,14 @@ def test_add_inventory_view_invalid_data(client, admin_user, product):
     }
     response = client.post(reverse("inventory:add_item_to_location"), data)
     assert response.status_code == 302  # Redirects with error message
-    
+
     # Check that an error message was added
     messages = list(get_messages(response.wsgi_request))
     assert len(messages) > 0
-    assert any("error" in str(message).lower() or "invalid" in str(message).lower() for message in messages)
+    assert any(
+        "error" in str(message).lower() or "invalid" in str(message).lower()
+        for message in messages
+    )
 
 
 def test_remove_product_with_stock(client, admin_user, inventory_item):

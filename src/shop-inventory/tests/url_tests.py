@@ -87,7 +87,7 @@ def test_user_group_membership(user):
     # Check that Shop Employee group exists
     shop_employee_group = Group.objects.get(name="Shop Employee")
     assert shop_employee_group is not None
-    
+
     # Check that the user is in the Shop Employee group
     assert user.groups.filter(name="Shop Employee").exists()
     assert shop_employee_group in user.groups.all()
