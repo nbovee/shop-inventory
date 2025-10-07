@@ -12,7 +12,9 @@
         "--nothreading"
       ],
       "django": true,
-      "justMyCode": true
+      "justMyCode": true,
+      "python": "${workspaceFolder}/.venv/bin/python",
+      "cwd": "${workspaceFolder}/src/shop-inventory"
     }
   ]
 }

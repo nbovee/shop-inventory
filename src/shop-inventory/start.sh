@@ -21,7 +21,7 @@ python manage.py migrate --noinput
 # Start Gunicorn
 exec gunicorn _core.wsgi:application \
     --name shop_inventory \
-    --bind unix:"${APP_RUN_DIR}/shop-inventory.sock" \
+    --bind unix:"${APP_RUN_DIR}/pantry.sock" \
     --log-file "${APP_LOG_DIR}/gunicorn.log" \
     --access-logfile "${APP_LOG_DIR}/gunicorn-access.log" \
     --error-logfile "${APP_LOG_DIR}/gunicorn-error.log" \

@@ -8,4 +8,5 @@ https://docs.docker.com/compose/environment-variables/envvars-precedence/
 {
     "python.envFile": "",
     "djlint.showInstallError": false,
+    "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python"
 }
