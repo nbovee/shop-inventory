@@ -1,8 +1,6 @@
-# Shop Prototype Repository
+# Shop Inventory System
 
-This repository is the development repository for the Rowan Shop & Pantry Inventory System. Due to installation constraints where no WAN is available, it is built with [Django](https://www.djangoproject.com/) and compiled for Raspberry Pi using the [pi-gen](https://github.com/RPi-Distro/pi-gen) tool for fully offline deployment. [UV](https://docs.astral.sh/uv/), [Docker](https://docs.docker.com/), [WSL](https://docs.microsoft.com/en-us/windows/wsl/install), and [VSCode](https://code.visualstudio.com/) are used for development as they were easy to onboard inexperienced developers with.
-
-Effort has been taken to make this follow [Filesystem Hierarchy Standard](https://refspecs.linuxfoundation.org/FHS_3.0/fhs/index.html). This is a design choice, to allow for easy reuse of the build process for other projects or multiple concurrent applications. The service files are used to automatically start the Django server on boot, without the security risks of running as root or with auto-login.
+This repository contains the Django-based inventory management system for the Rowan Shop & Pantry. The application is designed for offline-only operation using [Django](https://www.djangoproject.com/) with SQLite. [UV](https://docs.astral.sh/uv/) is used for dependency management and development.
 
 <div markdown="1">
 
@@ -15,75 +13,102 @@ Effort has been taken to make this follow [Filesystem Hierarchy Standard](https:
 ## Development
 
 ### Initial Setup
-1. Install [uv](https://docs.astral.sh/uv/getting-started/installation/), [Docker Desktop](https://docs.docker.com/engine/install/), and [WSL](https://docs.microsoft.com/en-us/windows/wsl/install) as needed.
 
-2. Clone the repository with submodules and initialize the development environment:
+1. Install [uv](https://docs.astral.sh/uv/getting-started/installation/)
+
+2. Clone the repository:
 ```console
-git clone --recursive https://github.com/nbovee/shop-inventory.git
+git clone https://github.com/nbovee/shop-inventory.git
 cd shop-inventory
-bash init.sh
 ```
 
-3. Create your config file:
-```bash
-cp config.example config
+3. Set up the development environment:
+```console
+# Install dependencies
+uv sync
+
+# Install pre-commit hooks (optional)
+uvx pre-commit install
 ```
 
-4. Configure at least the following variables in `config`:
-- `DJANGO_SECRET_KEY`: Django's secret key
-- `DJANGO_DEBUG`: Development mode ("true"/"false")
-- `WIFI_PASS`: WiFi hotspot password
-- `DJANGO_SUPERUSER_PASSWORD`: Admin password
-- `DJANGO_BACKUP_PASSWORD`: Backup encryption password
+4. Create a `.env` file in the Django project directory:
+```console
+cd src/shop-inventory
+cp .env.example .env  # If example exists, otherwise create manually
+```
 
-> **Security Note**: Never commit the `config` file to version control.
+Configure the following environment variables in `.env`:
+- `DJANGO_SECRET_KEY`: Django's secret key (generate with `python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'`)
+- `DJANGO_DEBUG`: Set to "true" for development
+- `DJANGO_SUPERUSER_USERNAME`: Admin username (optional, for automated setup)
+- `DJANGO_SUPERUSER_PASSWORD`: Admin password (optional)
+- `DJANGO_SUPERUSER_EMAIL`: Admin email (optional)
+
+> **Security Note**: Never commit the `.env` file to version control.
 
 ### Running the Application
 
-1. Launch the development server:
-   - In VSCode: Run "Simple Debug" from the Run and Debug tab
-   - Access the application at [http://127.0.0.1:8000](http://127.0.0.1:8000)
+1. Navigate to the Django project directory:
+```console
+cd src/shop-inventory
+```
 
-2. Run tests:
+2. Run database migrations:
+```console
+python manage.py migrate
+```
+
+3. Create a superuser (if not using environment variables):
+```console
+python manage.py createsuperuser
+```
+
+4. Launch the development server:
+```console
+python manage.py runserver
+```
+
+5. Access the application at [http://127.0.0.1:8000](http://127.0.0.1:8000)
+
+### Testing and Code Quality
+
+Run tests:
 ```console
 uv run pytest
 ```
 
-> Note: The source code directory is mounted inside the container, allowing real-time code changes to be reflected in the development server.
-
-## Deployment
-
-### Building the Raspberry Pi Image
-
-1. If using WSL (Windows Subsystem for Linux), set up ARM emulation:
+Generate coverage report:
 ```console
-sudo apt-get update
-sudo apt-get install qemu-user-static
-sudo update-binfmts --enable
+uv run coverage xml
 ```
 
-2. Ensure submodules are initialized:
-```bash
-git submodule update --init
+Run linting:
+```console
+uv run ruff check
+uv run ruff format --check
 ```
 
-3. Set up the links for the build environment and the skip files used by pi-gen:
-```bash
-bash init.sh
+Fix formatting:
+```console
+uv run ruff format
 ```
 
-4. Build the image (this directs to the build-docker.sh script within pi-gen, as we are using WSL to build the image):
-```bash
-bash build.sh
-```
+## Application Structure
 
-The completed image will be available in `/deploy`.
+- **_core/**: Main Django application containing settings, base views, authentication, and user management
+- **inventory/**: Handles product catalog, stock management, locations, and barcode generation
+- **checkout/**: Manages shopping cart functionality and order processing
 
-### Raspberry Pi Setup
-The completed image can be flashed to a Raspberry Pi using the tool Raspberry Pi Imager.
+### Key Features
 
-### Backup Drives
-As a WLAN network, there is no possibility for an offsite backup. Instead, the RPi scans for connected USB drives containing a file name `.shopbackup`, and exports the database to that drive.
+- Custom user authentication with session timeout (20 minutes)
+- Product inventory management with location tracking
+- Barcode/QR code generation for inventory items
+- Shopping cart and order processing
+- Bootstrap-based responsive UI
+- SQLite database for simplicity and portability
+- USB backup functionality (scans for drives with `.shopbackup` file)
+
 ## Acknowledgements
 
 We extend our sincere gratitude to:
