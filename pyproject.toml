@@ -57,3 +57,6 @@ exclude_also = [
     "pass",
     "raise ImportError",
 ]
+
+[tool.ruff.lint]
+ignore = ["F401", "F841"]
