@@ -3,7 +3,7 @@ set -e
 
 # Load environment variables
 # service should already have sourced the config file but some of the chaining seems to fail
-source /etc/shop-inventory/config
+source /etc/pantry/config
 
 # Activate virtual environment
 source "${APP_INSTALL_DIR}/venv/bin/activate"

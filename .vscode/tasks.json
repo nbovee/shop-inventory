@@ -53,7 +53,7 @@
           },
           {
             "localPath": "${workspaceFolder}/src/config",
-            "containerPath": "/etc/shop-inventory/config"
+            "containerPath": "/etc/pantry/config"
           }
         ],
         "customOptions": "-v sqlite:/sqlite",
