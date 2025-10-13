@@ -18,7 +18,8 @@ from _core import is_true, split_with_comma
 from dotenv import load_dotenv
 
 # load_dotenv does not override existing environment variables, so in development we simply load the overrides first
-config_path = "/etc/pantry/config"
+APP_ENV_DIR = os.getenv("APP_ENV_DIR", "/etc/pantry")
+config_path = f"{APP_ENV_DIR}/config"
 config_loaded = load_dotenv(config_path)
 if config_loaded:
     print(f"Loaded environment config from {config_path}")
@@ -28,11 +29,11 @@ else:
 
     try:
         result = subprocess.run(
-            ["ls", "-la", "/etc/pantry"], capture_output=True, text=True
+            ["ls", "-la", APP_ENV_DIR], capture_output=True, text=True
         )
-        print(f"Contents of /etc/pantry:\n{result.stdout}")
+        print(f"Contents of {APP_ENV_DIR}:\n{result.stdout}")
     except Exception as e:
-        print(f"Could not list /etc/pantry: {e}")
+        print(f"Could not list {APP_ENV_DIR}: {e}")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 CORE_APP = Path(__file__).resolve().parent

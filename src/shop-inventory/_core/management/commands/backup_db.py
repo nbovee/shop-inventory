@@ -15,15 +15,18 @@ class Command(BaseCommand):
 
     def find_backup_drives(self):
         """Find all mounted drives with a .shopbackup file"""
-        # Common mount points for USB drives on Linux
-        mount_points = ["/tmp/shop-backup-mounts"]
+        # Get backup mount directory from environment
+        backup_mount_dir = os.environ.get("BACKUP_MOUNT_DIR", "/tmp/pantry-backup-mounts")
+        mount_points = [backup_mount_dir]
         backup_drives = []
 
         for mount_point in mount_points:
             if os.path.exists(mount_point):
                 # Walk through all subdirectories
                 for root, dirs, files in os.walk(mount_point):
+                    logger.info(f"Checking {root} for .shopbackup ...")
                     if ".shopbackup" in files:
+                        logger.info(f"{root}/.shopbackup found.")
                         backup_drives.append(root)
 
         return backup_drives
