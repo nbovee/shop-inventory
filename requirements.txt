@@ -12,6 +12,8 @@ colorama==0.4.6
     #   tqdm
 coverage==7.10.7
     # via pytest-cov
+debugpy==1.8.17
+    # via shop-inventory (pyproject.toml:test)
 django==4.2.25
     # via shop-inventory (pyproject.toml)
 gunicorn==23.0.0

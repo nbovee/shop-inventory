@@ -11,7 +11,7 @@
       },
       "dockerBuild": {
         "tag": "shop-inventory:master",
-        "dockerfile": "${workspaceFolder}/Dockerfile",
+        "dockerfile": "${workspaceFolder}/.vscode/Dockerfile",
         "context": "${workspaceFolder}",
         "pull": true
       }
@@ -38,36 +38,36 @@
       "problemMatcher": []
     },
     {
-      "type": "docker-run",
-      "label": "docker-run: debug",
-      "dependsOn": ["docker-build"],
-      "dockerRun": {
-        "image": "shop-inventory:master",
-        "remove": true,
-        // get all the env vars from the .env file
-        // "envFiles": ["${workspaceFolder}/.env"],
-        "volumes": [
-          {
-            "localPath": "${workspaceFolder}/src/shop-inventory",
-            "containerPath": "/usr/src/shop-inventory"
-          },
-          {
-            "localPath": "${workspaceFolder}/src/config",
-            "containerPath": "/etc/pantry/config"
-          }
-        ],
-        "customOptions": "-v sqlite:/sqlite",
-        "ports": [
-          {
-            "containerPort": 8000,
-            "hostPort": 8000
-          }
-        ]
+      "type": "shell",
+      "label": "shop-inventory: debug-compose-up",
+      "command": "docker-compose -f docker-compose.debug.yml up --build -d",
+      "presentation": {
+        "group": "docker",
+        "reveal": "always",
+        "panel": "new"
       },
-      "python": {
-        "file": "manage.py",
-        "args": ["runserver", "0.0.0.0:8000", "--nothreading"]
-      }
+      "problemMatcher": []
+    },
+    {
+      "type": "shell",
+      "label": "shop-inventory: wait-for-launch",
+      "dependsOn": "shop-inventory: debug-compose-up",
+      "command": "sleep 3",
+      "presentation": {
+        "group": "docker",
+        "showReuseMessage": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "type": "shell",
+      "label": "shop-inventory: debug-compose-down",
+      "command": "docker-compose -f docker-compose.debug.yml down",
+      "presentation": {
+        "group": "docker",
+        "reveal": "silent"
+      },
+      "problemMatcher": []
     },
     {
       "type": "shell",

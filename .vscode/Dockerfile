@@ -1,6 +1,6 @@
-FROM python:3.12-alpine as base
+FROM python:3.12-alpine AS base
 
-FROM base as builder
+FROM base AS builder
 
 RUN mkdir /install
 WORKDIR /install
@@ -23,7 +23,6 @@ ARG DJANGO_BASE_DIR=/usr/src/$PROJECT_NAME
 ARG DJANGO_STATIC_ROOT=/var/www/static
 ARG DJANGO_MEDIA_ROOT=/var/www/media
 ARG DJANGO_SQLITE_DIR=/sqlite
-# The superuser with the data below will be created only if there are no users in the database!
 ARG DJANGO_DEV_SERVER_PORT=8000
 
 # Keeps Python from generating .pyc files in the container
@@ -44,16 +43,13 @@ ENV \
 	DJANGO_STATIC_ROOT=$DJANGO_STATIC_ROOT \
 	DJANGO_MEDIA_ROOT=$DJANGO_MEDIA_ROOT \
 	DJANGO_SQLITE_DIR=$DJANGO_SQLITE_DIR \
-	DJANGO_SUPERUSER_USERNAME=$DJANGO_SUPERUSER_USERNAME \
-	DJANGO_SUPERUSER_PASSWORD=$DJANGO_SUPERUSER_PASSWORD \
-	DJANGO_SUPERUSER_EMAIL=$DJANGO_SUPERUSER_EMAIL \
 	DJANGO_DEV_SERVER_PORT=$DJANGO_DEV_SERVER_PORT
 
 
 COPY --from=builder /install /usr/local
-COPY docker-entrypoint.sh /
-COPY docker-cmd.sh /
-COPY $PROJECT_NAME $DJANGO_BASE_DIR
+COPY .vscode/docker-entrypoint.sh /
+COPY .vscode/docker-cmd.sh /
+COPY src/$PROJECT_NAME $DJANGO_BASE_DIR
 
 # User
 RUN chmod +x /docker-entrypoint.sh /docker-cmd.sh && \

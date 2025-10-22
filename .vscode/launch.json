@@ -2,19 +2,24 @@
   "version": "2.0.0",
   "configurations": [
     {
-      "name": "Python: Django",
+      "name": "Docker: Python - Django",
       "type": "debugpy",
-      "request": "launch",
-      "program": "${workspaceFolder}/src/shop-inventory/manage.py",
-      "args": [
-        "runserver",
-        "0.0.0.0:8000",
-        "--nothreading"
+      "request": "attach",
+      "preLaunchTask": "shop-inventory: wait-for-launch",
+      "postDebugTask": "shop-inventory: debug-compose-down",
+      "connect": {
+        "host": "localhost",
+        "port": 5678
+      },
+      "pathMappings": [
+        {
+          "localRoot": "${workspaceFolder}/src/shop-inventory",
+          "remoteRoot": "/usr/src/shop-inventory"
+        }
       ],
       "django": true,
       "justMyCode": true,
-      "python": "${workspaceFolder}/.venv/bin/python",
-      "cwd": "${workspaceFolder}/src/shop-inventory"
+      "internalConsoleOptions": "openOnSessionStart"
     }
   ]
 }
