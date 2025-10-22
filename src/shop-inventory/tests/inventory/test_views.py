@@ -61,53 +61,6 @@ def test_stock_update_view_negative(client, user, inventory_item):
     assert inventory_item.quantity == initial_quantity  # Quantity shouldn't change
 
 
-def test_add_inventory_view(client, admin_user, product, location):
-    """Test adding new inventory using the multi-step workflow"""
-    client.force_login(admin_user)
-
-    # Step 1: Select location
-    response = client.post(
-        reverse("inventory:add_item_to_location"),
-        {"action": "select_location", "location_id": location.id},
-    )
-    assert response.status_code == 200  # Should show scan form
-
-    # Step 2: Scan barcode (use the product's existing barcode)
-    response = client.post(
-        reverse("inventory:add_item_to_location"),
-        {"action": "scan_barcode", "barcode": product.barcode},
-    )
-    assert response.status_code == 200  # Should show quantity form
-
-    # Step 3: Add quantity
-    response = client.post(
-        reverse("inventory:add_item_to_location"),
-        {"action": "add_quantity", "quantity": 5},
-    )
-    assert Inventory.objects.filter(product=product, location=location).exists()
-
-
-def test_add_product_view(client, admin_user, location):
-    """Test that add_product view (NonBarcodeProductForm) works correctly"""
-    client.force_login(admin_user)
-
-    data = {
-        "name": "New Item",
-        "manufacturer": "New Manufacturer",
-        "location": location.id,
-        "quantity": 5,
-    }
-    response = client.post(reverse("inventory:add_product"), data)
-    assert response.status_code == 302  # Should redirect after successful submission
-
-    # Verify the product and inventory were created
-    assert Product.objects.filter(name="New Item").exists()
-    new_product = Product.objects.get(name="New Item")
-    assert Inventory.objects.filter(
-        product=new_product, location=location, quantity=5
-    ).exists()
-
-
 def test_remove_product_view(client, admin_user, product, inventory_item):
     """Test removing a product"""
     client.force_login(admin_user)

@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+from django.db import IntegrityError
 from .models import Product, Location, Inventory, normalize_barcode
 from django.http import HttpResponse
 from django.core import exceptions as forms
@@ -427,19 +428,41 @@ def _handle_add_new_item(request):
 
     form = NewProductForm(request.POST)
     if form.is_valid():
-        product = form.save(commit=False)
-        product.barcode = barcode
-        product.save()
+        try:
+            product = form.save(commit=False)
+            product.barcode = barcode
+            product.save()
 
-        # Store product ID in session for the quantity step
-        request.session["current_product_id"] = product.id
-        context["product"] = product
-        context["form"] = AddQuantityForm()
-        context["form_type"] = "quantity_form"
+            # Store product ID in session for the quantity step
+            request.session["current_product_id"] = product.id
+            context["product"] = product
+            context["form"] = AddQuantityForm()
+            context["form_type"] = "quantity_form"
+            context["form_title"] = "Add Quantity"
+        except IntegrityError as e:
+            # Database constraint violation (duplicate barcode or name+manufacturer)
+            error_msg = str(e).lower()
+            if "normalized_barcode" in error_msg or "barcode" in error_msg:
+                messages.error(
+                    request, "This barcode is already in use by another product."
+                )
+            elif "name" in error_msg or "manufacturer" in error_msg:
+                messages.error(
+                    request, "A product with this name and manufacturer already exists."
+                )
+            else:
+                messages.error(
+                    request, "Unable to create product. Please check your input."
+                )
+
+            context["form"] = form
+            context["form_type"] = "new_item_form"
+            context["form_title"] = "Enroll a New Item"
     else:
         # If form is invalid, show it again with errors
         context["form"] = form
         context["form_type"] = "new_item_form"
+        context["form_title"] = "Enroll a New Item"
 
     return render(request, "inventory/add_item_to_location.html", context)
 

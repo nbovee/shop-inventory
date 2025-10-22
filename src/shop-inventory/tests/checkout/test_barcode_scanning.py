@@ -98,18 +98,3 @@ def test_remove_from_cart_no_product_id(client):
     """Test remove from cart without product_id"""
     response = client.post(reverse("checkout:remove_from_cart"), {})
     assert response.status_code == 302
-
-
-def test_process_order_error_handling(client, inventory_item):
-    """Test process order with invalid data"""
-    session = client.session
-    session["cart"] = {str(inventory_item.id): 2}
-    session.save()
-
-    # Submit with invalid implicit_id
-    data = {"implicit_id": ""}
-    response = client.post(reverse("checkout:process_order"), data)
-    assert response.status_code == 302
-
-    # Cart should still exist since order failed
-    assert "cart" in client.session

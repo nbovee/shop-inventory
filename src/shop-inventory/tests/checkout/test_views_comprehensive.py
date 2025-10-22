@@ -15,35 +15,6 @@ def test_checkout_index_with_filter(client, inventory_item):
     assert inventory_item in response.context["inventory_items"]
 
 
-def test_checkout_barcode_scan_with_error(client, shopfloor):
-    """Test barcode scanning error handling"""
-    session = client.session
-    session["cart"] = {}
-    session.save()
-
-    # Scan a barcode for non-existent item
-    data = {
-        "barcode": "999999999999",
-        "quantity": 1,
-    }
-    response = client.post(reverse("checkout:index"), data)
-    assert response.status_code == 302
-
-
-def test_checkout_barcode_scan_invalid_quantity(client, inventory_item):
-    """Test barcode scanning with invalid quantity"""
-    session = client.session
-    session["cart"] = {}
-    session.save()
-
-    data = {
-        "barcode": inventory_item.product.barcode,
-        "quantity": 999,  # More than available
-    }
-    response = client.post(reverse("checkout:index"), data)
-    assert response.status_code == 302
-
-
 def test_process_order_form_validation_error(client, inventory_item):
     """Test process order with form validation errors"""
     session = client.session

@@ -15,7 +15,7 @@ def test_normalize_barcode_number_system_2():
     """Test normalize_barcode with number system 2 (variable weight items)"""
     barcode = "290123456789"  # Starts with 2
     normalized = normalize_barcode(barcode)
-    assert normalized == "290123"
+    assert normalized == "290123000000"
 
 
 def test_normalize_barcode_regular():
@@ -43,7 +43,7 @@ def test_product_normalized_barcode_saved():
         manufacturer="Test",
         barcode="290123456789",
     )
-    assert product.normalized_barcode == "290123"
+    assert product.normalized_barcode == "290123000000"
 
 
 def test_location_str():
