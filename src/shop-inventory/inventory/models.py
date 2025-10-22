@@ -28,13 +28,13 @@ def validate_barcode(value):
     # We also support UUID codes, which are used as a last resort for items that do not have either of the above barcodes
 
     if barcode_is_upc_a(value):
-        # assume this is a UPC-A code, which we don't validate
+        # assume this is a UPC-A code, which we don't validate beyond length.
         return True
     elif barcode_is_upc_e(value):
-        # assume this is a UPC-E code, which we don't validate
+        # assume this is a UPC-E code, which we don't validate beyond length.
         return True
     elif barcode_is_uuid(value):
-        # assume we have scanned one of our custom uuid codes, which we dont validate
+        # assume we have scanned one of our custom uuid codes, which we dont validate beyond length.
         return True
     raise ValidationError(
         "Scanned barcode does not appear to match UPC-A (12 digit), UPC-E (8 digit), or our custom barcode."

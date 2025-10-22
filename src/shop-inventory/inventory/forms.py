@@ -207,6 +207,9 @@ class AddQuantityForm(forms.Form):
 
 
 class NewProductForm(AddProductForm):
+    # Remove the inherited barcode field - barcode comes from the scanned value in session
+    barcode = None
+
     class Meta(AddProductForm.Meta):
         fields = ["name", "manufacturer"]  # barcode will be set from scan
 
