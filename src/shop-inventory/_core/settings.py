@@ -216,39 +216,40 @@ DEFAULT_FROM_EMAIL = os.getenv("DJANGO_DEFAULT_FROM_EMAIL", "webmaster@localhost
 DJANGO_ADMIN_USERNAME = os.getenv("DJANGO_ADMIN_USERNAME")
 DJANGO_ADMIN_PASSWORD = os.getenv("DJANGO_ADMIN_PASSWORD")
 
-# Define the log directory from environment variable
-LOG_DIR = Path(os.getenv("APP_LOG_DIR", BASE_DIR / "logs"))
+# Logging configuration (production only - debug mode uses Django's default console logging)
+if not DEBUG:
+    # Define the log directory from environment variable
+    LOG_DIR = Path(os.getenv("APP_LOG_DIR", BASE_DIR / "logs"))
 
-# Logging configuration
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "formatters": {
-        "verbose": {
-            "format": "{levelname} {asctime} {module} {message}",
-            "style": "{",
+    LOGGING = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "verbose": {
+                "format": "{levelname} {asctime} {module} {message}",
+                "style": "{",
+            },
+            "simple": {
+                "format": "{levelname} {message}",
+                "style": "{",
+            },
         },
-        "simple": {
-            "format": "{levelname} {message}",
-            "style": "{",
+        "handlers": {
+            "file": {
+                "level": "DEBUG",
+                "class": "logging.handlers.RotatingFileHandler",
+                "filename": LOG_DIR
+                / f"django-{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.log",
+                "maxBytes": 1024 * 1024 * 5,  # 5 MB
+                "backupCount": 5,
+                "formatter": "verbose",
+            },
         },
-    },
-    "handlers": {
-        "file": {
-            "level": "DEBUG",
-            "class": "logging.handlers.RotatingFileHandler",
-            "filename": LOG_DIR
-            / f"django-{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.log",
-            "maxBytes": 1024 * 1024 * 5,  # 5 MB
-            "backupCount": 5,
-            "formatter": "verbose",
+        "loggers": {
+            "django": {
+                "handlers": ["file"],
+                "level": "DEBUG",
+                "propagate": True,
+            },
         },
-    },
-    "loggers": {
-        "django": {
-            "handlers": ["file"],
-            "level": "DEBUG",
-            "propagate": True,
-        },
-    },
-}
+    }

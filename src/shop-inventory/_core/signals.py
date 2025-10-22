@@ -31,20 +31,19 @@ def create_default_users(sender, **kwargs):
         User = get_user_model()
         # Define the default user data
         users = []
-        if not settings.DEBUG:
-            admin_username = getattr(settings, "DJANGO_ADMIN_USERNAME")
-            admin_password = getattr(settings, "DJANGO_ADMIN_PASSWORD")
-            if admin_username and admin_password:
-                users = [
-                    {
-                        "username": admin_username,
-                        "password": admin_password,
-                        "is_superuser": True,
-                        "is_staff": True,
-                        "groups": ["Shop Manager", "Shop Employee"],
-                    },
-                ]
-        else:
+        admin_username = getattr(settings, "DJANGO_ADMIN_USERNAME")
+        admin_password = getattr(settings, "DJANGO_ADMIN_PASSWORD")
+        if admin_username and admin_password:
+            users = [
+                {
+                    "username": admin_username,
+                    "password": admin_password,
+                    "is_superuser": True,
+                    "is_staff": True,
+                    "groups": ["Shop Manager", "Shop Employee"],
+                },
+            ]
+        if settings.DEBUG:
             # Add default users for development environment
             users.extend(
                 [
