@@ -32,9 +32,17 @@
             <form method="post">
                 {% csrf_token %}
                 <input type="hidden" name="action" value="scan_barcode">
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
                 <div class="form-group mb-3">
                     {{ form.barcode.label_tag }}
                     {{ form.barcode }}
+                    {% if form.barcode.errors %}
+                        <div class="text-danger small">{{ form.barcode.errors }}</div>
+                    {% endif %}
                     <small class="form-text text-muted">Scan or type a barcode</small>
                 </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
@@ -44,14 +52,25 @@
                 {% csrf_token %}
                 <input type="hidden" name="action" value="add_new_item">
                 <h5>New Item {% if barcode_is_uuid %}(UUID: {{ barcode }}){% else %}(Barcode: {{ barcode }}){% endif %}</h5>
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
                 <div class="form-group mb-3">
                     {{ form.name.label_tag }}
                     {{ form.name }}
+                    {% if form.name.errors %}
+                        <div class="text-danger small">{{ form.name.errors }}</div>
+                    {% endif %}
                     <small class="form-text text-muted">Double-check the item name is correct</small>
                 </div>
                 <div class="form-group mb-3">
                     {{ form.manufacturer.label_tag }}
                     {{ form.manufacturer }}
+                    {% if form.manufacturer.errors %}
+                        <div class="text-danger small">{{ form.manufacturer.errors }}</div>
+                    {% endif %}
                     <small class="form-text text-muted">Verify the manufacturer information</small>
                 </div>
                 <button type="submit" class="btn btn-primary">Create Item</button>
@@ -61,9 +80,17 @@
                 {% csrf_token %}
                 <input type="hidden" name="action" value="add_quantity">
                 <h5>{{ product.name }} ({{ product.manufacturer }})</h5>
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
                 <div class="form-group mb-3">
                     {{ form.quantity.label_tag }}
                     {{ form.quantity }}
+                    {% if form.quantity.errors %}
+                        <div class="text-danger small">{{ form.quantity.errors }}</div>
+                    {% endif %}
                     <small class="form-text text-muted">Enter the quantity to add</small>
                 </div>
                 <button type="submit" class="btn btn-primary">Add Quantity</button>
